@@ -40,9 +40,8 @@ export default function Login() {
       console.log("enviando:", senha);
 
       const responseApi = await requestLogin(cpf.replace(/\D/g, ""), senha);
-
       // exemplo: supondo que a API retorna { token, usuario }
-      if (responseApi?.token) {
+      if (responseApi?.data.status === "success" && responseApi?.data.token) {
         // salva token em storage (opcional)
         await AsyncStorage.setItem("token", responseApi.token);
 

@@ -3,6 +3,7 @@ import axios from "axios";
 const client = axios.create({
   baseURL: "http://192.168.0.6:3000/api/v1", // URL base da API
   timeout: 10000,
+  withCredentials: true,
 });
 
 /* client.interceptors.request.use(

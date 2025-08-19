@@ -1,14 +1,23 @@
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Image, Dimensions, Alert } from 'react-native';
-import React, { useState } from 'react';
-import { router } from 'expo-router';
-import Rotas from '../types/types.route';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as LocalAuthentication from 'expo-local-authentication';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  Alert,
+} from "react-native";
+import React, { useState } from "react";
+import { router } from "expo-router";
+import Rotas from "../types/types.route";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as LocalAuthentication from "expo-local-authentication";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
-const imageBack = require('../assets/fundoRisco.png');
-const logo = require('../assets/logo.png');
+const imageBack = require("../assets/fundoRisco.png");
+const logo = require("../assets/logo.png");
 
 export default function Home() {
   const [checking, setChecking] = useState(false);
@@ -16,7 +25,7 @@ export default function Home() {
   const handleEnter = async () => {
     setChecking(true);
     try {
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
 
       if (!token) {
         router.push(Rotas.REGISTER);
@@ -24,35 +33,38 @@ export default function Home() {
         return;
       }
 
-      const bioEnabled = await AsyncStorage.getItem('biometria');
+      const bioEnabled = await AsyncStorage.getItem("biometria");
 
-      if (bioEnabled === 'true') {
+      if (bioEnabled === "true") {
         const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: 'Confirme sua digital para entrar',
-          fallbackLabel: 'Usar senha',
+          promptMessage: "Confirme sua digital para entrar",
+          fallbackLabel: "Usar senha",
         });
 
         if (!result.success) {
-          Alert.alert('Atenção', 'Biometria não reconhecida.');
+          Alert.alert("Atenção", "Biometria não reconhecida.");
           setChecking(false);
           return;
         }
       }
 
       router.push(Rotas.HOME);
-
     } catch (error) {
-      console.log('Erro ao verificar login/biometria:', error);
+      console.log("Erro ao verificar login/biometria:", error);
     }
     setChecking(false);
   };
 
   return (
-    <ImageBackground source={imageBack} style={styles.background} resizeMode='cover'>
+    <ImageBackground
+      source={imageBack}
+      style={styles.background}
+      resizeMode="cover"
+    >
       <View style={styles.container}>
         <Text style={styles.title}>Bem-vindo de volta!</Text>
-        <TouchableOpacity 
-          style={styles.buttonLogin} 
+        <TouchableOpacity
+          style={styles.buttonLogin}
           onPress={handleEnter}
           disabled={checking}
         >
@@ -65,37 +77,42 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  background: { flex: 1, width: '100%', height: '100%' },
+  background: { flex: 1, width: "100%", height: "100%" },
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: height * 0.08,
   },
   title: {
     fontSize: width * 0.08,
-    fontFamily: 'Roboto_500Medium',
-    textAlign: 'center',
-    color: 'white',
-    backgroundColor: '#1B98E0',
+    fontFamily: "Roboto_500Medium",
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "#1B98E0",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
   buttonLogin: {
-    width: '60%',
+    width: "60%",
     aspectRatio: 3.5,
-    backgroundColor: '#0686D0',
+    backgroundColor: "#0686D0",
     borderRadius: 12,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: height * 0.45,
-    alignItems: 'center',
+    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
-    elevation: 5
+    elevation: 5,
   },
-  textButton: { color: 'white', textAlign: 'center', fontSize: width * 0.06 },
-  logo: { width: width * 0.25, height: width * 0.25, marginTop: height * 0.01, marginRight: width * 0.7 },
+  textButton: { color: "white", textAlign: "center", fontSize: width * 0.06 },
+  logo: {
+    width: width * 0.25,
+    height: width * 0.25,
+    marginTop: height * 0.01,
+    marginRight: width * 0.7,
+  },
 });
