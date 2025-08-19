@@ -183,7 +183,7 @@ export function useRegisterForm() {
 
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(
-          () => reject(new Error("Timeout: Requisição demorou muito")),
+          () => reject(console.error("Timeout: Requisição demorou muito")),
           10000
         );
       });
@@ -197,6 +197,7 @@ export function useRegisterForm() {
       const cpfExiste = response.data.status !== "success";
       return cpfExiste;
     } catch (error: any) {
+      console.log(error);
       if (error.message.includes("Timeout")) {
         setFieldError(
           "cpf",
@@ -511,7 +512,7 @@ export function useRegisterForm() {
         Alert.alert("Sucesso!", "Conta criada com sucesso!", [
           {
             text: "OK",
-            onPress: () => router.push(Rotas.DIGITAL_REGISTER),
+            onPress: () => router.push(Rotas.LOGIN),
           },
         ]);
       } else {
