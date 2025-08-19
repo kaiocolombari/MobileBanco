@@ -12,6 +12,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import ImageButton from "../components/ImageButton";
+import Rotas from "../../types/types.route";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -38,12 +40,14 @@ export default function HomeScreen() {
           </View>
           <View style={styles.headerIcons}>
             <Ionicons name="help-circle-outline" size={25} color="white" />
-            <Ionicons
-              name="settings-outline"
-              size={25}
-              color="white"
-              style={{ marginLeft: 15 }}
-            />
+            <TouchableOpacity onPress={()=>{router.push(Rotas.CONFIG)}}>
+              <Ionicons
+                name="settings-outline"
+                size={25}
+                color="white"
+                style={{ marginLeft: 15 }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -121,6 +125,9 @@ export default function HomeScreen() {
             />
           </View>
           <TextInput style={styles.input} placeholder="Escreva aqui..." />
+          <TouchableOpacity style={styles.rateButton} onPress={() => { }}>
+            <Text style={styles.rateButtonText}>Enviar avaliação</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <BottomNav />
@@ -276,6 +283,26 @@ const styles = StyleSheet.create({
     color: "white",
     fontFamily: "Roboto_500Medium",
     fontSize: 15,
+  },
+
+  rateButton: {
+    backgroundColor: "#0686D0",
+    paddingVertical: 12,
+    borderRadius: 23,
+    alignItems: "center",
+    marginTop: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    width: 120,
+    alignSelf: "flex-end"
+  },
+  rateButtonText: {
+    color: "white",
+    fontFamily: "Roboto_500Medium",
+    fontSize: 12,
   },
 
   ratingBox: {
