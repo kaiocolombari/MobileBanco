@@ -28,7 +28,7 @@ export default function Home() {
       const token = await AsyncStorage.getItem("token");
 
       if (!token) {
-        router.push(Rotas.REGISTER);
+        router.push(Rotas.HOME);
         setChecking(false);
         return;
       }
@@ -46,14 +46,22 @@ export default function Home() {
           setChecking(false);
           return;
         }
+
+<<<<<<< HEAD
+      router.push(Rotas.HOME);
+=======
+        router.push(Rotas.HOME);
+      } else {
+        router.push(Rotas.LOGIN);
       }
 
-      router.push(Rotas.HOME);
+>>>>>>> da383a923cccb148612a1aaf0a8cdb3452175b76
     } catch (error) {
       console.log("Erro ao verificar login/biometria:", error);
     }
     setChecking(false);
   };
+
 
   return (
     <ImageBackground

@@ -4,7 +4,8 @@ const Rotas = {
   HOME: "screen/homeScreen",
   REGISTER: "screen/register",
   LOGIN_ERROR: "screen/loginError",
-  DIGITAL_REGISTER: "screen/digitalRegister"
+  DIGITAL_REGISTER: "screen/digitalRegister",
+  CONFIG: "screen/config"
 }
 
 export default Rotas
