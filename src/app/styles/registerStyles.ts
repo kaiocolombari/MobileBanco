@@ -45,5 +45,6 @@ export const registerStyles = StyleSheet.create({
   loginBackText: {
     color: "blue",
     fontSize: width * 0.04,
+    alignSelf: "flex-start"
   },
 });

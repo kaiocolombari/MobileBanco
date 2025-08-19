@@ -111,7 +111,13 @@ export default function Register() {
           showsVerticalScrollIndicator={false}
         >
           {renderCurrentStep()}
-
+          <TouchableOpacity
+            style={registerStyles.loginBackButton}
+            onPress={() => router.push(Rotas.LOGIN)}
+            disabled={loading}>
+            <Text style={registerStyles.loginBackText}>Já tem uma conta?</Text>
+          </TouchableOpacity>
+          
           <FormNavigation
             currentStep={step}
             loading={loading}
@@ -120,13 +126,7 @@ export default function Register() {
             onRegister={handleRegister}
           />
 
-          <TouchableOpacity
-            style={registerStyles.loginBackButton}
-            onPress={() => router.push(Rotas.LOGIN)}
-            disabled={loading}
-          >
-            <Text style={registerStyles.loginBackText}>Já tem uma conta?</Text>
-          </TouchableOpacity>
+
         </ScrollView>
       </View>
     </View>

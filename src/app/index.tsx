@@ -16,6 +16,14 @@ export default function Home() {
   const handleEnter = async () => {
     setChecking(true);
     try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        router.push(Rotas.REGISTER);
+        setChecking(false);
+        return;
+      }
+
       const bioEnabled = await AsyncStorage.getItem('biometria');
 
       if (bioEnabled === 'true') {
@@ -31,15 +39,10 @@ export default function Home() {
         }
       }
 
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        router.push(Rotas.HOME);
-      } else {
-        router.push(Rotas.LOGIN);
-      }
+      router.push(Rotas.HOME);
 
     } catch (error) {
-      console.log('Erro ao verificar biometria:', error);
+      console.log('Erro ao verificar login/biometria:', error);
     }
     setChecking(false);
   };
