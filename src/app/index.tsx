@@ -37,9 +37,11 @@ export default function Home() {
           setChecking(false);
           return;
         }
-      }
 
-      router.push(Rotas.HOME);
+        router.push(Rotas.HOME);
+      } else {
+        router.push(Rotas.LOGIN);
+      }
 
     } catch (error) {
       console.log('Erro ao verificar login/biometria:', error);
@@ -47,12 +49,13 @@ export default function Home() {
     setChecking(false);
   };
 
+
   return (
     <ImageBackground source={imageBack} style={styles.background} resizeMode='cover'>
       <View style={styles.container}>
         <Text style={styles.title}>Bem-vindo de volta!</Text>
-        <TouchableOpacity 
-          style={styles.buttonLogin} 
+        <TouchableOpacity
+          style={styles.buttonLogin}
           onPress={handleEnter}
           disabled={checking}
         >
