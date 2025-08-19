@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Image, Dimensions, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
 import Rotas from '../types/types.route';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,47 +11,50 @@ const imageBack = require('../assets/fundoRisco.png');
 const logo = require('../assets/logo.png');
 
 export default function Home() {
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(false);
 
-  useEffect(() => {
-    checkBiometria();
-  }, []);
+  const handleEnter = async () => {
+    setChecking(true);
+    try {
+      const bioEnabled = await AsyncStorage.getItem('biometria');
 
-  const checkBiometria = async () => {
-    const bioEnabled = await AsyncStorage.getItem('biometria');
-    if (bioEnabled === 'true') {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Confirme sua digital para entrar',
-        fallbackLabel: 'Usar senha',
-      });
+      if (bioEnabled === 'true') {
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage: 'Confirme sua digital para entrar',
+          fallbackLabel: 'Usar senha',
+        });
 
-      if (result.success) {
-        verifyLogin();
-      } else {
-        Alert.alert('Atenção', 'Biometria não reconhecida.');
+        if (!result.success) {
+          Alert.alert('Atenção', 'Biometria não reconhecida.');
+          setChecking(false);
+          return;
+        }
       }
+
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        router.push(Rotas.HOME);
+      } else {
+        router.push(Rotas.LOGIN);
+      }
+
+    } catch (error) {
+      console.log('Erro ao verificar biometria:', error);
     }
     setChecking(false);
-  };
-
-  const verifyLogin = async () => {
-    const token = await AsyncStorage.getItem('token');
-    if (token) {
-      router.push(Rotas.LOGIN);
-    } else {
-      router.push(Rotas.HOME);
-    }
   };
 
   return (
     <ImageBackground source={imageBack} style={styles.background} resizeMode='cover'>
       <View style={styles.container}>
         <Text style={styles.title}>Bem-vindo de volta!</Text>
-        {!checking && (
-          <TouchableOpacity style={styles.buttonLogin} onPress={verifyLogin}>
-            <Text style={styles.textButton}>ENTRAR</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity 
+          style={styles.buttonLogin} 
+          onPress={handleEnter}
+          disabled={checking}
+        >
+          <Text style={styles.textButton}>ENTRAR</Text>
+        </TouchableOpacity>
         <Image source={logo} style={styles.logo} resizeMode="contain" />
       </View>
     </ImageBackground>
@@ -59,11 +62,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%'
-  },
+  background: { flex: 1, width: '100%', height: '100%' },
   container: {
     flex: 1,
     justifyContent: 'space-between',
@@ -89,23 +88,11 @@ const styles = StyleSheet.create({
     marginTop: height * 0.45,
     alignItems: 'center',
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
     elevation: 5
   },
-  textButton: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: width * 0.06
-  },
-  logo: {
-    width: width * 0.25,
-    height: width * 0.25,
-    marginTop: height * 0.01,
-    marginRight: width * 0.7,
-  },
+  textButton: { color: 'white', textAlign: 'center', fontSize: width * 0.06 },
+  logo: { width: width * 0.25, height: width * 0.25, marginTop: height * 0.01, marginRight: width * 0.7 },
 });
