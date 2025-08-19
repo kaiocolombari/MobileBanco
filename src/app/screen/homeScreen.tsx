@@ -65,8 +65,8 @@ export default function HomeScreen() {
             <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { }} />
             <ImageButton image={require("../../assets/barraIcon.png")} label="Pagar" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
-            <ImageButton image={require("../../assets/depositarIcon.png")} label="Depositar" onPress={() => { }} />
-            <ImageButton image={require("../../assets/trans.png")} label="Transferir" onPress={() => { }} />
+            <ImageButton image={require("../../assets/deposito2.png")} label="Depositar" onPress={() => { }} />
+            <ImageButton image={require("../../assets/trans2.png")} label="Transferir" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
           </ScrollView>
         </View>
