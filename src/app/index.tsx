@@ -47,21 +47,15 @@ export default function Home() {
           return;
         }
 
-<<<<<<< HEAD
-      router.push(Rotas.HOME);
-=======
         router.push(Rotas.HOME);
       } else {
         router.push(Rotas.LOGIN);
       }
-
->>>>>>> da383a923cccb148612a1aaf0a8cdb3452175b76
     } catch (error) {
       console.log("Erro ao verificar login/biometria:", error);
     }
     setChecking(false);
   };
-
 
   return (
     <ImageBackground
