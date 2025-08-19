@@ -25,7 +25,7 @@ export default function HomeScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
           <Image
-            source={require("../../assets/user.png")}
+            source={require("../../assets/avatar.png")}
             style={{
               width: 60,
               height: 60,
