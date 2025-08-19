@@ -39,7 +39,7 @@ export default function Home() {
     if (token) {
       router.push(Rotas.LOGIN);
     } else {
-      router.push(Rotas.REGISTER);
+      router.push(Rotas.HOME);
     }
   };
 
@@ -88,6 +88,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: height * 0.45,
     alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5
   },
   textButton: {
     color: 'white',

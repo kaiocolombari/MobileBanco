@@ -188,7 +188,7 @@ export function useRegisterForm() {
         );
       });
 
-      const responsePromise = RequestCpfInUse(cpf);
+      const responsePromise = await RequestCpfInUse(cpf);
       const response = (await Promise.race([
         responsePromise,
         timeoutPromise,
