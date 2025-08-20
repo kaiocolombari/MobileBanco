@@ -44,7 +44,6 @@ export default function Login() {
       if (responseApi?.data.status === "success" && responseApi?.data.token) {
         // salva token em storage (opcional)
         await AsyncStorage.setItem("token", responseApi.token);
-
         // navega para a home
         router.replace(Rotas.HOME);
       } else {

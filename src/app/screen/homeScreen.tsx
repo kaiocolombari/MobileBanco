@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,30 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import ImageButton from "../components/ImageButton";
 import Rotas from "../../types/types.route";
 import { router } from "expo-router";
+import { fetchUser } from "../api/user";
+import { fetchUserMock } from "../api/user";
 
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const [selectedRating, setSelectedRating] = useState<string | null>(null);
+  const [nome, setNome] = useState("");       
+  const [saldo, setSaldo] = useState(0);
+  const [loading, setLoading] = useState(true); 
 
+  useEffect(() => {
+    const loadUser = async () => {
+      const data = await fetchUserMock();        
+      if (data && data.usuario) {
+        setNome(data.usuario.full_name);
+        setSaldo(data.conta_bancaria.saldo);     
+      }
+      setLoading(false);                     
+    };
+
+    loadUser();
+  }, []);
+  
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -36,11 +54,11 @@ export default function HomeScreen() {
             }}
           />
           <View style={{ marginLeft: 10 }}>
-            <Text style={styles.hello}>Olá, Gustavo</Text>
+            <Text style={styles.hello}>Olá, {nome}</Text>
           </View>
           <View style={styles.headerIcons}>
             <Ionicons name="help-circle-outline" size={25} color="white" />
-            <TouchableOpacity onPress={()=>{router.push(Rotas.CONFIG)}}>
+            <TouchableOpacity onPress={() => { router.push(Rotas.CONFIG) }}>
               <Ionicons
                 name="settings-outline"
                 size={25}
@@ -53,7 +71,7 @@ export default function HomeScreen() {
 
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceTitle}>Conta</Text>
-          <Text style={styles.balanceValue}>R$ 0,00</Text>
+          <Text style={styles.balanceValue}>R$ {saldo.toFixed(2)}</Text>
         </View>
 
         <View style={{ marginTop: 12 }}>
