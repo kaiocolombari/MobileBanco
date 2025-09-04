@@ -23,11 +23,11 @@ export const fetchUser = async () => {
 export const fetchUserMock = async () => {
   return {
     usuario: {
-      full_name: "João da Silva",
+      full_name: "Faricio Autista",
       email: "usuario@exemplo.com"
     },
     conta_bancaria: {
-      saldo: 1000
+      saldo: -10000
     }
   };
 };

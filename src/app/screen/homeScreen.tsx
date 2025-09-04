@@ -21,23 +21,23 @@ const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const [selectedRating, setSelectedRating] = useState<string | null>(null);
-  const [nome, setNome] = useState("");       
+  const [nome, setNome] = useState("");
   const [saldo, setSaldo] = useState(0);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
-      const data = await fetchUserMock();        
+      const data = await fetchUserMock();
       if (data && data.usuario) {
         setNome(data.usuario.full_name);
-        setSaldo(data.conta_bancaria.saldo);     
+        setSaldo(data.conta_bancaria.saldo);
       }
-      setLoading(false);                     
+      setLoading(false);
     };
 
     loadUser();
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -80,7 +80,7 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 12 }}
           >
-            <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { }} />
+            <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
             <ImageButton image={require("../../assets/barraIcon.png")} label="Pagar" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
             <ImageButton image={require("../../assets/deposito2.png")} label="Depositar" onPress={() => { }} />
