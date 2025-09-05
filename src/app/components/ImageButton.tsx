@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Image, Text, StyleSheet, Dimensions, View } from "react-native";
 
-const { width } = Dimensions.get("window");
+const { width, } = Dimensions.get("window");
 
 type Props = {
   image: any;
@@ -12,7 +12,7 @@ type Props = {
 export default function ImageButton({ image, label, onPress }: Props) {
   const circleSize = width / 8;
   const imageSize = width / 12; 
-  const fontSize = 13;
+  const fontSize = width / 30;
   return (
     
     <TouchableOpacity style={styles.container} onPress={onPress}>

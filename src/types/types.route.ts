@@ -5,7 +5,10 @@ const Rotas = {
   REGISTER: "screen/register",
   LOGIN_ERROR: "screen/loginError",
   DIGITAL_REGISTER: "screen/digitalRegister",
-  CONFIG: "screen/config"
+  CONFIG: "screen/config",
+  PIX: "screen/pixScreen",
+  TRANSPIX: "screen/transferirScreen",
+  PIXCONFIRM: "screen/transferirConfirm"
 }
 
 export default Rotas
