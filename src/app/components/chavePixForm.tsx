@@ -34,7 +34,7 @@ export const PixComponent: React.FC = () => {
     );
 };
 
-export const PixComponentValeu: React.FC<PixComponentValeuProps> = ({ nome, chavePix, onContinuar }) => {
+export const PixComponentValor: React.FC<PixComponentValeuProps> = ({ nome, chavePix, onContinuar }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -59,14 +59,12 @@ export const PixComponentValeu: React.FC<PixComponentValeuProps> = ({ nome, chav
                     </TouchableOpacity>
                 </View>
 
-                {/* Exibição da chave Pix escolhida */}
                 <View style={styles.chaveContainer}>
                     <Text style={styles.subText}>Chave Pix</Text>
                     <Text style={styles.chaveTexto}>{chavePix}</Text>
                 </View>
             </View>
 
-            {/* Botão continuar */}
             <TouchableOpacity style={styles.buttonContinuar} onPress={onContinuar}>
                 <Text style={styles.buttonText}>Continuar</Text>
             </TouchableOpacity>

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
-import { PixComponentValeu } from '../components/chavePixForm';
+import { PixComponentValor } from '../components/chavePixForm';
 
 const { width } = Dimensions.get("window");
 
@@ -80,7 +80,7 @@ export default function TransferirScreen() {
             )}
 
             {etapa === 3 && (
-                <PixComponentValeu
+                <PixComponentValor
                     nome="Faricio Batistaah de Amêndoa"
                     chavePix={valorChave}
                     onContinuar={() => console.log("Transferência confirmada!")}

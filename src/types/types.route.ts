@@ -7,7 +7,8 @@ const Rotas = {
   DIGITAL_REGISTER: "screen/digitalRegister",
   CONFIG: "screen/config",
   PIX: "screen/pixScreen",
-  TRANSPIX: "screen/transferirScreen"
+  TRANSPIX: "screen/transferirScreen",
+  PIXCONFIRM: "screen/transferirConfirm"
 }
 
 export default Rotas
