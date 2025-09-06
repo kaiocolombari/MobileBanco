@@ -2,13 +2,16 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from 'react';
 import { PixComponentValor } from '../components/chavePixForm';
+import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
+import type { AxiosResponse } from 'axios';
 
 const { width } = Dimensions.get("window");
 
 export default function TransferirScreen() {
-    const [etapa, setEtapa] = useState<1 | 2 | 3>(1);
-    const [tipoChave, setTipoChave] = useState<'cpf' | 'telefone' | 'chave' | null>(null);
+    const [etapa, setEtapa] = useState<1 | 2 | 3 | 4>(1);
+    const [tipoChave, setTipoChave] = useState<'cpf' | 'phone' | 'chave' | null>(null);
     const [valorChave, setValorChave] = useState('');
+    const [nomeCompletoDestinatario, setNomeCompletoDestinatario] = useState("");
 
     const formatarChave = (texto: string) => {
         if (tipoChave === 'cpf') {
@@ -17,7 +20,7 @@ export default function TransferirScreen() {
             cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
             cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             return cpf;
-        } else if (tipoChave === 'telefone') {
+        } else if (tipoChave === 'phone') {
             let tel = texto.replace(/\D/g, '');
             tel = tel.replace(/^(\d{2})(\d)/g, '($1) $2');
             tel = tel.replace(/(\d{5})(\d{4})$/, '$1-$2');
@@ -30,6 +33,31 @@ export default function TransferirScreen() {
         setValorChave(formatarChave(texto));
     };
 
+    const handleSubmitEtapa2 = async () => {
+
+        try {
+            switch (tipoChave) {
+                case "chave":
+                    var response = await getDadosDestinatarioByChavePix(valorChave);
+                    break;
+                case "phone":
+                    var response = await getDadosDestinatarioByPhone(valorChave);
+                    break;
+                case "cpf":
+                    var response = await getDadosDestinatarioByCpf(valorChave);
+                    break;
+                default:
+                    throw Error();
+            }
+
+            setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name);
+            
+            setEtapa(3)
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return (
         <View style={styles.container}>
             {etapa === 1 && (
@@ -39,7 +67,7 @@ export default function TransferirScreen() {
                         <Text style={styles.opcaoTexto}>Usar CPF</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('telefone'); setEtapa(2); }}>
+                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
                         <Ionicons name="call-outline" size={22} color="#1B98E0" style={styles.icone} />
                         <Text style={styles.opcaoTexto}>Usar Telefone</Text>
                     </TouchableOpacity>
@@ -62,7 +90,7 @@ export default function TransferirScreen() {
 
                     <TextInput
                         style={styles.input}
-                        placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'telefone' ? "(00) 00000-0000" : "Chave Pix"}
+                        placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'phone' ? "(00) 00000-0000" : "Chave Pix"}
                         placeholderTextColor="#999"
                         keyboardType={tipoChave === 'chave' ? "default" : "numeric"}
                         value={valorChave}
@@ -81,7 +109,7 @@ export default function TransferirScreen() {
 
             {etapa === 3 && (
                 <PixComponentValor
-                    nome="Faricio Batistaah de Amêndoa"
+                    nome={nomeCompletoDestinatario}
                     chavePix={valorChave}
                     onContinuar={() => console.log("Transferência confirmada!")}
                 />
