@@ -34,7 +34,6 @@ export default function TransferirScreen() {
     };
 
     const handleSubmitEtapa2 = async () => {
-
         try {
             switch (tipoChave) {
                 case "chave":
@@ -91,6 +90,7 @@ export default function TransferirScreen() {
                     <TextInput
                         style={styles.input}
                         placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'phone' ? "(00) 00000-0000" : "Chave Pix"}
+                        maxLength={tipoChave === 'cpf' ? 14 : tipoChave === 'phone' ? 15 : 50}
                         placeholderTextColor="#999"
                         keyboardType={tipoChave === 'chave' ? "default" : "numeric"}
                         value={valorChave}

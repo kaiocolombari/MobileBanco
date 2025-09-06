@@ -31,6 +31,10 @@ export default function TransacaoResultadoScreen({ sucesso = true }: Props) {
                         <Text style={styles.infoText}>Enviado para: João Silva</Text>
                     </View>
                     <View style={styles.infoRow}>
+                        <Ionicons name="cash-outline" size={22} color="#555" />
+                        <Text style={styles.infoText}>Valor: R$ 100,00</Text>
+                    </View>
+                    <View style={styles.infoRow}>
                         <Ionicons name="time-outline" size={22} color="#555" />
                         <Text style={styles.infoText}>Enviado em: 06/09/2025 - 14:30</Text>
                     </View>
