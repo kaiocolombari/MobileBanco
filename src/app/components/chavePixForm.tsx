@@ -17,17 +17,14 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
   const [editando, setEditando] = useState(false);
 
   const formatarValor = (text: string) => {
-    // mantém apenas números
     let numeros = text.replace(/\D/g, "");
 
     if (numeros === "") {
       return "0,00";
     }
 
-    // transforma em centavos
     let centavos = (parseInt(numeros, 10) / 100).toFixed(2);
 
-    // troca ponto por vírgula (formato brasileiro)
     return centavos.replace(".", ",");
   };
 
@@ -57,7 +54,7 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
               onChangeText={handleChange}
               keyboardType="numeric"
               autoFocus
-              onBlur={() => setEditando(false)} // sai do modo edição ao perder foco
+              onBlur={() => setEditando(false)}
             />
           ) : (
             <Text style={styles.valorPix}>{valor}</Text>
