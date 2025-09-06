@@ -46,9 +46,6 @@ export default function Home() {
           setChecking(false);
           return;
         }
-
-        router.push(Rotas.HOME);
-      } else {
         router.push(Rotas.LOGIN);
       }
     } catch (error) {
