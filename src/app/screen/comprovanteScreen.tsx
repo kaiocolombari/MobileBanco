@@ -1,12 +1,17 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import Rotas from "../../types/types.route";
+import ComprovanteFull from "../components/ComprovanteFull";
 
 interface Props {
     sucesso?: boolean;
 }
 
 export default function TransacaoResultadoScreen({ sucesso = true }: Props) {
+    const [modalVisivel, setModalVisivel] = useState(false);
+
     return (
         <View style={styles.container}>
             <View style={styles.card}>
@@ -41,17 +46,36 @@ export default function TransacaoResultadoScreen({ sucesso = true }: Props) {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <TouchableOpacity style={styles.homeButton}>
+                    <TouchableOpacity style={styles.homeButton} onPress={() => { router.push(Rotas.HOME) }}>
                         <Ionicons name="home-outline" size={18} color="#FFF" />
                         <Text style={styles.homeText}>Voltar para Home</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.receiptButton}>
+                    <TouchableOpacity style={styles.receiptButton} onPress={() => setModalVisivel(true)}>
                         <Ionicons name="receipt-outline" size={18} color="#1B98E0" />
                         <Text style={styles.receiptText}>Ver Comprovante</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <Modal
+                visible={modalVisivel}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setModalVisivel(false)}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContainer}>
+                        <ComprovanteFull sucesso={sucesso} />
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setModalVisivel(false)}
+                        >
+                            <Ionicons name="close-circle-outline" size={28} color="#E53935" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -148,5 +172,23 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#1B98E0",
         marginLeft: 6,
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContainer: {
+        width: "90%",
+        maxHeight: "90%",
+        backgroundColor: "#FFF",
+        borderRadius: 20,
+        padding: 16,
+    },
+    closeButton: {
+        position: "absolute",
+        top: 12,
+        right: 12,
     },
 });
