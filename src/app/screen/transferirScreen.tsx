@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
 import type { AxiosResponse } from 'axios';
+import { router } from 'expo-router';
 
 const { width } = Dimensions.get("window");
 
@@ -50,7 +51,7 @@ export default function TransferirScreen() {
             }
 
             setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name);
-            
+
             setEtapa(3)
         } catch (e) {
             console.log(e);
@@ -59,61 +60,68 @@ export default function TransferirScreen() {
 
     return (
         <View style={styles.container}>
-            {etapa === 1 && (
-                <View style={styles.opcoesContainer}>
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
-                        <Ionicons name="person-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar CPF</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
-                        <Ionicons name="call-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar Telefone</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
-                        <Ionicons name="key-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar Chave Pix</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {etapa === 2 && (
-                <View>
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => setEtapa(1)}>
-                            <Ionicons name="chevron-back" size={28} color="#333" />
+            <View >
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.container}>
+                {etapa === 1 && (
+                    <View style={styles.opcoesContainer}>
+                        <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
+                            <Ionicons name="person-outline" size={22} color="#1B98E0" style={styles.icone} />
+                            <Text style={styles.opcaoTexto}>Usar CPF</Text>
                         </TouchableOpacity>
-                        <Text style={styles.headerText}>Digite a chave</Text>
+
+                        <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
+                            <Ionicons name="call-outline" size={22} color="#1B98E0" style={styles.icone} />
+                            <Text style={styles.opcaoTexto}>Usar Telefone</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
+                            <Ionicons name="key-outline" size={22} color="#1B98E0" style={styles.icone} />
+                            <Text style={styles.opcaoTexto}>Usar Chave Pix</Text>
+                        </TouchableOpacity>
                     </View>
+                )}
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'phone' ? "(00) 00000-0000" : "Chave Pix"}
-                        maxLength={tipoChave === 'cpf' ? 14 : tipoChave === 'phone' ? 15 : 50}
-                        placeholderTextColor="#999"
-                        keyboardType={tipoChave === 'chave' ? "default" : "numeric"}
-                        value={valorChave}
-                        onChangeText={handleChangeText}
+                {etapa === 2 && (
+                    <View>
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => setEtapa(1)}>
+                                <Ionicons name="chevron-back" size={28} color="#333" />
+                            </TouchableOpacity>
+                            <Text style={styles.headerText}>Digite a chave</Text>
+                        </View>
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'phone' ? "(00) 00000-0000" : "Chave Pix"}
+                            maxLength={tipoChave === 'cpf' ? 14 : tipoChave === 'phone' ? 15 : 50}
+                            placeholderTextColor="#999"
+                            keyboardType={tipoChave === 'chave' ? "default" : "numeric"}
+                            value={valorChave}
+                            onChangeText={handleChangeText}
+                        />
+
+                        <TouchableOpacity
+                            style={[styles.botao, { opacity: valorChave ? 1 : 0.5 }]}
+                            disabled={!valorChave}
+                            onPress={() => setEtapa(3)}
+                        >
+                            <Text style={styles.botaoTexto}>Próximo</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {etapa === 3 && (
+                    <PixComponentValor
+                        nome={nomeCompletoDestinatario}
+                        chavePix={valorChave}
+                        onContinuar={() => console.log("Transferência confirmada!")}
                     />
-
-                    <TouchableOpacity
-                        style={[styles.botao, { opacity: valorChave ? 1 : 0.5 }]}
-                        disabled={!valorChave}
-                        onPress={() => setEtapa(3)}
-                    >
-                        <Text style={styles.botaoTexto}>Próximo</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
-
-            {etapa === 3 && (
-                <PixComponentValor
-                    nome={nomeCompletoDestinatario}
-                    chavePix={valorChave}
-                    onContinuar={() => console.log("Transferência confirmada!")}
-                />
-            )}
+                )}
+            </View>
         </View>
     );
 }
@@ -124,6 +132,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFF",
         padding: 20,
         justifyContent: "center",
+    },
+    backButton: {
+        marginTop: 20,
+        marginLeft: 16,
+    },
+    iconBack: {
+        marginBottom: 12,
+        marginLeft: 4
     },
     // Etapa 1
     opcoesContainer: {
