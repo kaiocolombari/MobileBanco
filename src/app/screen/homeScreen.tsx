@@ -89,7 +89,7 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <TouchableOpacity style={styles.extratoBtn}>
+        <TouchableOpacity style={styles.extratoBtn} onPress={() => router.push(Rotas.EXTRATO)}>
           <Ionicons name="document-text-outline" size={20} color="#008CFF" />
           <Text style={styles.extratoText}>Extratos</Text>
         </TouchableOpacity>

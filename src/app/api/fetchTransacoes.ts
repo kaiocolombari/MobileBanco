@@ -7,6 +7,9 @@ export interface Transacao {
     tipo: 'transferência' | string;
     descricao: string;
     status: string;
+    data: "2023-07-15",
+    hora: "10:30",
+    tipoBanco: "itau",
     tipoTransacao: 'enviado' | 'recebido';
     conta_origem?: {
         id_conta: number;
@@ -58,6 +61,9 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
                 valor: 100.50,
                 tipo: "transferência",
                 descricao: "Transferência para amigo",
+                data: "2023-07-15",
+                hora: "10:30",
+                tipoBanco: "itau",
                 status: "aprovada",
                 conta_destino: {
                     id_conta: 2,
@@ -72,6 +78,9 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
                 tipo: "transferência",
                 descricao: "Pagamento de serviço",
                 status: "aprovada",
+                data: "2023-07-15",
+                hora: "10:30",
+                tipoBanco: "itau",
                 conta_origem: {
                     id_conta: 3,
                     tipo_conta: "poupanca"

@@ -8,7 +8,8 @@ const Rotas = {
   CONFIG: "screen/config",
   PIX: "screen/pixScreen",
   TRANSPIX: "screen/transferirScreen",
-  PIXCONFIRM: "screen/transferirConfirm"
+  PIXCONFIRM: "screen/transferirConfirm",
+  EXTRATO: "screen/extratoScreen",
 }
 
 export default Rotas
