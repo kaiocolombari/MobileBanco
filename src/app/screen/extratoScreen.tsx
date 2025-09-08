@@ -51,7 +51,6 @@ export default function ExtratoScreen() {
                         <Text style={styles.transactionDate}>Hora: {item.hora}</Text>
                     </View>
                     <View style={styles.transactionDetails}>
-                        <Text style={styles.transactionBank}>Banco: {item.tipoBanco || "N/A"}</Text>
                         <Text style={[styles.transactionStatus, { color: isReceived ? 'green' : 'red' }]}>
                             {isReceived ? "Recebido" : "Enviado"}
                         </Text>
