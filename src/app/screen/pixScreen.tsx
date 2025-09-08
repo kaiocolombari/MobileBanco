@@ -49,7 +49,7 @@ export default function pixScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.backButton}>
-        <TouchableOpacity onPress={() => { router.back() }}>
+        <TouchableOpacity>
           <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
         </TouchableOpacity>
       </View>
