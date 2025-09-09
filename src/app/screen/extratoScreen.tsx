@@ -33,8 +33,8 @@ export default function ExtratoScreen() {
                 const [horaB, minB] = b.hora.split(':');
 
                 const dateB = new Date(+anoB, +mesB - 1, +diaB, +horaB, +minB);
-                
-                return dateB.getTime() - dateA.getTime(); 
+
+                return dateB.getTime() - dateA.getTime();
             });
 
             setTransactions(sortedData);
@@ -48,35 +48,36 @@ export default function ExtratoScreen() {
         const isReceived = item.tipoTransacao === 'recebido';
 
         return (
-            <View style={styles.transactionItem}>
-                <View style={[styles.iconContainer, { backgroundColor: isReceived ? '#DFF7E1' : '#FDDCDC' }]}>
-                    <MaterialIcons
-                        name={isReceived ? "arrow-downward" : "arrow-upward"}
-                        size={width / 18}
-                        color={isReceived ? 'green' : 'red'}
-                        onPress={() => { router.back(); }}
-                    />
-                </View>
-
-                <View style={styles.transactionInfo}>
-                    <Text style={styles.transactionDesc}>{item.descricao}</Text>
-                    <Text style={styles.transactionId}>ID: {item.id_transacao}</Text>
-
-                    <View style={styles.transactionDetails}>
-                        <Text style={styles.transactionDate}>Data: {item.date}</Text>
-                        <Text style={styles.transactionDate}>Hora: {item.hora}</Text>
+            <TouchableOpacity onPress={() => null}>
+                <View style={styles.transactionItem}>
+                    <View style={[styles.iconContainer, { backgroundColor: isReceived ? '#DFF7E1' : '#FDDCDC' }]}>
+                        <MaterialIcons
+                            name={isReceived ? "arrow-downward" : "arrow-upward"}
+                            size={width / 18}
+                            color={isReceived ? 'green' : 'red'}
+                            onPress={() => { router.back(); }}
+                        />
                     </View>
-                    <View style={styles.transactionDetails}>
-                        <Text style={[styles.transactionStatus, { color: isReceived ? 'green' : 'red' }]}>
-                            {isReceived ? "Recebido" : "Enviado"}
-                        </Text>
-                    </View>
-                </View>
 
-                <Text style={[styles.transactionAmount, { color: isReceived ? 'green' : 'red' }]}>
-                    {isReceived ? `+ R$${item.valor.toFixed(2)}` : `- R$${item.valor.toFixed(2)}`}
-                </Text>
-            </View>
+                    <View style={styles.transactionInfo}>
+                        <Text style={styles.transactionDesc}>{item.descricao}</Text>
+                        <Text style={styles.transactionId}>ID: {item.id_transacao}</Text>
+
+                        <View style={styles.transactionDetails}>
+                            <Text style={styles.transactionDate}>Data: {item.date}</Text>
+                            <Text style={styles.transactionDate}>Hora: {item.hora}</Text>
+                        </View>
+                        <View style={styles.transactionDetails}>
+                            <Text style={[styles.transactionStatus, { color: isReceived ? 'green' : 'red' }]}>
+                                {isReceived ? "Recebido" : "Enviado"}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text style={[styles.transactionAmount, { color: isReceived ? 'green' : 'red' }]}>
+                        {isReceived ? `+ R$${item.valor.toFixed(2)}` : `- R$${item.valor.toFixed(2)}`}
+                    </Text>
+                </View>
+            </TouchableOpacity>
         );
     };
 

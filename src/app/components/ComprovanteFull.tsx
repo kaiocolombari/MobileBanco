@@ -4,11 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   sucesso?: boolean;
+  id?: number
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-export default function ComprovanteFull({ sucesso = true }: Props) {
+
+export default function ComprovanteFull({ sucesso = true, id }: Props) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>

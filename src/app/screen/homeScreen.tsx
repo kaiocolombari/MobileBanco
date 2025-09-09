@@ -81,10 +81,9 @@ export default function HomeScreen() {
             contentContainerStyle={{ paddingHorizontal: 12 }}
           >
             <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
-            <ImageButton image={require("../../assets/barraIcon.png")} label="Pagar" onPress={() => { }} />
+            <ImageButton image={require("../../assets/barraIcon.png")} label="Bolteo" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
-            <ImageButton image={require("../../assets/deposito3.png")} label="Depositar" onPress={() => { }} />
-            <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { }} />
+            <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
             <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { }} />            
           </ScrollView>
@@ -189,7 +188,7 @@ function BottomNav() {
       <TouchableOpacity>
         <Ionicons name="person-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>{router.push(Rotas.EXTRATO)}}>
         <Ionicons name="document-text-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
       <TouchableOpacity>
