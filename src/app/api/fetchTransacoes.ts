@@ -7,7 +7,7 @@ export interface Transacao {
     tipo: 'transferência' | string;
     descricao: string;
     status: string;
-    data: string,
+    date: string,
     hora: string,
     tipoTransacao: 'enviado' | 'recebido';
     conta_origem?: {
@@ -60,8 +60,29 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
                 valor: 100.50,
                 tipo: "transferência",
                 descricao: "Transferência para amigo",
-                data: "2023-07-15",
-                hora: "10:30",
+                date: new Date('2025-09-10').toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }),
+                status: "aprovada",
+                conta_destino: {
+                    id_conta: 2,
+                    tipo_conta: "corrente"
+                }
+            },
+            {
+                id_transacao: 3,
+                valor: 0.50,
+                tipo: "transferência",
+                descricao: "Faricio",
+                date: new Date('2025-09-08').toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }),
                 status: "aprovada",
                 conta_destino: {
                     id_conta: 2,
@@ -76,8 +97,12 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
                 tipo: "transferência",
                 descricao: "Pagamento de serviço",
                 status: "aprovada",
-                data: "2023-07-15",
-                hora: "10:30",
+                date: new Date('2025-09-09').toLocaleDateString('pt-BR'),
+                hora: new Date().toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }),
                 conta_origem: {
                     id_conta: 3,
                     tipo_conta: "poupanca"

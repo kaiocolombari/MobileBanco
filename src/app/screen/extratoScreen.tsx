@@ -22,11 +22,27 @@ export default function ExtratoScreen() {
         async function loadTransactions() {
             setLoading(true);
             const data = await fetchTransacoesMock();
-            setTransactions(data);
+
+            const sortedData = data.sort((a, b) => {
+                const [diaA, mesA, anoA] = a.date.split('/');
+                const [horaA, minA] = a.hora.split(':');
+
+                const dateA = new Date(+anoA, +mesA - 1, +diaA, +horaA, +minA);
+
+                const [diaB, mesB, anoB] = b.date.split('/');
+                const [horaB, minB] = b.hora.split(':');
+
+                const dateB = new Date(+anoB, +mesB - 1, +diaB, +horaB, +minB);
+                
+                return dateB.getTime() - dateA.getTime(); 
+            });
+
+            setTransactions(sortedData);
             setLoading(false);
         }
         loadTransactions();
     }, []);
+
 
     const renderTransaction = ({ item }: { item: Transacao }) => {
         const isReceived = item.tipoTransacao === 'recebido';
@@ -47,7 +63,7 @@ export default function ExtratoScreen() {
                     <Text style={styles.transactionId}>ID: {item.id_transacao}</Text>
 
                     <View style={styles.transactionDetails}>
-                        <Text style={styles.transactionDate}>Data: {item.data}</Text>
+                        <Text style={styles.transactionDate}>Data: {item.date}</Text>
                         <Text style={styles.transactionDate}>Hora: {item.hora}</Text>
                     </View>
                     <View style={styles.transactionDetails}>
