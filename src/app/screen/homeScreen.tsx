@@ -83,9 +83,10 @@ export default function HomeScreen() {
             <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
             <ImageButton image={require("../../assets/barraIcon.png")} label="Pagar" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
-            <ImageButton image={require("../../assets/deposito2.png")} label="Depositar" onPress={() => { }} />
-            <ImageButton image={require("../../assets/trans2.png")} label="Transferir" onPress={() => { }} />
+            <ImageButton image={require("../../assets/deposito3.png")} label="Depositar" onPress={() => { }} />
+            <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
+            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { }} />            
           </ScrollView>
         </View>
 
@@ -95,13 +96,12 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <View style={styles.cardBox}>
-          <Text style={styles.cardTitle}>Cartão de crédito</Text>
+          <Text style={styles.cardTitle}>Cofrinho</Text>
           <Text style={styles.cardSubtitle}>
-            Peça seu cartão de crédito sem anuidade e tenha mais controle da sua
-            vida financeira.
+            Comece hoje mesmo! Faça do seu cofrinho digital o seu melhor aliado para conquistar o futuro que você merece.
           </Text>
           <TouchableOpacity style={styles.cardButton}>
-            <Text style={styles.cardButtonText}>Pedir Cartão</Text>
+            <Text style={styles.cardButtonText}>Comece agora</Text>
           </TouchableOpacity>
         </View>
 
@@ -213,6 +213,14 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingHorizontal: 15,
     paddingVertical: 18,
+  },
+  cofreImage: {
+    width: width * 0.3,
+    height: width * 0.3,
+    alignSelf: "center",
+    tintColor: "#1B98E0",
+    resizeMode: "contain",
+    marginBottom: 10,
   },
   hello: {
     color: "white",

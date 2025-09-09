@@ -64,7 +64,7 @@ export default function pixScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.backButton}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => { router.back() }}>
           <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
         </TouchableOpacity>
       </View>
@@ -72,7 +72,7 @@ export default function pixScreen() {
         <Text style={styles.headerText}>Área Pix</Text>
       </View>
       <View style={styles.iconesPix}>
-        <ImageButton image={require("../../assets/trans2.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
+        <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
         <ImageButton image={require("../../assets/copiaCola.png")} label="Pix Copia e Cola" onPress={() => { }} />
         <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { }} />
       </View>
