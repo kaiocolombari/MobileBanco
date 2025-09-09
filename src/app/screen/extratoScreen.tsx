@@ -11,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { fetchTransacoesMock, Transacao } from '../api/fetchTransacoes';
+import ComprovanteFull from '../components/ComprovanteFull';
+import Rotas from '../../types/types.route';
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,7 +50,7 @@ export default function ExtratoScreen() {
         const isReceived = item.tipoTransacao === 'recebido';
 
         return (
-            <TouchableOpacity onPress={() => null}>
+            <TouchableOpacity onPress={() => router.push(`/comprovante/${item.id_transacao}`)}>
                 <View style={styles.transactionItem}>
                     <View style={[styles.iconContainer, { backgroundColor: isReceived ? '#DFF7E1' : '#FDDCDC' }]}>
                         <MaterialIcons
