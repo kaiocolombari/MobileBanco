@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import client from "./client";
+import { fetchUser, fetchUserByAccountId } from "./user";
 
 export interface Transacao {
     id_transacao: number;
@@ -18,6 +19,12 @@ export interface Transacao {
         id_conta: number;
         tipo_conta: string;
     };
+    remetente?: {
+        full_name: string;
+    };
+    destinatario?: {
+        full_name: string;
+    };
 }
 
 export async function fetchTransacoes(token: string): Promise<Transacao[]> {
@@ -33,12 +40,12 @@ export async function fetchTransacoes(token: string): Promise<Transacao[]> {
         else {
             const transacoesEnviadas = data.transacoesEnviadas.map((t: any) => ({
                 ...t,
-                tipoTransacao: 'enviado'
+                tipoTransacao: 'enviado' as 'enviado'
             }));
 
             const transacoesRecebidas = data.transacoesRecebidas.map((t: any) => ({
                 ...t,
-                tipoTransacao: 'recebido'
+                tipoTransacao: 'recebido' as 'recebido'
             }));
 
             return [...transacoesEnviadas, ...transacoesRecebidas].sort(
@@ -115,12 +122,12 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
     else {
         const transacoesEnviadas = mockData.transacoesEnviadas.map(t => ({
             ...t,
-            tipoTransacao: 'enviado'
+            tipoTransacao: 'enviado' as 'enviado'
         }));
 
         const transacoesRecebidas = mockData.transacoesRecebidas.map(t => ({
             ...t,
-            tipoTransacao: 'recebido'
+            tipoTransacao: 'recebido' as 'recebido'
         }));
 
         return [...transacoesEnviadas, ...transacoesRecebidas].sort(
@@ -137,7 +144,35 @@ export async function fetchTransacaoById(id: number, token: string) {
             },
         });
 
-        return response.data.data;
+        const transacao = response.data.data;
+        if (!transacao) return null;
+
+        // Fetch logged user
+        const loggedUser = await fetchUser();
+        const loggedUserName = loggedUser?.usuario?.full_name || "Usuário";
+
+        let remetente, destinatario;
+
+        if (transacao.tipoTransacao === 'enviado') {
+            remetente = { full_name: loggedUserName };
+            if (transacao.conta_destino) {
+                const destUser = await fetchUserByAccountId(transacao.conta_destino.id_conta, token);
+                destinatario = { full_name: destUser?.full_name || "Destinatário" };
+            }
+        } else if (transacao.tipoTransacao === 'recebido') {
+            destinatario = { full_name: loggedUserName };
+            if (transacao.conta_origem) {
+                const origUser = await fetchUserByAccountId(transacao.conta_origem.id_conta, token);
+                remetente = { full_name: origUser?.full_name || "Remetente" };
+            }
+        }
+
+        return {
+            ...transacao,
+            tipoTransacao: transacao.tipoTransacao as 'enviado' | 'recebido',
+            remetente,
+            destinatario,
+        };
     } catch (error) {
         console.error("Erro ao buscar transação por id:", error);
         return null;
@@ -206,11 +241,11 @@ export async function fetchTransacaoByIdMock(id: number): Promise<Transacao | nu
     const allTransacoes = [
         ...mockData.transacoesEnviadas.map(t => ({
             ...t,
-            tipoTransacao: 'enviado'
+            tipoTransacao: 'enviado' as 'enviado'
         })),
         ...mockData.transacoesRecebidas.map(t => ({
             ...t,
-            tipoTransacao: 'recebido'
+            tipoTransacao: 'recebido' as 'recebido'
         }))
     ];
 
@@ -220,5 +255,26 @@ export async function fetchTransacaoByIdMock(id: number): Promise<Transacao | nu
         return null;
     }
 
-    return transacao;
+    // Add mock user data
+    let remetente, destinatario;
+
+    if (transacao.tipoTransacao === 'enviado') {
+        remetente = { full_name: "Faricio Autista" }; // Mock logged user
+        if (transacao.conta_destino) {
+            const destUser = { full_name: "Maria Oliveira" }; // Mock for id 2
+            destinatario = destUser;
+        }
+    } else if (transacao.tipoTransacao === 'recebido') {
+        destinatario = { full_name: "Faricio Autista" };
+        if (transacao.conta_origem) {
+            const origUser = { full_name: "Pedro Santos" }; // Mock for id 3
+            remetente = origUser;
+        }
+    }
+
+    return {
+        ...transacao,
+        remetente,
+        destinatario,
+    };
 }

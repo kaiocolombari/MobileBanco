@@ -12,8 +12,9 @@ interface Props {
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function ComprovanteFull({ sucesso = true, id }: Props) {
-  const [loading, setLoading] = useState(true);
-  const [transacao, setTransacao] = useState<any>(null);
+   const [loading, setLoading] = useState(true);
+   const [transacao, setTransacao] = useState<any>(null);
+   const [sucessoState, setSucessoState] = useState(sucesso);
 
   useEffect(() => {
     async function loadData() {
@@ -22,6 +23,9 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
 
       const data = await fetchTransacaoByIdMock(id);
       setTransacao(data);
+      if (data) {
+        setSucessoState(data.status === 'aprovada');
+      }
       setLoading(false);
     }
 
@@ -51,25 +55,24 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.card}>
           <Ionicons
-            name={sucesso ? "checkmark-circle-outline" : "close-circle-outline"}
+            name={sucessoState ? "checkmark-circle-outline" : "close-circle-outline"}
             size={SCREEN_WIDTH * 0.15}
-            color={sucesso ? "#4CAF50" : "#E53935"}
+            color={sucessoState ? "#4CAF50" : "#E53935"}
             style={styles.icon}
           />
-          <Text style={[styles.title, { color: sucesso ? "#4CAF50" : "#E53935", fontSize: SCREEN_WIDTH * 0.05 }]}>
-            {sucesso ? "Transação concluída" : "Falha na transação"}
+          <Text style={[styles.title, { color: sucessoState ? "#4CAF50" : "#E53935", fontSize: SCREEN_WIDTH * 0.05 }]}>
+            {sucessoState ? "Transação concluída" : "Falha na transação"}
           </Text>
 
           <Text style={[styles.amount, { fontSize: SCREEN_WIDTH * 0.08 }]}>
             R$ {valor.toFixed(2).replace(".", ",")}
           </Text>
 
-          {/* Destinatário */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { fontSize: SCREEN_WIDTH * 0.04 }]}>Destinatário</Text>
             <View style={styles.row}>
               <Ionicons name="person-circle-outline" size={SCREEN_WIDTH * 0.05} color="#555" />
-              <Text style={[styles.value, { fontSize: SCREEN_WIDTH * 0.038 }]}>Destinatário Nome</Text> {/* Mock value */}
+              <Text style={[styles.value, { fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.destinatario?.full_name || "Destinatário"}</Text>
             </View>
             <View style={styles.row}>
               <Ionicons name="card-outline" size={SCREEN_WIDTH * 0.05} color="#555" />
@@ -82,7 +85,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
             <Text style={[styles.sectionTitle, { fontSize: SCREEN_WIDTH * 0.04 }]}>Remetente</Text>
             <View style={styles.row}>
               <Ionicons name="person-circle-outline" size={SCREEN_WIDTH * 0.05} color="#555" />
-              <Text style={[styles.value, { fontSize: SCREEN_WIDTH * 0.038 }]}>Remetente Nome</Text> {/* Mock value */}
+              <Text style={[styles.value, { fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.remetente?.full_name || "Remetente"}</Text>
             </View>
             <View style={styles.row}>
               <Ionicons name="card-outline" size={SCREEN_WIDTH * 0.05} color="#555" />

@@ -48,4 +48,29 @@ export const getDadosDestinatarioByChavePix = async (chavePix: string) => {
   const response = await client.get(`/usuario/chave-pix/${chavePix}`)
 
   return response;
-} 
+};
+
+export const fetchUserByAccountId = async (id_conta: number, token: string) => {
+  try {
+    const response = await client.get(`/usuario/conta/${id_conta}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status === 200) {
+      return response.data.usuario;
+    }
+  } catch (error) {
+    console.log("Erro ao buscar usuário por conta:", error);
+    return null;
+  }
+};
+
+export const fetchUserByAccountIdMock = (id_conta: number) => {
+  const mockUsers = {
+    1: { full_name: "João da Silva" },
+    2: { full_name: "Maria Oliveira" },
+    3: { full_name: "Pedro Santos" },
+  };
+  return mockUsers[id_conta as keyof typeof mockUsers] || { full_name: "Usuário Desconhecido" };
+};
