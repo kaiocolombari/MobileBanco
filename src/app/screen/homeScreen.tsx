@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -21,9 +21,35 @@ const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const [selectedRating, setSelectedRating] = useState<string | null>(null);
+  const [ratingText, setRatingText] = useState("");
   const [nome, setNome] = useState("");
   const [saldo, setSaldo] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  type Avaliacao = {
+    user: string;
+    rating: string;
+    ratingReview: string;
+  };
+
+  const handleRatingPress = () => {
+    if (selectedRating !== null && ratingText !== "") {
+      setAvaliacoes((prev) => [
+        ...prev,
+        {
+          user: nome,
+          rating: selectedRating,
+          ratingReview: ratingText,
+        },
+      ]);
+
+      setSelectedRating(null);
+      setRatingText("");
+    }
+  };
+
 
   useEffect(() => {
     const loadUser = async () => {
@@ -85,7 +111,7 @@ export default function HomeScreen() {
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
             <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
-            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { }} />            
+            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { }} />
           </ScrollView>
         </View>
 
@@ -141,9 +167,10 @@ export default function HomeScreen() {
               onPress={() => setSelectedRating("Péssimo")}
             />
           </View>
-          <TextInput style={styles.input} placeholder="Escreva aqui..." />
-          <TouchableOpacity style={styles.rateButton} onPress={() => { }}>
+          <TextInput style={styles.input} placeholder="Escreva aqui..." value={ratingText} onChangeText={setRatingText} />
+          <TouchableOpacity style={styles.rateButton} onPress={() => { handleRatingPress() }}>
             <Text style={styles.rateButtonText}>Enviar avaliação</Text>
+
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -188,7 +215,7 @@ function BottomNav() {
       <TouchableOpacity>
         <Ionicons name="person-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={()=>{router.push(Rotas.EXTRATO)}}>
+      <TouchableOpacity onPress={() => { router.push(Rotas.EXTRATO) }}>
         <Ionicons name="document-text-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
       <TouchableOpacity>
