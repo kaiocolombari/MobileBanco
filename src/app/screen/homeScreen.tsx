@@ -170,11 +170,11 @@ export default function HomeScreen() {
           <TextInput style={styles.input} placeholder="Escreva aqui..." value={ratingText} onChangeText={setRatingText} />
           <TouchableOpacity style={styles.rateButton} onPress={() => { handleRatingPress() }}>
             <Text style={styles.rateButtonText}>Enviar avaliação</Text>
-
           </TouchableOpacity>
         </View>
       </ScrollView>
       <BottomNav />
+
     </View>
   );
 }
