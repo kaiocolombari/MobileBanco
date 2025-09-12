@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     padding: 16
   },
-  iconesPix: {
+    iconesPix: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

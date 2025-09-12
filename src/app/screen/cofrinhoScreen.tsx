@@ -13,8 +13,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const { width } = Dimensions.get("window");
+import { Roboto_400Regular } from "@expo-google-fonts/roboto";
+const { width, height } = Dimensions.get("window");
 
 type Goal = {
     id: string;
@@ -73,7 +73,6 @@ export default function CofrinhoScreen() {
     const [isNewGoalModalVisible, setNewGoalModalVisible] = useState(false);
     const [isDeleteGoalModalVisible, setDeleteGoalModalVisible] = useState(false);
     const [isEditGoalModalVisible, setEditGoalModalVisible] = useState(false);
-    const [isCompleteGoalModalVisible, setCompleteGoalModalVisible] = useState(false);
     const [isCongratulatoryModalVisible, setCongratulatoryModalVisible] = useState(false);
 
     const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
@@ -89,16 +88,27 @@ export default function CofrinhoScreen() {
             return;
         }
         if (selectedGoal) {
+            const newCurrent = selectedGoal.current + amount;
+            const isCompleted = newCurrent >= selectedGoal.target;
             setGoals((prev) =>
                 prev.map((goal) =>
                     goal.id === selectedGoal.id
-                        ? { ...goal, current: goal.current + amount }
+                        ? {
+                            ...goal,
+                            current: newCurrent,
+                            ...(isCompleted && goal.status !== 'completed' ? { status: 'completed', completedAt: new Date() } : {})
+                        }
                         : goal
                 )
             );
             setAddMoneyModalVisible(false);
             setAddAmount("");
-            setSelectedGoal(null);
+            if (isCompleted && selectedGoal.status !== 'completed') {
+                setSelectedGoal({ ...selectedGoal, current: newCurrent });
+                setCongratulatoryModalVisible(true);
+            } else {
+                setSelectedGoal(null);
+            }
         }
     };
 
@@ -153,10 +163,15 @@ export default function CofrinhoScreen() {
             return;
         }
         if (selectedGoal) {
+            const needsReset = target > selectedGoal.current && selectedGoal.status === 'completed';
             setGoals((prev) =>
                 prev.map((goal) =>
                     goal.id === selectedGoal.id
-                        ? { ...goal, target }
+                        ? {
+                            ...goal,
+                            target,
+                            ...(needsReset ? { status: 'in_progress', completedAt: undefined } : {})
+                        }
                         : goal
                 )
             );
@@ -166,26 +181,6 @@ export default function CofrinhoScreen() {
         }
     };
 
-    const openCompleteGoalModal = (goal: Goal) => {
-        setSelectedGoal(goal);
-        setCompleteGoalModalVisible(true);
-    };
-
-    const handleCompleteGoal = () => {
-        if (selectedGoal && selectedGoal.current >= selectedGoal.target) {
-            setGoals((prev) =>
-                prev.map((goal) =>
-                    goal.id === selectedGoal.id
-                        ? { ...goal, status: 'completed', completedAt: new Date() }
-                        : goal
-                )
-            );
-            setCompleteGoalModalVisible(false);
-            setCongratulatoryModalVisible(true);
-        } else {
-            Alert.alert("Erro", "A meta ainda não foi atingida.");
-        }
-    };
 
     const getProgressColor = (percent: number) => {
         if (percent >= 80) return "#4CAF50";
@@ -197,7 +192,7 @@ export default function CofrinhoScreen() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={25} color="white" />
+                    <Ionicons name="chevron-back" size={25} color="grey" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Cofrinho</Text>
             </View>
@@ -206,12 +201,15 @@ export default function CofrinhoScreen() {
                 <Text style={styles.subtitle}>
                     Guarde dinheiro para seus objetivos e realize seus sonhos!
                 </Text>
+                <View style={styles.line}></View>
+
+                <Text style={{ marginTop: 10, fontSize: width * 0.05, marginLeft: 20 }}>Metas</Text>
 
                 {goals.map((goal) => {
                     const percent = (goal.current / goal.target) * 100;
                     const now = new Date();
                     const endDate = goal.status === 'completed' && goal.completedAt ? goal.completedAt : now;
-                    
+
                     const days = Math.floor((endDate.getTime() - goal.createdAt.getTime()) / (1000 * 60 * 60 * 24));
                     return (
                         <View key={goal.id} style={styles.goalCard}>
@@ -221,7 +219,10 @@ export default function CofrinhoScreen() {
                                     {goal.status === 'completed' ? 'Concluído' : 'Em andamento'}
                                 </Text>
                             </View>
-                            <Text style={styles.goalName}>{goal.name}</Text>
+                            <View style={styles.goalNameContainer}>
+                                <Text style={styles.goalName}>{goal.name}</Text>
+
+                            </View>
                             <Text style={styles.daysText}>Dias: {days}</Text>
                             <Text style={styles.goalAmount}>
                                 R$ {goal.current.toFixed(2)} / R$ {goal.target.toFixed(2)}
@@ -252,23 +253,6 @@ export default function CofrinhoScreen() {
                                 >
                                     <Ionicons name="trash-outline" size={18} color="white" />
                                     <Text style={styles.deleteButtonText}>Excluir</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.goalActionsSecondary}>
-                                <TouchableOpacity
-                                    style={styles.editButton}
-                                    onPress={() => openEditGoalModal(goal)}
-                                >
-                                    <Ionicons name="pencil-outline" size={18} color="white" />
-                                    <Text style={styles.editButtonText}>Editar</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={styles.completeButton}
-                                    onPress={() => openCompleteGoalModal(goal)}
-                                >
-                                    <Ionicons name="checkmark-circle-outline" size={18} color="white" />
-                                    <Text style={styles.completeButtonText}>Concluir</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -439,47 +423,6 @@ export default function CofrinhoScreen() {
                 </View>
             </Modal>
 
-            <Modal
-                visible={isCompleteGoalModalVisible}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setCompleteGoalModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        {selectedGoal && (
-                            <>
-                                <Text style={styles.modalTitle}>Concluir Meta</Text>
-                                <Text style={styles.deleteText}>
-                                    Você guardou{" "}
-                                    <Text style={{ fontWeight: "bold" }}>
-                                        {((selectedGoal.current / selectedGoal.target) * 100).toFixed(1)}%
-                                    </Text>{" "}
-                                    da meta de <Text style={{ fontWeight: "bold" }}>{selectedGoal.name}</Text>.
-                                </Text>
-                                <Text style={styles.deleteText}>
-                                    Tem certeza que deseja concluir esta meta?
-                                </Text>
-
-                                <View style={styles.modalButtons}>
-                                    <TouchableOpacity
-                                        style={styles.cancelButton}
-                                        onPress={() => setCompleteGoalModalVisible(false)}
-                                    >
-                                        <Text style={styles.cancelButtonText}>Cancelar</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={[styles.confirmButton, { backgroundColor: "#4CAF50" }]}
-                                        onPress={handleCompleteGoal}
-                                    >
-                                        <Text style={styles.confirmButtonText}>Concluir</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
-                    </View>
-                </View>
-            </Modal>
 
             <Modal
                 visible={isCongratulatoryModalVisible}
@@ -516,22 +459,21 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#F9FBFF" },
 
     header: {
-        backgroundColor: "#1B98E0",
         flexDirection: "row",
-        alignItems: "center",
         paddingVertical: 18,
         paddingHorizontal: 15,
         elevation: 4,
+        marginLeft: 15
     },
 
     backButton: {
-        paddingRight: 10
+        paddingRight: 10,
+        marginBottom: 15
     },
 
     headerTitle: {
-        color: "white",
-        fontSize: 20,
-        fontWeight: "600"
+        fontSize: width * 0.06,
+        fontFamily: 'Roboto_400Regular',
     },
 
     scrollContent: {
@@ -540,10 +482,18 @@ const styles = StyleSheet.create({
 
     subtitle: {
         fontSize: width * 0.05,
-        color: "#222",
         textAlign: "center",
         marginVertical: 12,
         paddingHorizontal: 20,
+        fontFamily: 'Roboto_400Regular',
+    },
+
+    line: {
+        width: "100%",
+        height: 5,
+        backgroundColor: "#E8F1F2",
+        marginBottom: height * 0.02,
+        marginTop: height * 0.04
     },
 
     goalCard: {
@@ -559,10 +509,16 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
 
+    goalNameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
     goalName: {
         fontSize: 17,
         fontWeight: "600",
-        color: "#222"
+        color: "#222",
+        flex: 1,
     },
 
     goalAmount: {
