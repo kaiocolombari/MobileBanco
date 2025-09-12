@@ -11,7 +11,8 @@ const Rotas = {
   PIXCONFIRM: "screen/transferirConfirm",
   EXTRATO: "screen/extratoScreen",
   COMPROVANTE: "screen/ComprovanteFull",
-  COFRINHO: "screen/cofrinhoScreen"
+  COFRINHO: "screen/cofrinhoScreen",
+  DASHBOARD: "screen/dashboardScreen"
 }
 
 export default Rotas

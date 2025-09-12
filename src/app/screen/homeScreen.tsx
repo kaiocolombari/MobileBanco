@@ -120,6 +120,11 @@ export default function HomeScreen() {
           <Text style={styles.extratoText}>Extratos</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style={styles.extratoBtn} onPress={() => router.push(Rotas.DASHBOARD)}>
+          <Ionicons name="pie-chart-outline" size={20} color="#008CFF" />
+          <Text style={styles.extratoText}>DashBoard</Text>
+        </TouchableOpacity>
+
         <View style={styles.cardBox}>
           <Text style={styles.cardTitle}>Cofrinho</Text>
           <Text style={styles.cardSubtitle}>
@@ -218,7 +223,7 @@ function BottomNav() {
       <TouchableOpacity onPress={() => { router.push(Rotas.EXTRATO) }}>
         <Ionicons name="document-text-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => { router.push(Rotas.DASHBOARD) }}>
         <Ionicons name="pie-chart-outline" size={28} color="#008CFF" />
       </TouchableOpacity>
     </View>

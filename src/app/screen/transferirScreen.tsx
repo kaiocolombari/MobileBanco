@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
 import type { AxiosResponse } from 'axios';
+import { router } from 'expo-router';
 
 const { width } = Dimensions.get("window");
 
@@ -50,7 +51,7 @@ export default function TransferirScreen() {
             }
 
             setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name);
-            
+
             setEtapa(3)
         } catch (e) {
             console.log(e);
@@ -59,8 +60,12 @@ export default function TransferirScreen() {
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity style={{...styles.backButton,  position: 'absolute', top: 20, left: 20 }} onPress={() => { router.back() }}>
+                <Ionicons name="chevron-back" size={28} color="grey" />
+            </TouchableOpacity>
             {etapa === 1 && (
                 <View style={styles.opcoesContainer}>
+
                     <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
                         <Ionicons name="person-outline" size={22} color="#1B98E0" style={styles.icone} />
                         <Text style={styles.opcaoTexto}>Usar CPF</Text>
@@ -145,6 +150,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         elevation: 2,
     },
+
+    backButton: {
+        width: "100%",
+        alignItems: "flex-start",
+    },
+
     icone: {
         marginRight: 14,
     },
