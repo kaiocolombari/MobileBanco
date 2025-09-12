@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get("window");
 
@@ -20,12 +21,54 @@ type Goal = {
     name: string;
     target: number;
     current: number;
+    status: 'in_progress' | 'completed';
+    createdAt: Date;
+    completedAt?: Date;
 };
 
 export default function CofrinhoScreen() {
-    const [goals, setGoals] = useState<Goal[]>([
-        { id: "1", name: "Dildo Gigante", target: 5000, current: 500 },
-    ]);
+    const [goals, setGoals] = useState<Goal[]>([]);
+
+    useEffect(() => {
+        const loadGoals = async () => {
+            try {
+                const stored = await AsyncStorage.getItem('goals');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    const goalsWithDates = parsed.map((goal: any) => ({
+                        ...goal,
+                        createdAt: new Date(goal.createdAt),
+                        completedAt: goal.completedAt ? new Date(goal.completedAt) : undefined,
+                    }));
+                    setGoals(goalsWithDates);
+                } else {
+                    setGoals([{ id: "1", name: "Dildo Gigante", target: 5000, current: 500, status: 'in_progress', createdAt: new Date() }]);
+                }
+            } catch (error) {
+                console.error('Error loading goals:', error);
+                setGoals([]);
+            }
+        };
+        loadGoals();
+    }, []);
+
+    useEffect(() => {
+        const saveGoals = async () => {
+            try {
+                const toSave = goals.map(goal => ({
+                    ...goal,
+                    createdAt: goal.createdAt.toISOString(),
+                    completedAt: goal.completedAt ? goal.completedAt.toISOString() : null,
+                }));
+                await AsyncStorage.setItem('goals', JSON.stringify(toSave));
+            } catch (error) {
+                console.error('Error saving goals:', error);
+            }
+        };
+        if (goals.length > 0) {
+            saveGoals();
+        }
+    }, [goals]);
     const [isAddMoneyModalVisible, setAddMoneyModalVisible] = useState(false);
     const [isNewGoalModalVisible, setNewGoalModalVisible] = useState(false);
     const [isDeleteGoalModalVisible, setDeleteGoalModalVisible] = useState(false);
@@ -70,6 +113,8 @@ export default function CofrinhoScreen() {
             name: newGoalName,
             target,
             current: 0,
+            status: 'in_progress',
+            createdAt: new Date(),
         };
         setGoals((prev) => [...prev, newGoal]);
         setNewGoalModalVisible(false);
@@ -128,6 +173,13 @@ export default function CofrinhoScreen() {
 
     const handleCompleteGoal = () => {
         if (selectedGoal && selectedGoal.current >= selectedGoal.target) {
+            setGoals((prev) =>
+                prev.map((goal) =>
+                    goal.id === selectedGoal.id
+                        ? { ...goal, status: 'completed', completedAt: new Date() }
+                        : goal
+                )
+            );
             setCompleteGoalModalVisible(false);
             setCongratulatoryModalVisible(true);
         } else {
@@ -145,7 +197,7 @@ export default function CofrinhoScreen() {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={25} color="white" />
+                    <Ionicons name="chevron-back" size={25} color="white" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Cofrinho</Text>
             </View>
@@ -157,9 +209,20 @@ export default function CofrinhoScreen() {
 
                 {goals.map((goal) => {
                     const percent = (goal.current / goal.target) * 100;
+                    const now = new Date();
+                    const endDate = goal.status === 'completed' && goal.completedAt ? goal.completedAt : now;
+                    
+                    const days = Math.floor((endDate.getTime() - goal.createdAt.getTime()) / (1000 * 60 * 60 * 24));
                     return (
                         <View key={goal.id} style={styles.goalCard}>
+                            <View style={styles.statusContainer}>
+                                <Ionicons name={goal.status === 'completed' ? 'checkmark-circle' : 'time-outline'} size={20} color={goal.status === 'completed' ? '#4CAF50' : '#FF9800'} />
+                                <Text style={[styles.statusText, { color: goal.status === 'completed' ? '#4CAF50' : '#FF9800' }]}>
+                                    {goal.status === 'completed' ? 'Concluído' : 'Em andamento'}
+                                </Text>
+                            </View>
                             <Text style={styles.goalName}>{goal.name}</Text>
+                            <Text style={styles.daysText}>Dias: {days}</Text>
                             <Text style={styles.goalAmount}>
                                 R$ {goal.current.toFixed(2)} / R$ {goal.target.toFixed(2)}
                             </Text>
@@ -693,5 +756,25 @@ const styles = StyleSheet.create({
         color: "#222",
         marginBottom: 10,
         textAlign: "center",
+    },
+
+    statusContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    statusText: {
+        fontSize: 12,
+        fontWeight: '500',
+        marginLeft: 4,
+    },
+
+    daysText: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 4,
     },
 });
