@@ -10,7 +10,8 @@ const Rotas = {
   TRANSPIX: "screen/transferirScreen",
   PIXCONFIRM: "screen/transferirConfirm",
   EXTRATO: "screen/extratoScreen",
-  COMPROVANTE: "screen/ComprovanteFull"
+  COMPROVANTE: "screen/ComprovanteFull",
+  COFRINHO: "screen/cofrinhoScreen"
 }
 
 export default Rotas

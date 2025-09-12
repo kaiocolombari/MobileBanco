@@ -111,7 +111,7 @@ export default function HomeScreen() {
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
             <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
-            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { }} />
+            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { router.push(Rotas.COFRINHO) }} />
           </ScrollView>
         </View>
 
