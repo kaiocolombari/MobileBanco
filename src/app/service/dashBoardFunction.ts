@@ -113,7 +113,7 @@ async function getDashboardAnalytics(): Promise<DashboardData> {
             transactionCategories,
         };
     } catch (error) {
-        console.error('Erro ao obter dados do dashboard:', error);
+        console.error('Errorrr ', error);
         return {
             totalIncome: 0,
             totalExpenses: 0,

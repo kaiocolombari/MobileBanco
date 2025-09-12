@@ -199,7 +199,6 @@ export default function DashboardScreen() {
       >
         {dashboardData && (
           <>
-            {/* Summary Cards */}
             <View style={styles.summaryContainer}>
               <View style={styles.summaryCard}>
                 <Text style={styles.summaryLabel}>Total Recebido</Text>
@@ -227,7 +226,6 @@ export default function DashboardScreen() {
               </View>
             </View>
 
-            {/* Charts */}
             <View style={styles.chartSection}>
               <Text style={styles.sectionTitle}>Distribuição de Gastos</Text>
               <PieChart data={dashboardData.transactionCategories} />
@@ -238,7 +236,6 @@ export default function DashboardScreen() {
               <BarChart data={dashboardData.monthlyData} />
             </View>
 
-            {/* Piggy Bank Goals */}
             <View style={styles.goalsSection}>
               <Text style={styles.sectionTitle}>Metas do Cofrinho</Text>
               {dashboardData.piggyBankGoals.map((goal: { name: string; current: number; target: number; progress: number }, index: number) => (
