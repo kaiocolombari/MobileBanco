@@ -125,7 +125,7 @@ export default function HomeScreen() {
           <Text style={styles.cardSubtitle}>
             Comece hoje mesmo! Faça do seu cofrinho digital o seu melhor aliado para conquistar o futuro que você merece.
           </Text>
-          <TouchableOpacity style={styles.cardButton}>
+          <TouchableOpacity style={styles.cardButton} onPress={() => { router.push(Rotas.COFRINHO) }}>
             <Text style={styles.cardButtonText}>Comece agora</Text>
           </TouchableOpacity>
         </View>
