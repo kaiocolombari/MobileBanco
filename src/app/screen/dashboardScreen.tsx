@@ -110,8 +110,8 @@ export default function DashboardScreen() {
           {data.map((item, index) => (
             <View key={index} style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: ['#4CAF50', '#E53935', '#FF9800'][index % 3] }]} />
-              <Text style={styles.legendText}>{item.category}</Text>
-              <Text style={styles.legendValue}>{formatCurrency(item.amount)}</Text>
+              <Text style={[styles.legendText, { color: theme.text }]}>{item.category}</Text>
+              <Text style={[styles.legendValue, { color: theme.text }]}>{formatCurrency(item.amount)}</Text>
             </View>
           ))}
         </View>
@@ -165,11 +165,11 @@ export default function DashboardScreen() {
         <View style={styles.barLegend}>
           <View style={styles.barLegendItem}>
             <View style={[styles.barLegendColor, { backgroundColor: '#4CAF50' }]} />
-            <Text style={styles.barLegendText}>Receitas</Text>
+            <Text style={[styles.barLegendText, { color: theme.text }]}>Receitas</Text>
           </View>
           <View style={styles.barLegendItem}>
             <View style={[styles.barLegendColor, { backgroundColor: '#E53935' }]} />
-            <Text style={styles.barLegendText}>Despesas</Text>
+            <Text style={[styles.barLegendText, { color: theme.text }]}>Despesas</Text>
           </View>
         </View>
       </View>
@@ -281,7 +281,6 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     paddingHorizontal: 15,
     elevation: 4,
-    marginLeft: 15,
   },
   backButton: {
     paddingRight: 10,

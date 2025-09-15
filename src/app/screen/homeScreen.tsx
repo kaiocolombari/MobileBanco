@@ -117,12 +117,12 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.surface }]} onPress={() => router.push(Rotas.EXTRATO)}>
+        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.EXTRATO)}>
           <Ionicons name="document-text-outline" size={20} color={theme.primary} />
           <Text style={[styles.extratoText, { color: theme.accent }]}>Extratos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.surface }]} onPress={() => router.push(Rotas.DASHBOARD)}>
+        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.DASHBOARD)}>
           <Ionicons name="pie-chart-outline" size={20} color={theme.primary} />
           <Text style={[styles.extratoText, { color: theme.accent }]}>DashBoard</Text>
         </TouchableOpacity>

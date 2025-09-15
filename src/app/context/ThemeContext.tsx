@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Theme {
   background: string;
@@ -52,12 +53,51 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const theme = isDark ? darkTheme : lightTheme;
+
+  // Load theme preference on startup
+  useEffect(() => {
+    const loadThemePreference = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem('themePreference');
+        if (savedTheme !== null) {
+          setIsDark(savedTheme === 'dark');
+        }
+      } catch (error) {
+        console.error('Error loading theme preference:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadThemePreference();
+  }, []);
+
+  // Save theme preference when it changes
+  useEffect(() => {
+    const saveThemePreference = async () => {
+      try {
+        await AsyncStorage.setItem('themePreference', isDark ? 'dark' : 'light');
+      } catch (error) {
+        console.error('Error saving theme preference:', error);
+      }
+    };
+
+    if (!isLoading) {
+      saveThemePreference();
+    }
+  }, [isDark, isLoading]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
+
+  // Show loading state while theme is being loaded
+  if (isLoading) {
+    return null; // Or you could return a loading component
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>

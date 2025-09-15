@@ -315,34 +315,36 @@ export default function CofrinhoScreen() {
                 onRequestClose={() => setNewGoalModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Novo Cofrinho</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Novo Cofrinho</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
                             placeholder="Nome do objetivo"
+                            placeholderTextColor={theme.textSecondary}
                             value={newGoalName}
                             onChangeText={setNewGoalName}
                         />
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
                             placeholder="Meta (R$)"
+                            placeholderTextColor={theme.textSecondary}
                             keyboardType="numeric"
                             value={newGoalTarget}
                             onChangeText={setNewGoalTarget}
                         />
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
-                                style={styles.cancelButton}
+                                style={[styles.cancelButton, { backgroundColor: theme.surface }]}
                                 onPress={() => {
                                     setNewGoalModalVisible(false);
                                     setNewGoalName("");
                                     setNewGoalTarget("");
                                 }}
                             >
-                                <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                <Text style={[styles.cancelButtonText, { color: theme.textSecondary }]}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleCreateGoal}>
-                                <Text style={styles.confirmButtonText}>Criar</Text>
+                            <TouchableOpacity style={[styles.confirmButton, { backgroundColor: theme.button }]} onPress={handleCreateGoal}>
+                                <Text style={[styles.confirmButtonText, { color: theme.text }]}>Criar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -356,27 +358,27 @@ export default function CofrinhoScreen() {
                 onRequestClose={() => setDeleteGoalModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
                         {selectedGoal && (
                             <>
-                                <Text style={styles.modalTitle}>Excluir Cofrinho</Text>
-                                <Text style={styles.deleteText}>
+                                <Text style={[styles.modalTitle, { color: theme.text }]}>Excluir Cofrinho</Text>
+                                <Text style={[styles.deleteText, { color: theme.textSecondary }]}>
                                     Você guardou{" "}
-                                    <Text style={{ fontWeight: "bold" }}>
+                                    <Text style={{ fontWeight: "bold", color: theme.text }}>
                                         {((selectedGoal.current / selectedGoal.target) * 100).toFixed(1)}%
                                     </Text>{" "}
-                                    da meta de <Text style={{ fontWeight: "bold" }}>{selectedGoal.name}</Text>.
+                                    da meta de <Text style={{ fontWeight: "bold", color: theme.text }}>{selectedGoal.name}</Text>.
                                 </Text>
-                                <Text style={styles.deleteText}>
+                                <Text style={[styles.deleteText, { color: theme.textSecondary }]}>
                                     Ainda faltam R$ {(selectedGoal.target - selectedGoal.current).toFixed(2)}.
                                 </Text>
 
                                 <View style={styles.modalButtons}>
                                     <TouchableOpacity
-                                        style={styles.cancelButton}
+                                        style={[styles.cancelButton, { backgroundColor: theme.surface }]}
                                         onPress={() => setDeleteGoalModalVisible(false)}
                                     >
-                                        <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                        <Text style={[styles.cancelButtonText, { color: theme.textSecondary }]}>Cancelar</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={[styles.confirmButton, { backgroundColor: "#E53935" }]}
@@ -398,28 +400,29 @@ export default function CofrinhoScreen() {
                 onRequestClose={() => setEditGoalModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Editar Meta</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Editar Meta</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
                             placeholder="Nova meta (R$)"
+                            placeholderTextColor={theme.textSecondary}
                             keyboardType="numeric"
                             value={editTarget}
                             onChangeText={setEditTarget}
                         />
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
-                                style={styles.cancelButton}
+                                style={[styles.cancelButton, { backgroundColor: theme.surface }]}
                                 onPress={() => {
                                     setEditGoalModalVisible(false);
                                     setEditTarget("");
                                     setSelectedGoal(null);
                                 }}
                             >
-                                <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                <Text style={[styles.cancelButtonText, { color: theme.textSecondary }]}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleEditGoal}>
-                                <Text style={styles.confirmButtonText}>Salvar</Text>
+                            <TouchableOpacity style={[styles.confirmButton, { backgroundColor: theme.button }]} onPress={handleEditGoal}>
+                                <Text style={[styles.confirmButtonText, { color: theme.text }]}>Salvar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -434,12 +437,12 @@ export default function CofrinhoScreen() {
                 onRequestClose={() => setCongratulatoryModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Parabéns! 🎉</Text>
-                        <Text style={styles.congratulatoryText}>
-                            Você concluiu a meta de <Text style={{ fontWeight: "bold" }}>{selectedGoal?.name}</Text>!
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Parabéns! 🎉</Text>
+                        <Text style={[styles.congratulatoryText, { color: theme.textSecondary }]}>
+                            Você concluiu a meta de <Text style={{ fontWeight: "bold", color: theme.text }}>{selectedGoal?.name}</Text>!
                         </Text>
-                        <Text style={styles.congratulatoryText}>
+                        <Text style={[styles.congratulatoryText, { color: theme.textSecondary }]}>
                             Você guardou R$ {selectedGoal?.current.toFixed(2)} dos R$ {selectedGoal?.target.toFixed(2)}.
                         </Text>
                         <TouchableOpacity
@@ -466,7 +469,6 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         paddingHorizontal: 15,
         elevation: 4,
-        marginLeft: 15
     },
 
     backButton: {
@@ -548,12 +550,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "#1B98E0",
         paddingVertical: 8,
         borderRadius: 10,
         flex: 0.48,
     },
 
     addButtonText: {
+        color: "white",
         fontWeight: "600",
         fontSize: 14,
         marginLeft: 6,
