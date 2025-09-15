@@ -16,10 +16,12 @@ import Rotas from "../../types/types.route";
 import { router } from "expo-router";
 import { fetchUser } from "../api/user";
 import { fetchUserMock } from "../api/user";
+import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
+  const { theme } = useTheme();
   const [selectedRating, setSelectedRating] = useState<string | null>(null);
   const [ratingText, setRatingText] = useState("");
   const [nome, setNome] = useState("");
@@ -65,9 +67,9 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: theme.header }]}>
           <Image
             source={require("../../assets/avatar.png")}
             style={{
@@ -80,7 +82,7 @@ export default function HomeScreen() {
             }}
           />
           <View style={{ marginLeft: 10 }}>
-            <Text style={styles.hello}>Olá, {nome}</Text>
+            <Text style={[styles.hello, { color: '#FFFFFF' }]}>Olá, {nome}</Text>
           </View>
           <View style={styles.headerIcons}>
             <Ionicons name="help-circle-outline" size={25} color="white" />
@@ -96,8 +98,8 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.balanceContainer}>
-          <Text style={styles.balanceTitle}>Conta</Text>
-          <Text style={styles.balanceValue}>R$ {saldo.toFixed(2)}</Text>
+          <Text style={[styles.balanceTitle, { color: theme.textSecondary }]}>Conta</Text>
+          <Text style={[styles.balanceValue, { color: theme.accent }]}>R$ {saldo.toFixed(2)}</Text>
         </View>
 
         <View style={{ marginTop: 12 }}>
@@ -115,29 +117,29 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <TouchableOpacity style={styles.extratoBtn} onPress={() => router.push(Rotas.EXTRATO)}>
-          <Ionicons name="document-text-outline" size={20} color="#008CFF" />
-          <Text style={styles.extratoText}>Extratos</Text>
+        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.surface }]} onPress={() => router.push(Rotas.EXTRATO)}>
+          <Ionicons name="document-text-outline" size={20} color={theme.primary} />
+          <Text style={[styles.extratoText, { color: theme.accent }]}>Extratos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.extratoBtn} onPress={() => router.push(Rotas.DASHBOARD)}>
-          <Ionicons name="pie-chart-outline" size={20} color="#008CFF" />
-          <Text style={styles.extratoText}>DashBoard</Text>
+        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.surface }]} onPress={() => router.push(Rotas.DASHBOARD)}>
+          <Ionicons name="pie-chart-outline" size={20} color={theme.primary} />
+          <Text style={[styles.extratoText, { color: theme.accent }]}>DashBoard</Text>
         </TouchableOpacity>
 
-        <View style={styles.cardBox}>
-          <Text style={styles.cardTitle}>Cofrinho</Text>
-          <Text style={styles.cardSubtitle}>
+        <View style={[styles.cardBox, { backgroundColor: theme.card }]}>
+          <Text style={[styles.cardTitle, { color: theme.text }]}>Cofrinho</Text>
+          <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>
             Comece hoje mesmo! Faça do seu cofrinho digital o seu melhor aliado para conquistar o futuro que você merece.
           </Text>
-          <TouchableOpacity style={styles.cardButton} onPress={() => { router.push(Rotas.COFRINHO) }}>
-            <Text style={styles.cardButtonText}>Comece agora</Text>
+          <TouchableOpacity style={[styles.cardButton, { backgroundColor: theme.button }]} onPress={() => { router.push(Rotas.COFRINHO) }}>
+            <Text style={[styles.cardButtonText, { color: "#FFFFFF" }]}>Comece agora</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.ratingBox}>
-          <Text style={styles.ratingTitle}>Avalie sua experiência</Text>
-          <Text style={styles.ratingSubtitle}>
+          <Text style={[styles.ratingTitle, { color: theme.text }]}>Avalie sua experiência</Text>
+          <Text style={[styles.ratingSubtitle, { color: theme.textSecondary }]}>
             O que achou da tela inicial do aplicativo?
           </Text>
           <View style={styles.ratingRow}>
@@ -172,9 +174,9 @@ export default function HomeScreen() {
               onPress={() => setSelectedRating("Péssimo")}
             />
           </View>
-          <TextInput style={styles.input} placeholder="Escreva aqui..." value={ratingText} onChangeText={setRatingText} />
-          <TouchableOpacity style={styles.rateButton} onPress={() => { handleRatingPress() }}>
-            <Text style={styles.rateButtonText}>Enviar avaliação</Text>
+          <TextInput style={[styles.input, { borderColor: theme.primary, color: theme.text }]} placeholder="Escreva aqui..." placeholderTextColor={theme.textSecondary} value={ratingText} onChangeText={setRatingText} />
+          <TouchableOpacity style={[styles.rateButton, { backgroundColor: theme.button }]} onPress={() => { handleRatingPress() }}>
+            <Text style={[styles.rateButtonText, { color: "#FFFFFF" }]}>Enviar avaliação</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -195,17 +197,18 @@ function RatingItem({
   selected: boolean;
   onPress: () => void;
 }) {
+  const { theme } = useTheme();
   return (
     <TouchableOpacity style={styles.ratingItem} onPress={onPress}>
       <FontAwesome6
         name={icon}
         size={26}
-        color={selected ? "#FFD700" : "#008CFF"}
+        color={selected ? "#FFD700" : theme.primary}
       />
       <Text
         style={[
           styles.ratingLabel,
-          { color: selected ? "#FFD700" : "#333" },
+          { color: selected ? "#FFD700" : theme.text },
         ]}
       >
         {label}
@@ -215,16 +218,17 @@ function RatingItem({
 }
 
 function BottomNav() {
+  const { theme } = useTheme();
   return (
-    <View style={styles.bottomNav}>
+    <View style={[styles.bottomNav, { backgroundColor: theme.card, borderColor: theme.border }]}>
       <TouchableOpacity>
-        <Ionicons name="person-outline" size={28} color="#008CFF" />
+        <Ionicons name="person-outline" size={28} color={theme.primary} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { router.push(Rotas.EXTRATO) }}>
-        <Ionicons name="document-text-outline" size={28} color="#008CFF" />
+        <Ionicons name="document-text-outline" size={28} color={theme.primary} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { router.push(Rotas.DASHBOARD) }}>
-        <Ionicons name="pie-chart-outline" size={28} color="#008CFF" />
+        <Ionicons name="pie-chart-outline" size={28} color={theme.primary} />
       </TouchableOpacity>
     </View>
   );
@@ -233,14 +237,12 @@ function BottomNav() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F9FF",
   },
   scrollContent: {
     paddingBottom: 90,
   },
 
   header: {
-    backgroundColor: "#1B98E0",
     alignItems: "flex-start",
     paddingHorizontal: 15,
     paddingVertical: 18,
@@ -254,7 +256,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   hello: {
-    color: "white",
     fontSize: 20,
     fontFamily: "Roboto_500Medium",
   },
@@ -270,17 +271,14 @@ const styles = StyleSheet.create({
   balanceTitle: {
     fontSize: 17,
     fontFamily: "Roboto_400Regular",
-    color: "#444",
   },
   balanceValue: {
     fontSize: 22,
     fontFamily: "Roboto_700Bold",
-    color: "#0686D0",
     marginTop: 4,
   },
 
   extratoBtn: {
-    backgroundColor: "#E6F4FB",
     flexDirection: "row",
     alignItems: "center",
     padding: 14,
@@ -295,14 +293,12 @@ const styles = StyleSheet.create({
   },
   extratoText: {
     marginLeft: 10,
-    color: "#0686D0",
     fontSize: 15,
     fontFamily: "Roboto_500Medium",
   },
 
   cardBox: {
     marginTop: 20,
-    backgroundColor: "white",
     padding: 18,
     borderRadius: 12,
     marginHorizontal: 18,
@@ -315,16 +311,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontFamily: "Roboto_500Medium",
-    color: "#222",
   },
   cardSubtitle: {
     fontSize: 14,
     fontFamily: "Roboto_400Regular",
-    color: "#555",
     marginVertical: 10,
   },
   cardButton: {
-    backgroundColor: "#0686D0",
     paddingVertical: 12,
     borderRadius: 23,
     alignItems: "center",
@@ -337,13 +330,11 @@ const styles = StyleSheet.create({
     width: 120,
   },
   cardButtonText: {
-    color: "white",
     fontFamily: "Roboto_500Medium",
     fontSize: 15,
   },
 
   rateButton: {
-    backgroundColor: "#0686D0",
     paddingVertical: 12,
     borderRadius: 23,
     alignItems: "center",
@@ -357,7 +348,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end"
   },
   rateButtonText: {
-    color: "white",
     fontFamily: "Roboto_500Medium",
     fontSize: 12,
   },
@@ -370,12 +360,10 @@ const styles = StyleSheet.create({
   ratingTitle: {
     fontSize: 17,
     fontFamily: "Roboto_500Medium",
-    color: "#222",
   },
   ratingSubtitle: {
     fontSize: 14,
     fontFamily: "Roboto_400Regular",
-    color: "#555",
     marginVertical: 6,
   },
   ratingRow: {
@@ -391,12 +379,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 3,
     fontFamily: "Roboto_400Regular",
-    color: "#333",
   },
 
   input: {
     borderWidth: 1,
-    borderColor: "#1B98E0",
     borderRadius: 10,
     padding: 6,
     marginTop: 5,
@@ -408,12 +394,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "white",
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderColor: "#E0E0E0",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,

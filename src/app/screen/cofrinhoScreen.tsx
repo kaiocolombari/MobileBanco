@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Roboto_400Regular } from "@expo-google-fonts/roboto";
+import { useTheme } from "../context/ThemeContext";
 const { width, height } = Dimensions.get("window");
 
 type Goal = {
@@ -27,6 +28,7 @@ type Goal = {
 };
 
 export default function CofrinhoScreen() {
+    const { theme } = useTheme();
     const [goals, setGoals] = useState<Goal[]>([]);
 
     useEffect(() => {
@@ -189,21 +191,21 @@ export default function CofrinhoScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { backgroundColor: theme.header }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={25} color="grey" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Cofrinho</Text>
+                <Text style={[styles.headerTitle, { color: theme.text }]}>Cofrinho</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Text style={styles.subtitle}>
+                <Text style={[styles.subtitle, { color: theme.text }]}>
                     Guarde dinheiro para seus objetivos e realize seus sonhos!
                 </Text>
-                <View style={styles.line}></View>
+                <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
 
-                <Text style={{ marginTop: 10, fontSize: width * 0.05, marginLeft: 20 }}>Metas</Text>
+                <Text style={{ marginTop: 10, fontSize: width * 0.05, marginLeft: 20, color: theme.text }}>Metas</Text>
 
                 {goals.map((goal) => {
                     const percent = (goal.current / goal.target) * 100;
@@ -212,7 +214,7 @@ export default function CofrinhoScreen() {
 
                     const days = Math.floor((endDate.getTime() - goal.createdAt.getTime()) / (1000 * 60 * 60 * 24));
                     return (
-                        <View key={goal.id} style={styles.goalCard}>
+                        <View key={goal.id} style={[styles.goalCard, { backgroundColor: theme.card }]}>
                             <View style={styles.statusContainer}>
                                 <Ionicons name={goal.status === 'completed' ? 'checkmark-circle' : 'time-outline'} size={20} color={goal.status === 'completed' ? '#4CAF50' : '#FF9800'} />
                                 <Text style={[styles.statusText, { color: goal.status === 'completed' ? '#4CAF50' : '#FF9800' }]}>
@@ -220,14 +222,14 @@ export default function CofrinhoScreen() {
                                 </Text>
                             </View>
                             <View style={styles.goalNameContainer}>
-                                <Text style={styles.goalName}>{goal.name}</Text>
+                                <Text style={[styles.goalName, { color: theme.text }]}>{goal.name}</Text>
 
                             </View>
-                            <Text style={styles.daysText}>Dias: {days}</Text>
-                            <Text style={styles.goalAmount}>
+                            <Text style={[styles.daysText, { color: theme.textSecondary }]}>Dias: {days}</Text>
+                            <Text style={[styles.goalAmount, { color: theme.accent }]}>
                                 R$ {goal.current.toFixed(2)} / R$ {goal.target.toFixed(2)}
                             </Text>
-                            <View style={styles.progressBar}>
+                            <View style={[styles.progressBar, { backgroundColor: theme.border }]}>
                                 <View
                                     style={[
                                         styles.progressFill,
@@ -260,11 +262,11 @@ export default function CofrinhoScreen() {
                 })}
 
                 <TouchableOpacity
-                    style={styles.newGoalButton}
+                    style={[styles.newGoalButton, { backgroundColor: theme.button }]}
                     onPress={() => setNewGoalModalVisible(true)}
                 >
                     <Ionicons name="add-circle-outline" size={22} color="white" />
-                    <Text style={styles.newGoalButtonText}>Criar novo cofrinho</Text>
+                    <Text style={[styles.newGoalButtonText, { color: theme.text }]}>Criar novo cofrinho</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -275,30 +277,31 @@ export default function CofrinhoScreen() {
                 onRequestClose={() => setAddMoneyModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>
                             Adicionar a {selectedGoal?.name}
                         </Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
                             placeholder="Valor (R$)"
+                            placeholderTextColor={theme.textSecondary}
                             keyboardType="numeric"
                             value={addAmount}
                             onChangeText={setAddAmount}
                         />
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
-                                style={styles.cancelButton}
+                                style={[styles.cancelButton, { backgroundColor: theme.surface }]}
                                 onPress={() => {
                                     setAddMoneyModalVisible(false);
                                     setAddAmount("");
                                     setSelectedGoal(null);
                                 }}
                             >
-                                <Text style={styles.cancelButtonText}>Cancelar</Text>
+                                <Text style={[styles.cancelButtonText, { color: theme.textSecondary }]}>Cancelar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleAddMoney}>
-                                <Text style={styles.confirmButtonText}>Adicionar</Text>
+                            <TouchableOpacity style={[styles.confirmButton, { backgroundColor: theme.button }]} onPress={handleAddMoney}>
+                                <Text style={[styles.confirmButtonText, { color: theme.text }]}>Adicionar</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -456,7 +459,7 @@ export default function CofrinhoScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#F9FBFF" },
+    container: { flex: 1 },
 
     header: {
         flexDirection: "row",
@@ -491,13 +494,11 @@ const styles = StyleSheet.create({
     line: {
         width: "100%",
         height: 5,
-        backgroundColor: "#E8F1F2",
         marginBottom: height * 0.02,
         marginTop: height * 0.04
     },
 
     goalCard: {
-        backgroundColor: "white",
         marginHorizontal: 18,
         marginTop: 16,
         padding: 18,
@@ -517,20 +518,17 @@ const styles = StyleSheet.create({
     goalName: {
         fontSize: 17,
         fontWeight: "600",
-        color: "#222",
         flex: 1,
     },
 
     goalAmount: {
         fontSize: 15,
         fontWeight: "500",
-        color: "#1B98E0",
         marginVertical: 6,
     },
 
     progressBar: {
         height: 10,
-        backgroundColor: "#E6E6E6",
         borderRadius: 6,
         marginBottom: 12,
         overflow: "hidden",
@@ -550,14 +548,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#1B98E0",
         paddingVertical: 8,
         borderRadius: 10,
         flex: 0.48,
     },
 
     addButtonText: {
-        color: "white",
         fontWeight: "600",
         fontSize: 14,
         marginLeft: 6,
@@ -621,7 +617,6 @@ const styles = StyleSheet.create({
     },
 
     newGoalButton: {
-        backgroundColor: "#4CAF50",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
@@ -633,7 +628,6 @@ const styles = StyleSheet.create({
     },
 
     newGoalButtonText: {
-        color: "white",
         fontWeight: "600",
         fontSize: 16,
         marginLeft: 8,
@@ -647,7 +641,6 @@ const styles = StyleSheet.create({
     },
 
     modalContent: {
-        backgroundColor: "white",
         padding: 22,
         borderRadius: 14,
         width: width * 0.85,
@@ -656,19 +649,16 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 18,
         fontWeight: "600",
-        color: "#222",
         marginBottom: 15,
         textAlign: "center",
     },
 
     input: {
         borderWidth: 1.2,
-        borderColor: "#1B98E0",
         borderRadius: 10,
         padding: 12,
         marginBottom: 14,
         fontSize: 15,
-        color: "#333",
     },
 
     modalButtons: {
@@ -677,39 +667,33 @@ const styles = StyleSheet.create({
     },
 
     cancelButton: {
-        backgroundColor: "#E0E0E0",
         paddingVertical: 10,
         paddingHorizontal: 22,
         borderRadius: 10,
     },
 
     cancelButtonText: {
-        color: "#555",
         fontWeight: "600"
     },
 
     confirmButton: {
-        backgroundColor: "#1B98E0",
         paddingVertical: 10,
         paddingHorizontal: 22,
         borderRadius: 10,
     },
 
     confirmButtonText: {
-        color: "white",
         fontWeight: "600"
     },
 
     deleteText: {
         fontSize: 15,
-        color: "#444",
         marginBottom: 10,
         textAlign: "center",
     },
 
     congratulatoryText: {
         fontSize: 16,
-        color: "#222",
         marginBottom: 10,
         textAlign: "center",
     },
@@ -730,7 +714,6 @@ const styles = StyleSheet.create({
 
     daysText: {
         fontSize: 14,
-        color: '#666',
         marginTop: 4,
     },
 });

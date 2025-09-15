@@ -3,6 +3,7 @@ import { useFontsApp } from '../types/types.font';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeProvider } from './context/ThemeContext';
 
 export default function Layout() {
   const fontsLoaded = useFontsApp();
@@ -10,14 +11,16 @@ export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        {!fontsLoaded ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1B98E0" />
-            <Text style={styles.loadingText}>Carregando fontes...</Text>
-          </View>
-        ) : (
-          <Stack screenOptions={{ headerShown: false }} />
-        )}
+        <ThemeProvider>
+          {!fontsLoaded ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#1B98E0" />
+              <Text style={styles.loadingText}>Carregando fontes...</Text>
+            </View>
+          ) : (
+            <Stack screenOptions={{ headerShown: false }} />
+          )}
+        </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

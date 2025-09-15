@@ -5,10 +5,12 @@ import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
 import type { AxiosResponse } from 'axios';
 import { router } from 'expo-router';
+import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get("window");
 
 export default function TransferirScreen() {
+    const { theme } = useTheme();
     const [etapa, setEtapa] = useState<1 | 2 | 3 | 4>(1);
     const [tipoChave, setTipoChave] = useState<'cpf' | 'phone' | 'chave' | null>(null);
     const [valorChave, setValorChave] = useState('');
@@ -59,26 +61,26 @@ export default function TransferirScreen() {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <TouchableOpacity style={{...styles.backButton,  position: 'absolute', top: 20, left: 20 }} onPress={() => { router.back() }}>
                 <Ionicons name="chevron-back" size={28} color="grey" />
             </TouchableOpacity>
             {etapa === 1 && (
                 <View style={styles.opcoesContainer}>
 
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
-                        <Ionicons name="person-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar CPF</Text>
+                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
+                        <Ionicons name="person-outline" size={22} color={theme.primary} style={styles.icone} />
+                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar CPF</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
-                        <Ionicons name="call-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar Telefone</Text>
+                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
+                        <Ionicons name="call-outline" size={22} color={theme.primary} style={styles.icone} />
+                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Telefone</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.opcao} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
-                        <Ionicons name="key-outline" size={22} color="#1B98E0" style={styles.icone} />
-                        <Text style={styles.opcaoTexto}>Usar Chave Pix</Text>
+                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
+                        <Ionicons name="key-outline" size={22} color={theme.primary} style={styles.icone} />
+                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Chave Pix</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -87,27 +89,27 @@ export default function TransferirScreen() {
                 <View>
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => setEtapa(1)}>
-                            <Ionicons name="chevron-back" size={28} color="#333" />
+                            <Ionicons name="chevron-back" size={28} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={styles.headerText}>Digite a chave</Text>
+                        <Text style={[styles.headerText, { color: theme.text }]}>Digite a chave</Text>
                     </View>
 
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text }]}
                         placeholder={tipoChave === 'cpf' ? "000.000.000-00" : tipoChave === 'phone' ? "(00) 00000-0000" : "Chave Pix"}
                         maxLength={tipoChave === 'cpf' ? 14 : tipoChave === 'phone' ? 15 : 50}
-                        placeholderTextColor="#999"
+                        placeholderTextColor={theme.textSecondary}
                         keyboardType={tipoChave === 'chave' ? "default" : "numeric"}
                         value={valorChave}
                         onChangeText={handleChangeText}
                     />
 
                     <TouchableOpacity
-                        style={[styles.botao, { opacity: valorChave ? 1 : 0.5 }]}
+                        style={[styles.botao, { backgroundColor: theme.button, opacity: valorChave ? 1 : 0.5 }]}
                         disabled={!valorChave}
                         onPress={() => setEtapa(3)}
                     >
-                        <Text style={styles.botaoTexto}>Próximo</Text>
+                        <Text style={[styles.botaoTexto, { color: theme.text }]}>Próximo</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -126,7 +128,6 @@ export default function TransferirScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#FFF",
         padding: 20,
         justifyContent: "center",
     },
@@ -137,9 +138,7 @@ const styles = StyleSheet.create({
     opcao: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#FFF",
         borderWidth: 1,
-        borderColor: "#E0E0E0",
         borderRadius: 12,
         paddingVertical: 16,
         paddingHorizontal: 18,
@@ -161,7 +160,6 @@ const styles = StyleSheet.create({
     },
     opcaoTexto: {
         fontSize: 16,
-        color: "#333",
         fontWeight: "500",
     },
     // Etapa 2
@@ -173,30 +171,25 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 20,
         fontWeight: "600",
-        color: "#333",
         marginLeft: 12,
     },
     input: {
         width: "100%",
         height: 55,
         borderWidth: 1,
-        borderColor: "#DDD",
         borderRadius: 12,
         paddingHorizontal: 16,
         fontSize: 16,
-        backgroundColor: "#F9F9F9",
         marginBottom: 20,
     },
     botao: {
         width: "100%",
         height: 50,
-        backgroundColor: "#1B98E0",
         borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
     },
     botaoTexto: {
-        color: "#FFF",
         fontSize: 16,
         fontWeight: "600",
     },

@@ -6,10 +6,12 @@ import { Roboto_400Regular } from '@expo-google-fonts/roboto';
 import Rotas from '../../types/types.route';
 import { router } from 'expo-router';
 import { fetchTransacoesMock, Transacao } from '../api/fetchTransacoes';
+import { useTheme } from '../context/ThemeContext';
 
 const { width, height } = Dimensions.get("window");
 
 export default function pixScreen() {
+  const { theme } = useTheme();
   const [transactions, setTransactions] = useState<Transacao[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,7 @@ export default function pixScreen() {
   const renderTransaction = ({ item }: { item: Transacao }) => {
     const isReceived = item.tipoTransacao === 'recebido';
     return (
-      <View style={styles.transactionItem}>
+      <View style={[styles.transactionItem, { backgroundColor: theme.card }]}>
         <View style={[styles.iconContainer, { backgroundColor: isReceived ? '#DFF7E1' : '#FDDCDC' }]}>
           <MaterialIcons
             name={isReceived ? "arrow-downward" : "arrow-upward"}
@@ -50,9 +52,9 @@ export default function pixScreen() {
           />
         </View>
         <View style={styles.transactionInfo}>
-          <Text style={styles.transactionDesc}>{item.descricao}</Text>
-          <Text style={styles.transactionDate}>Data: {item.date}</Text>
-          <Text style={styles.transactionDate}>Horário: {item.hora}</Text>
+          <Text style={[styles.transactionDesc, { color: theme.text }]}>{item.descricao}</Text>
+          <Text style={[styles.transactionDate, { color: theme.textSecondary }]}>Data: {item.date}</Text>
+          <Text style={[styles.transactionDate, { color: theme.textSecondary }]}>Horário: {item.hora}</Text>
         </View>
         <Text style={[styles.transactionAmount, { color: isReceived ? 'green' : 'red' }]}>
           {isReceived ? `+ R$${item.valor.toFixed(2)}` : `- R$${item.valor.toFixed(2)}`}
@@ -62,31 +64,31 @@ export default function pixScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.backButton}>
         <TouchableOpacity onPress={() => { router.back() }}>
           <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
         </TouchableOpacity>
       </View>
       <View>
-        <Text style={styles.headerText}>Área Pix</Text>
+        <Text style={[styles.headerText, { color: theme.text }]}>Área Pix</Text>
       </View>
       <View style={styles.iconesPix}>
         <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
         <ImageButton image={require("../../assets/copiaCola.png")} label="Pix Copia e Cola" onPress={() => { }} />
         <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { }} />
       </View>
-      <View style={styles.line}></View>
+      <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
 
       <View style={styles.transactionsContainer}>
         {!loading && transactions.length === 0 ? (
-          <Text style={styles.noTransactionsText}>Nenhuma transação encontrada.</Text>
+          <Text style={[styles.noTransactionsText, { color: theme.text }]}>Nenhuma transação encontrada.</Text>
         ) : (
-          <Text style={styles.transactionsHeader}>Histórico de Transações</Text>
+          <Text style={[styles.transactionsHeader, { color: theme.text }]}>Histórico de Transações</Text>
         )}
 
         {loading ? (
-          <ActivityIndicator size="large" color="#333" style={{ marginTop: 20 }} />
+          <ActivityIndicator size="large" color={theme.text} style={{ marginTop: 20 }} />
         ) : (
           <FlatList
             data={transactions}
@@ -104,7 +106,6 @@ export default function pixScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F9FF",
   },
   backButton: {
     marginTop: 20,
@@ -128,7 +129,6 @@ const styles = StyleSheet.create({
   line: {
     width: "100%",
     height: 5,
-    backgroundColor: "#E8F1F2",
     marginBottom: 10,
     marginTop: height * 0.10
   },
@@ -140,13 +140,11 @@ const styles = StyleSheet.create({
     fontSize: width / 20,
     fontFamily: 'Roboto_400Regular',
     marginBottom: 10,
-    color: '#333'
   },
   transactionItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
     padding: 12,
     borderRadius: 10,
     marginBottom: 10,
@@ -165,7 +163,6 @@ const styles = StyleSheet.create({
   noTransactionsText: {
     fontSize: width / 25,
     fontFamily: 'Roboto_400Regular',
-    color: '#333',
     marginTop: 20
   },
   transactionInfo: {
@@ -175,11 +172,9 @@ const styles = StyleSheet.create({
   transactionDesc: {
     fontSize: width / 25,
     fontFamily: 'Roboto_400Regular',
-    color: '#333'
   },
   transactionDate: {
     fontSize: width / 32,
-    color: '#999'
   },
   transactionAmount: {
     fontSize: width / 22,

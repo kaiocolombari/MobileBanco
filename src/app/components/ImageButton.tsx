@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Image, Text, StyleSheet, Dimensions, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 const { width, } = Dimensions.get("window");
 
@@ -10,15 +11,16 @@ type Props = {
 };
 
 export default function ImageButton({ image, label, onPress }: Props) {
+  const { theme } = useTheme();
   const circleSize = width / 8;
-  const imageSize = width / 12; 
+  const imageSize = width / 12;
   const fontSize = width / 30;
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }]}>
+      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2, backgroundColor: theme.imageButtonCircle }]}>
         <Image source={image} style={[styles.image, { width: imageSize, height: imageSize }]} />
       </View>
-      <Text style={[styles.label, { fontSize }]}>{label}</Text>
+      <Text style={[styles.label, { fontSize, color: theme.text }]}>{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -30,11 +32,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   circle: {
-    backgroundColor: "#E8F1F2",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
-    
+
   },
   image: {
     resizeMode: "contain",
@@ -42,7 +43,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "500",
-    color: "#333",
     textAlign: "center",
   },
 });

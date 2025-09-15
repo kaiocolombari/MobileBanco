@@ -5,13 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 import Rotas from '../../types/types.route';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Config() {
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
+    const { toggleTheme, isDark, theme } = useTheme();
 
     const options = [
-        { label: "Tema Escuro", action: () => { } },
+        { label: isDark ? "Tema Claro" : "Tema Escuro", action: toggleTheme },
         { label: "Mudar senha", action: () => { } },
         { label: "Acessibilidade", action: () => { } },
         { label: "Assistência", action: () => { } },
@@ -34,8 +36,8 @@ export default function Config() {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { backgroundColor: theme.header }]}>
                 <Image
                     source={require("../../assets/avatar.png")}
                     style={{
@@ -49,7 +51,7 @@ export default function Config() {
                 />
                 <View style={{ marginLeft: 10 }}>
                     <TouchableOpacity>
-                        <Text style={styles.hello}>Mudar Avatar</Text>
+                        <Text style={[styles.hello, { color: "#FFFFFF" }]}>Mudar Avatar</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.headerIcons}>
@@ -78,10 +80,10 @@ export default function Config() {
                 {options.map((opt, index) => (
                     <TouchableOpacity
                         key={index}
-                        style={styles.optionButton}
+                        style={[styles.optionButton, { borderBottomColor: theme.border }]}
                         onPress={opt.action}
                     >
-                        <Text style={styles.optionText}>{opt.label}</Text>
+                        <Text style={[styles.optionText, { color: theme.text }]}>{opt.label}</Text>
                     </TouchableOpacity>
                 ))}
 
@@ -96,16 +98,13 @@ export default function Config() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F5F9FF",
     },
     header: {
-        backgroundColor: "#1B98E0",
         alignItems: "flex-start",
         paddingHorizontal: 15,
         paddingVertical: 18,
     },
     hello: {
-        color: "white",
         fontSize: 20,
         fontFamily: "Roboto_500Medium",
     },
@@ -122,11 +121,9 @@ const styles = StyleSheet.create({
     optionButton: {
         paddingVertical: 15,
         borderBottomWidth: 1,
-        borderBottomColor: "#E0E0E0",
     },
     optionText: {
         fontSize: 16,
-        color: "#000",
         fontFamily: "Roboto_400Regular",
     },
     logoutButton: {

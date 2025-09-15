@@ -13,10 +13,12 @@ import { router } from "expo-router";
 import { Svg, Circle, Rect, Text as SvgText, G } from "react-native-svg";
 import { getDashboardAnalytics, DashboardData } from "../service/dashBoardFunction";
 import Rotas from "../../types/types.route";
+import { useTheme } from "../context/ThemeContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function DashboardScreen() {
+  const { theme } = useTheme();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -183,12 +185,12 @@ export default function DashboardScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { backgroundColor: theme.header }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={25} color="grey" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Dashboard</Text>
+        <Text style={[styles.headerTitle, { color: theme.text }]}>Dashboard</Text>
       </View>
 
       <ScrollView
@@ -200,59 +202,59 @@ export default function DashboardScreen() {
         {dashboardData && (
           <>
             <View style={styles.summaryContainer}>
-              <View style={styles.summaryCard}>
-                <Text style={styles.summaryLabel}>Total Recebido</Text>
+              <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
+                <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Total Recebido</Text>
                 <Text style={[styles.summaryValue, { color: '#4CAF50' }]}>
                   {formatCurrency(dashboardData.totalIncome)}
                 </Text>
               </View>
-              <View style={styles.summaryCard}>
-                <Text style={styles.summaryLabel}>Total Gasto</Text>
+              <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
+                <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Total Gasto</Text>
                 <Text style={[styles.summaryValue, { color: '#E53935' }]}>
                   {formatCurrency(dashboardData.totalExpenses)}
                 </Text>
               </View>
-              <View style={styles.summaryCard}>
-                <Text style={styles.summaryLabel}>Cofrinho</Text>
+              <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
+                <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Cofrinho</Text>
                 <Text style={[styles.summaryValue, { color: '#FF9800' }]}>
                   {formatCurrency(dashboardData.totalPiggyBank)}
                 </Text>
               </View>
-              <View style={styles.summaryCard}>
-                <Text style={styles.summaryLabel}>Saldo</Text>
+              <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
+                <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Saldo</Text>
                 <Text style={[styles.summaryValue, { color: dashboardData.balance >= 0 ? '#4CAF50' : '#E53935' }]}>
                   {formatCurrency(dashboardData.balance)}
                 </Text>
               </View>
             </View>
 
-            <View style={styles.chartSection}>
-              <Text style={styles.sectionTitle}>Distribuição de Gastos</Text>
+            <View style={[styles.chartSection, { backgroundColor: theme.card }]}>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>Distribuição de Gastos</Text>
               <PieChart data={dashboardData.transactionCategories} />
             </View>
 
-            <View style={styles.chartSection}>
-              <Text style={styles.sectionTitle}>Evolução Mensal</Text>
+            <View style={[styles.chartSection, { backgroundColor: theme.card }]}>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>Evolução Mensal</Text>
               <BarChart data={dashboardData.monthlyData} />
             </View>
 
-            <View style={styles.goalsSection}>
-              <Text style={styles.sectionTitle}>Metas do Cofrinho</Text>
+            <View style={[styles.goalsSection, { backgroundColor: theme.card }]}>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>Metas do Cofrinho</Text>
               {dashboardData.piggyBankGoals.map((goal: { name: string; current: number; target: number; progress: number }, index: number) => (
-                <View key={index} style={styles.goalCard}>
+                <View key={index} style={[styles.goalCard, { backgroundColor: theme.surface }]}>
                   <View style={styles.goalHeader}>
-                    <Text style={styles.goalName}>{goal.name}</Text>
-                    <Text style={styles.goalProgress}>{goal.progress.toFixed(1)}%</Text>
+                    <Text style={[styles.goalName, { color: theme.text }]}>{goal.name}</Text>
+                    <Text style={[styles.goalProgress, { color: theme.primary }]}>{goal.progress.toFixed(1)}%</Text>
                   </View>
-                  <View style={styles.progressBar}>
+                  <View style={[styles.progressBar, { backgroundColor: theme.border }]}>
                     <View
                       style={[
                         styles.progressFill,
-                        { width: `${Math.min(goal.progress, 100)}%` }
+                        { width: `${Math.min(goal.progress, 100)}%`, backgroundColor: theme.primary }
                       ]}
                     />
                   </View>
-                  <Text style={styles.goalAmount}>
+                  <Text style={[styles.goalAmount, { color: theme.textSecondary }]}>
                     {formatCurrency(goal.current)} / {formatCurrency(goal.target)}
                   </Text>
                 </View>
@@ -268,7 +270,6 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FBFF",
   },
   loadingContainer: {
     flex: 1,
@@ -300,7 +301,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   summaryCard: {
-    backgroundColor: 'white',
     padding: 15,
     borderRadius: 12,
     margin: 5,
@@ -313,7 +313,6 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 14,
-    color: '#666',
     fontFamily: 'Roboto_400Regular',
   },
   summaryValue: {
@@ -323,7 +322,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_500Medium',
   },
   chartSection: {
-    backgroundColor: 'white',
     marginHorizontal: 15,
     marginTop: 20,
     padding: 20,
@@ -338,7 +336,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,
-    color: '#333',
     fontFamily: 'Roboto_500Medium',
   },
   chartContainer: {
@@ -362,12 +359,10 @@ const styles = StyleSheet.create({
   legendText: {
     flex: 1,
     fontSize: 12,
-    color: '#666',
   },
   legendValue: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#333',
   },
   barChartContainer: {
     alignItems: 'center',
@@ -390,10 +385,8 @@ const styles = StyleSheet.create({
   },
   barLegendText: {
     fontSize: 12,
-    color: '#666',
   },
   goalsSection: {
-    backgroundColor: 'white',
     marginHorizontal: 15,
     marginTop: 20,
     padding: 20,
@@ -407,7 +400,6 @@ const styles = StyleSheet.create({
   goalCard: {
     marginBottom: 15,
     padding: 15,
-    backgroundColor: '#F8F9FA',
     borderRadius: 8,
   },
   goalHeader: {
@@ -419,28 +411,23 @@ const styles = StyleSheet.create({
   goalName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
   },
   goalProgress: {
     fontSize: 14,
-    color: '#1B98E0',
     fontWeight: 'bold',
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#E6E6E6',
     borderRadius: 4,
     marginBottom: 8,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#1B98E0',
     borderRadius: 4,
   },
   goalAmount: {
     fontSize: 14,
-    color: '#666',
     textAlign: 'right',
   },
 });
