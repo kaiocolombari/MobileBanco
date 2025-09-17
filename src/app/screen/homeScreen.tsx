@@ -99,7 +99,7 @@ export default function HomeScreen() {
 
         <View style={styles.balanceContainer}>
           <Text style={[styles.balanceTitle, { color: theme.textSecondary }]}>Conta</Text>
-          <Text style={[styles.balanceValue, { color: theme.accent }]}>R$ {saldo.toFixed(2)}</Text>
+          <Text style={[styles.balanceValue, { color: theme.imageTintColor }]}>R$ {saldo.toFixed(2)}</Text>
         </View>
 
         <View style={{ marginTop: 12 }}>
@@ -118,13 +118,13 @@ export default function HomeScreen() {
         </View>
 
         <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.EXTRATO)}>
-          <Ionicons name="document-text-outline" size={20} color={theme.primary} />
-          <Text style={[styles.extratoText, { color: theme.accent }]}>Extratos</Text>
+          <Ionicons name="document-text-outline" size={20} color={theme.imageTintColor} />
+          <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>Extratos</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.DASHBOARD)}>
-          <Ionicons name="pie-chart-outline" size={20} color={theme.primary} />
-          <Text style={[styles.extratoText, { color: theme.accent }]}>DashBoard</Text>
+          <Ionicons name="pie-chart-outline" size={20} color={theme.imageTintColor} />
+          <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>DashBoard</Text>
         </TouchableOpacity>
 
         <View style={[styles.cardBox, { backgroundColor: theme.card }]}>
@@ -222,13 +222,13 @@ function BottomNav() {
   return (
     <View style={[styles.bottomNav, { backgroundColor: theme.card, borderColor: theme.border }]}>
       <TouchableOpacity>
-        <Ionicons name="person-outline" size={28} color={theme.primary} />
+        <Ionicons name="person-outline" size={28} color={theme.imageTintColor} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { router.push(Rotas.EXTRATO) }}>
-        <Ionicons name="document-text-outline" size={28} color={theme.primary} />
+        <Ionicons name="document-text-outline" size={28} color={theme.imageTintColor} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => { router.push(Rotas.DASHBOARD) }}>
-        <Ionicons name="pie-chart-outline" size={28} color={theme.primary} />
+        <Ionicons name="pie-chart-outline" size={28} color={theme.imageTintColor} />
       </TouchableOpacity>
     </View>
   );

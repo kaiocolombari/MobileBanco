@@ -13,6 +13,7 @@ interface Theme {
   header: string;
   button: string;
   imageButtonCircle: string;
+  imageTintColor: string
 }
 
 const lightTheme: Theme = {
@@ -27,6 +28,7 @@ const lightTheme: Theme = {
   header: '#1B98E0',
   button: '#0686D0',
   imageButtonCircle: '#E8F1F2',
+  imageTintColor: '#1B98E0'
 };
 
 const darkTheme: Theme = {
@@ -41,6 +43,7 @@ const darkTheme: Theme = {
   header: '#1B98E0',
   button: '#0686D0',
   imageButtonCircle: '#404446',
+  imageTintColor: '#FFFFFF'
 };
 
 interface ThemeContextType {

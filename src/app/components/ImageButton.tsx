@@ -18,7 +18,7 @@ export default function ImageButton({ image, label, onPress }: Props) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2, backgroundColor: theme.imageButtonCircle }]}>
-        <Image source={image} style={[styles.image, { width: imageSize, height: imageSize }]} />
+        <Image source={image} style={[styles.image, { width: imageSize, height: imageSize, tintColor: theme.imageTintColor }]} />
       </View>
       <Text style={[styles.label, { fontSize, color: theme.text }]}>{label}</Text>
     </TouchableOpacity>
@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
   },
   image: {
     resizeMode: "contain",
-    tintColor: '#1B98E0'
   },
   label: {
     fontWeight: "500",
