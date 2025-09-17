@@ -109,7 +109,7 @@ export default function HomeScreen() {
             contentContainerStyle={{ paddingHorizontal: 12 }}
           >
             <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
-            <ImageButton image={require("../../assets/barraIcon.png")} label="Bolteo" onPress={() => { }} />
+            <ImageButton image={require("../../assets/barraIcon.png")} label="Boleto" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
             <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />

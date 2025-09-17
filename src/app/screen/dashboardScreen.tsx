@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Svg, Circle, Rect, Text as SvgText, G } from "react-native-svg";
+import { Svg, Circle, Rect, Text as SvgText, G, Path } from "react-native-svg";
 import { getDashboardAnalytics, DashboardData } from "../service/dashBoardFunction";
 import Rotas from "../../types/types.route";
 import { useTheme } from "../context/ThemeContext";
@@ -77,25 +77,27 @@ export default function DashboardScreen() {
 
       const colors = ['#4CAF50', '#E53935', '#FF9800'];
 
+      const sliceColor = colors[index % colors.length];
+      const labelX = centerX + (radius + 10) * Math.cos(((startAngle + angle / 2) * Math.PI) / 180);
+      const labelY = centerY + (radius + 10) * Math.sin(((startAngle + angle / 2) * Math.PI) / 180);
+
       return (
         <G key={index}>
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={radius}
-            fill={colors[index % colors.length]}
+          <Path
+            d={pathData}
+            fill={sliceColor}
             stroke="#fff"
             strokeWidth="2"
           />
           <SvgText
-            x={centerX}
-            y={centerY}
+            x={labelX}
+            y={labelY}
             textAnchor="middle"
-            fontSize="12"
+            fontSize="10"
             fill="#fff"
             fontWeight="bold"
           >
-            {formatCurrency(total)}
+            {item.amount}
           </SvgText>
         </G>
       );
