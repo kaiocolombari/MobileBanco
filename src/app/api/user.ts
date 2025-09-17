@@ -27,7 +27,7 @@ export const fetchUserMock = async () => {
       email: "usuario@exemplo.com"
     },
     conta_bancaria: {
-      saldo: -10000
+      saldo: 10000
     }
   };
 };
