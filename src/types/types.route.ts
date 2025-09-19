@@ -12,7 +12,8 @@ const Rotas = {
   EXTRATO: "screen/extratoScreen",
   COMPROVANTE: "screen/ComprovanteFull",
   COFRINHO: "screen/cofrinhoScreen",
-  DASHBOARD: "screen/dashboardScreen"
+  DASHBOARD: "screen/dashboardScreen",
+  EMPRESTIMO: "screen/emprestimoScreen"
 }
 
 export default Rotas
