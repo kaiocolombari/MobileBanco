@@ -18,16 +18,16 @@ const { width } = Dimensions.get('window');
 export default function EmprestimoScreen() {
   const { theme } = useTheme();
   const [loanAmount, setLoanAmount] = useState('');
-  const [loanTerm, setLoanTerm] = useState(12); // months
+  const [loanTerm, setLoanTerm] = useState(12);
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
-  const [interestRate] = useState(0.015); // 1.5% per month
+  const [interestRate] = useState(0.009);
 
   const calculatePayment = (principal: number, rate: number, months: number) => {
     if (principal <= 0 || months <= 0) return { monthly: 0, total: 0 };
     const monthlyRate = rate;
     const pmt = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
-                (Math.pow(1 + monthlyRate, months) - 1);
+      (Math.pow(1 + monthlyRate, months) - 1);
     const total = pmt * months;
     return { monthly: pmt, total };
   };
@@ -63,16 +63,14 @@ export default function EmprestimoScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.header }]}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="white" />
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={25} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Empréstimo</Text>
+          <Text style={[styles.headerTitle, { color: theme.textTitle }]}>Empréstimo</Text>
           <View style={{ width: 24 }} />
         </View>
 
-        {/* Loan Amount Card */}
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Valor do Empréstimo</Text>
           <ValidatedInput
@@ -87,7 +85,6 @@ export default function EmprestimoScreen() {
           </Text>
         </View>
 
-        {/* Loan Term Card */}
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Prazo</Text>
           <View style={styles.termSelector}>
@@ -112,7 +109,6 @@ export default function EmprestimoScreen() {
           </Text>
         </View>
 
-        {/* Interest Rate Card */}
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Taxa de Juros</Text>
           <Text style={[styles.rateValue, { color: theme.primary }]}>
@@ -123,7 +119,6 @@ export default function EmprestimoScreen() {
           </Text>
         </View>
 
-        {/* Payment Summary */}
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Resumo do Pagamento</Text>
           <View style={styles.summaryRow}>
@@ -146,7 +141,6 @@ export default function EmprestimoScreen() {
           </View>
         </View>
 
-        {/* Terms Card */}
         <View style={[styles.card, { backgroundColor: theme.card }]}>
           <Text style={[styles.cardTitle, { color: theme.text }]}>Condições Gerais</Text>
           <Text style={[styles.termsText, { color: theme.textSecondary }]}>
@@ -157,7 +151,6 @@ export default function EmprestimoScreen() {
           </Text>
         </View>
 
-        {/* Apply Button */}
         <TouchableOpacity
           style={[styles.applyButton, { backgroundColor: theme.button }]}
           onPress={handleApply}
@@ -177,16 +170,18 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    flexDirection: "row",
     paddingVertical: 18,
+    paddingHorizontal: 15,
+    elevation: 4,
+  },
+  backButton: {
+    paddingRight: 10,
+    marginBottom: 15,
   },
   headerTitle: {
-    fontSize: 20,
-    fontFamily: 'Roboto_500Medium',
-    color: '#FFFFFF',
+    fontSize: width * 0.06,
+    fontFamily: 'Roboto_400Regular',
   },
   card: {
     marginTop: 20,

@@ -5,6 +5,7 @@ interface Theme {
   background: string;
   surface: string;
   text: string;
+  textTitle: string;
   textSecondary: string;
   primary: string;
   accent: string;
@@ -20,6 +21,7 @@ const lightTheme: Theme = {
   background: '#F5F9FF',
   surface: '#FFFFFF',
   text: '#333333',
+  textTitle: '#FFFFFF',
   textSecondary: '#666666',
   primary: '#1B98E0',
   accent: '#0686D0',
@@ -35,6 +37,7 @@ const darkTheme: Theme = {
   background: '#141414',
   surface: '#1E1E1E',
   text: '#FFFFFF',
+  textTitle: '#FFFFFF',
   textSecondary: '#CCCCCC',
   primary: '#1B98E0',
   accent: '#0686D0',

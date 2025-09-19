@@ -194,9 +194,9 @@ export default function CofrinhoScreen() {
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { backgroundColor: theme.header }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={25} color="grey" />
+                    <Ionicons name="arrow-back" size={25} color="white" />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: theme.text }]}>Cofrinho</Text>
+                <Text style={[styles.headerTitle, { color: theme.textTitle }]}>Cofrinho</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
