@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 interface PixComponentValeuProps {
   nome: string;
@@ -35,7 +36,7 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{router.back()}}>
           <Ionicons name="chevron-back" size={28} color="#333" />
         </TouchableOpacity>
       </View>

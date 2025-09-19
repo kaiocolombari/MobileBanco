@@ -28,7 +28,7 @@ export default function Home() {
       const token = await AsyncStorage.getItem("token");
 
       if (!token) {
-        router.push(Rotas.HOME);
+        router.push(Rotas.REGISTER);
         setChecking(false);
         return;
       }
