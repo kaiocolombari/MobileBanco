@@ -110,7 +110,7 @@ export default function HomeScreen() {
           >
             <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
             <ImageButton image={require("../../assets/barraIcon.png")} label="Boleto" onPress={() => { }} />
-            <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { }} />
+            <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { router.push(Rotas.RECARGA)}} />
             <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { router.push(Rotas.EMPRESTIMO) }} />
             <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
             <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { router.push(Rotas.COFRINHO) }} />
