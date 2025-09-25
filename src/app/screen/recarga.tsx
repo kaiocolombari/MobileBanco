@@ -19,7 +19,11 @@ export default function recargaScreen() {
             </View>
 
             <ScrollView>
-                
+                <View>
+                    <Text>
+                        Recarga
+                    </Text>
+                </View>
             </ScrollView>
         </View>
     )
