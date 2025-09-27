@@ -76,7 +76,7 @@ export default function pixScreen() {
       <View style={styles.iconesPix}>
         <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
         <ImageButton image={require("../../assets/copiaCola.png")} label="Pix Copia e Cola" onPress={() => { }} />
-        <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { }} />
+        <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { router.push('/qrScanner') }} />
       </View>
       <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
 

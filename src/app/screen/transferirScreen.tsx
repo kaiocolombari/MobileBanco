@@ -1,20 +1,59 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
 import type { AxiosResponse } from 'axios';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get("window");
 
 export default function TransferirScreen() {
     const { theme } = useTheme();
+    const { qrData } = useLocalSearchParams();
     const [etapa, setEtapa] = useState<1 | 2 | 3 | 4>(1);
     const [tipoChave, setTipoChave] = useState<'cpf' | 'phone' | 'chave' | null>(null);
     const [valorChave, setValorChave] = useState('');
     const [nomeCompletoDestinatario, setNomeCompletoDestinatario] = useState("");
+    const [qrParsedData, setQrParsedData] = useState<any>(null);
+
+    useEffect(() => {
+        const handleQrData = async () => {
+            if (qrData) {
+                try {
+                    const parsed = JSON.parse(qrData as string);
+                    setQrParsedData(parsed);
+                    setTipoChave(parsed.tipo || 'chave');
+                    setValorChave(parsed.chave);
+
+                    // Fetch recipient data
+                    let response;
+                    switch (parsed.tipo) {
+                        case "chave":
+                            response = await getDadosDestinatarioByChavePix(parsed.chave);
+                            break;
+                        case "phone":
+                            response = await getDadosDestinatarioByPhone(parsed.chave);
+                            break;
+                        case "cpf":
+                            response = await getDadosDestinatarioByCpf(parsed.chave);
+                            break;
+                        default:
+                            throw new Error('Tipo inválido');
+                    }
+
+                    setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || parsed.chave);
+                    setEtapa(3); // Skip to value input
+                } catch (error) {
+                    console.log('Error parsing QR data:', error);
+                    Alert.alert('Erro', 'Dados do QR Code inválidos');
+                }
+            }
+        };
+
+        handleQrData();
+    }, [qrData]);
 
     const formatarChave = (texto: string) => {
         if (tipoChave === 'cpf') {
@@ -118,7 +157,8 @@ export default function TransferirScreen() {
                 <PixComponentValor
                     nome={nomeCompletoDestinatario}
                     chavePix={valorChave}
-                    onContinuar={() => console.log("Transferência confirmada!")}
+                    onContinuar={() => router.push('/transferirConfirm')}
+                    initialValue={qrParsedData?.valor ? qrParsedData.valor * 100 : undefined}
                 />
             )}
         </View>

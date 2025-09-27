@@ -7,14 +7,16 @@ interface PixComponentValeuProps {
   nome: string;
   chavePix: string;
   onContinuar: () => void;
+  initialValue?: number;
 }
 
 export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
   nome,
   chavePix,
   onContinuar,
+  initialValue,
 }) => {
-  const [valor, setValor] = useState("0,00");
+  const [valor, setValor] = useState(initialValue ? (initialValue / 100).toFixed(2).replace(".", ",") : "0,00");
   const [editando, setEditando] = useState(false);
 
   const formatarValor = (text: string) => {
