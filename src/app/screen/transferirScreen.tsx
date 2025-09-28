@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
 import type { AxiosResponse } from 'axios';
@@ -16,6 +17,7 @@ export default function TransferirScreen() {
     const [tipoChave, setTipoChave] = useState<'cpf' | 'phone' | 'chave' | null>(null);
     const [valorChave, setValorChave] = useState('');
     const [nomeCompletoDestinatario, setNomeCompletoDestinatario] = useState("");
+    const [cpfDestinatario, setCpfDestinatario] = useState("");
     const [qrParsedData, setQrParsedData] = useState<any>(null);
 
     useEffect(() => {
@@ -44,6 +46,7 @@ export default function TransferirScreen() {
                     }
 
                     setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || parsed.chave);
+                    setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf || '');
                     setEtapa(3); // Skip to value input
                 } catch (error) {
                     console.log('Error parsing QR data:', error);
@@ -92,6 +95,7 @@ export default function TransferirScreen() {
             }
 
             setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name);
+            setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf);
 
             setEtapa(3)
         } catch (e) {
@@ -157,7 +161,18 @@ export default function TransferirScreen() {
                 <PixComponentValor
                     nome={nomeCompletoDestinatario}
                     chavePix={valorChave}
-                    onContinuar={() => router.push('/transferirConfirm')}
+                    onContinuar={async (valor: number) => {
+                        // Store transfer data
+                        await AsyncStorage.setItem('transferData', JSON.stringify({
+                            nome: nomeCompletoDestinatario,
+                            chavePix: valorChave,
+                            tipoChave,
+                            cpfDestinatario,
+                            valor,
+                            qrParsedData
+                        }));
+                        router.push('/transferirConfirm');
+                    }}
                     initialValue={qrParsedData?.valor ? qrParsedData.valor * 100 : undefined}
                 />
             )}

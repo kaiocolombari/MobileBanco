@@ -179,6 +179,50 @@ export async function fetchTransacaoById(id: number, token: string) {
     }
 }
 
+export async function transferir(token: string, password: string, value: number, cpf_destinatario: string, descricao: string) {
+    try {
+        const response = await client.post('/transacao', {
+            password,
+            value,
+            cpf_destinatario,
+            descricao
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.log('Erro ao realizar transferência:', error);
+        throw error;
+    }
+}
+
+export async function transferirMock(password: string, value: number, cpf_destinatario: string, descricao: string, mockData?: any) {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Mock validation
+    if (password !== '123456') {
+        throw new Error('Senha inválida');
+    }
+    if (value <= 0) {
+        throw new Error('Valor deve ser maior que zero');
+    }
+    if (!cpf_destinatario || cpf_destinatario.length !== 11) {
+        throw new Error('CPF inválido');
+    }
+
+    // Use provided mock data or default
+    const defaultMock = {
+        status: "success",
+        statusCode: 200,
+        msg: "Saldo enviado com sucesso"
+    };
+
+    return mockData || defaultMock;
+}
+
 export async function fetchTransacaoByIdMock(id: number): Promise<Transacao | null> {
     const mockData = {
         transacoesEnviadas: [

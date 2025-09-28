@@ -1,12 +1,26 @@
-import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Keyboard } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Keyboard, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import CancelarTransferenciaModal from "../components/CancelarTransferenciaModal";
+import { transferir } from '../api/fetchTransacoes';
 
 export default function ConfirmarSenhaScreen() {
     const [senha, setSenha] = useState("");
     const inputRef = useRef<TextInput>(null);
     const [modalVisivel, setModalVisivel] = useState(false);
+    const [transferData, setTransferData] = useState<any>(null);
+
+    useEffect(() => {
+        const loadTransferData = async () => {
+            const data = await AsyncStorage.getItem('transferData');
+            if (data) {
+                setTransferData(JSON.parse(data));
+            }
+        };
+        loadTransferData();
+    }, []);
 
     const handleChange = (text: string) => {
         if (text.length <= 6) {
@@ -14,10 +28,34 @@ export default function ConfirmarSenhaScreen() {
         }
     };
 
-    const handleTransferir = () => {
-        if (senha.length === 6) {
+    const handleTransferir = async () => {
+        if (senha.length === 6 && transferData) {
             Keyboard.dismiss();
-            console.log("Transferência confirmada com senha:", senha);
+            try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                    Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
+                    return;
+                }
+
+                // Use stored CPF
+                const cpf_destinatario = transferData.cpfDestinatario || transferData.chavePix.replace(/\D/g, '');
+
+                const response = await transferir(token, senha, transferData.valor, cpf_destinatario, 'Transferência via app');
+
+                if (response.status === 'success') {
+                    Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
+                        { text: 'OK', onPress: () => router.replace('/homeScreen') }
+                    ]);
+                    // Clear transfer data
+                    await AsyncStorage.removeItem('transferData');
+                } else {
+                    Alert.alert('Erro', response.msg || 'Erro na transferência');
+                }
+            } catch (error: any) {
+                console.log('Erro na transferência:', error);
+                Alert.alert('Erro', error.message || 'Erro na transferência');
+            }
         }
     };
 

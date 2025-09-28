@@ -6,7 +6,7 @@ import { router } from "expo-router";
 interface PixComponentValeuProps {
   nome: string;
   chavePix: string;
-  onContinuar: () => void;
+  onContinuar: (valor: number) => void;
   initialValue?: number;
 }
 
@@ -78,7 +78,10 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
         </View>
       </View>
 
-      <TouchableOpacity style={styles.buttonContinuar} onPress={onContinuar}>
+      <TouchableOpacity style={styles.buttonContinuar} onPress={() => {
+        const valorNumerico = parseFloat(valor.replace(',', '.'));
+        onContinuar(valorNumerico);
+      }}>
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
     </View>
