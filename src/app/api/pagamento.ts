@@ -1,6 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import client from "./client";
 
+/* 
+ Para todas as funções de transação
+ eu fiz uma versão mock pra nois nao 
+ precisar ficar rodando a api toda hora
+*/
+
 export interface Pagamento {
     id_pagamento: number;
     valor: number;
@@ -48,7 +54,6 @@ export async function criarPagamento(token: string, valor: number) {
 }
 
 export async function criarPagamentoMock(valor: number, mockData?: any) {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (valor <= 0) {
@@ -58,7 +63,7 @@ export async function criarPagamentoMock(valor: number, mockData?: any) {
     const defaultMock: PagamentoResponse = {
         id_pagamento: Math.floor(Math.random() * 1000),
         valor,
-        chave_pagamento: 'a1b2c3d4e5f6g7h8i9j0', // Mock chave
+        chave_pagamento: 'a1b2c3d4e5f6g7h8i9j0', 
         status_pagamento: 'pendente',
         id_conta_destino: 1
     };
@@ -83,7 +88,6 @@ export async function obterPagamento(chave_pagamento: string) {
 }
 
 export async function obterPagamentoMock(chave_pagamento: string, mockData?: any) {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const defaultMock: PagamentoDetalhes = {
@@ -132,7 +136,6 @@ export async function pagarPagamento(token: string, password: string, chave_paga
 }
 
 export async function pagarPagamentoMock(password: string, chave_pagamento: string, mockData?: any) {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (password !== '123456') {
@@ -164,7 +167,6 @@ export async function cancelarPagamento(token: string, chave_pagamento: string) 
 }
 
 export async function cancelarPagamentoMock(chave_pagamento: string, mockData?: any) {
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const defaultMock = {
