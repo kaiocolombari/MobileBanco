@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import client from "./client";
 import { fetchUser, fetchUserByAccountId } from "./user";
 import {
-  mockUsers,
-  mockTransactions,
-  getMockUserByCpf,
-  updateUserBalance,
-  addMockTransaction,
-  getNextTransactionId,
-  MockTransaction
+    mockUsers,
+    mockTransactions,
+    getMockUserByCpf,
+    updateUserBalance,
+    addMockTransaction,
+    getNextTransactionId,
+    MockTransaction
 } from "./mockData";
 
 export interface Transacao {
@@ -19,7 +19,7 @@ export interface Transacao {
     status: string;
     date: string,
     hora: string,
-    tipoTransacao: 'enviado' | 'recebido';
+    tipoTransacao: 'enviado' | 'recebido' | 'boleto';
     conta_origem?: {
         id_conta: number;
         tipo_conta: string;
@@ -52,7 +52,11 @@ export async function fetchTransacoesMock(): Promise<Transacao[]> {
         .filter(t => t.tipoTransacao === 'recebido')
         .map(t => ({ ...t }));
 
-    return [...transacoesEnviadas, ...transacoesRecebidas].sort(
+    const transacoesBoletos = mockTransactions
+        .filter(t => t.tipoTransacao === 'boleto')
+        .map(t => ({ ...t }));
+
+    return [...transacoesEnviadas, ...transacoesRecebidas, ...transacoesBoletos].sort(
         (a, b) => b.id_transacao - a.id_transacao
     );
 }
@@ -86,11 +90,17 @@ export async function fetchTransacaoById(id: number, token: string) {
                 const origUser = await fetchUserByAccountId(transacao.conta_origem.id_conta, token);
                 remetente = { full_name: origUser?.full_name || "Remetente" };
             }
+        } else if (transacao.tipoTransacao === 'boleto') {
+            destinatario = { full_name: loggedUserName };
+            if (transacao.conta_origem) {
+                const origUser = await fetchUserByAccountId(transacao.conta_origem.id_conta, token);
+                remetente = { full_name: origUser?.full_name || "Boleto" };
+            }
         }
 
         return {
             ...transacao,
-            tipoTransacao: transacao.tipoTransacao as 'enviado' | 'recebido',
+            tipoTransacao: transacao.tipoTransacao as 'enviado' | 'recebido' | 'boleto',
             remetente,
             destinatario,
         };

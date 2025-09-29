@@ -94,9 +94,8 @@ export default function TransferirScreen() {
                     throw Error();
             }
 
-            setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name);
-            setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf);
-
+            setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || '');
+            setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf || '');
             setEtapa(3)
         } catch (e) {
             console.log(e);
@@ -249,3 +248,13 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
 });
+
+
+/*
+
+const data = (response as AxiosResponse).data;
+setNomeCompletoDestinatario(data?.full_name || "");
+setCpfDestinatario(data?.cpf || "");
+setEtapa(3);
+
+ */

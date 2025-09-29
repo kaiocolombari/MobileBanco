@@ -22,7 +22,7 @@ export interface MockTransaction {
   status: string;
   date: string;
   hora: string;
-  tipoTransacao: 'enviado' | 'recebido';
+  tipoTransacao: 'enviado' | 'recebido' | 'boleto';
   conta_origem?: {
     id_conta: number;
     tipo_conta: string;
@@ -131,7 +131,7 @@ export let mockTransactions: MockTransaction[] = [
       tipo_conta: "corrente"
     },
     remetente: { full_name: "Faricio Autista" },
-    destinatario: { full_name: "João da Silva" }
+    destinatario: { full_name: "João da Silva" },
   },
   {
     id_transacao: 2,
@@ -151,6 +151,26 @@ export let mockTransactions: MockTransaction[] = [
       tipo_conta: "poupanca"
     },
     remetente: { full_name: "Maria Oliveira" },
+    destinatario: { full_name: "Faricio Autista" }
+  },
+  {
+    id_transacao: 3,
+    valor: 550,
+    tipo: "transferência",
+    descricao: "Pagamento da conta de luz",
+    status: "aprovada",
+    tipoTransacao: 'boleto',
+    date: new Date('2025-09-09').toLocaleDateString('pt-BR'),
+    hora: new Date().toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }),
+    conta_origem: {
+      id_conta: 3,
+      tipo_conta: "poupanca"
+    },
+    remetente: { full_name: "Carlos Luz inc." },
     destinatario: { full_name: "Faricio Autista" }
   }
 ];

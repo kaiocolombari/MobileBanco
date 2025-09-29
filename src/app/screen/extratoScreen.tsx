@@ -22,6 +22,7 @@ export default function ExtratoScreen() {
     const { theme } = useTheme();
     const [transactions, setTransactions] = useState<Transacao[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
     useEffect(() => {
         async function loadTransactions() {
@@ -48,24 +49,78 @@ export default function ExtratoScreen() {
         loadTransactions();
     }, []);
 
+    const getFilteredTransactions = () => {
+        if (!activeFilter) return transactions;
+
+        switch (activeFilter) {
+            case 'Enviados':
+                return transactions.filter(t => t.tipoTransacao === 'enviado');
+            case 'Recebidos':
+                return transactions.filter(t => t.tipoTransacao === 'recebido');
+            case 'PIX':
+                return transactions.filter(t => t.tipo === 'transferência');
+            case 'Boletos':
+                return transactions.filter(t => t.tipoTransacao === 'boleto');
+            case 'Recentes':
+            default:
+                return transactions;
+        }
+    };
+
+    const handleFilterPress = (filter: string) => {
+        setActiveFilter(activeFilter === filter ? null : filter);
+    };
 
     const renderTransaction = ({ item }: { item: Transacao }) => {
         const isReceived = item.tipoTransacao === 'recebido';
+        const isBoleto = item.tipoTransacao === 'boleto';
+
+        const getStatusText = () => {
+            if (isReceived) return "Recebido";
+            if (isBoleto) return "Boleto Pago";
+            return "Enviado";
+        };
+
+        const getIconName = () => {
+            if (isReceived) return "arrow-downward";
+            if (isBoleto) return "receipt";
+            return "arrow-upward";
+        };
+
+        const getIconColor = () => {
+            if (isReceived) return 'green';
+            if (isBoleto) return 'blue';
+            return 'red';
+        };
+
+        const getBackgroundColor = () => {
+            if (isReceived) return '#DFF7E1';
+            if (isBoleto) return '#E0F2FE';
+            return '#FDDCDC';
+        };
+
+        const getAmountColor = () => {
+            if (isReceived) return 'green';
+            return 'red';
+        };
+
+        const getAmountSign = () => {
+            return isReceived ? '+' : '-';
+        };
 
         return (
             <TouchableOpacity onPress={() => router.push(`/comprovante/${item.id_transacao}`)}>
                 <View style={[styles.transactionItem, { backgroundColor: theme.card }]}>
-                    <View style={[styles.iconContainer, { backgroundColor: isReceived ? '#DFF7E1' : '#FDDCDC' }]}>
+                    <View style={[styles.iconContainer, { backgroundColor: getBackgroundColor() }]}>
                         <MaterialIcons
-                            name={isReceived ? "arrow-downward" : "arrow-upward"}
+                            name={getIconName()}
                             size={width / 18}
-                            color={isReceived ? 'green' : 'red'}
-                            onPress={() => { router.back(); }}
+                            color={getIconColor()}
                         />
                     </View>
 
                     <View style={styles.transactionInfo}>
-                        <Text style={[styles.transactionDesc, { color: theme.text }]}>{item.descricao}</Text>
+                        <Text style={[styles.transactionDesc, { color: theme.text }]} numberOfLines={1}>{item.descricao}</Text>
                         <Text style={[styles.transactionId, { color: theme.textSecondary }]}>ID: {item.id_transacao}</Text>
 
                         <View style={styles.transactionDetails}>
@@ -73,13 +128,13 @@ export default function ExtratoScreen() {
                             <Text style={[styles.transactionDate, { color: theme.textSecondary }]}>Hora: {item.hora}</Text>
                         </View>
                         <View style={styles.transactionDetails}>
-                            <Text style={[styles.transactionStatus, { color: isReceived ? 'green' : 'red' }]}>
-                                {isReceived ? "Recebido" : "Enviado"}
+                            <Text style={[styles.transactionStatus, { color: getIconColor() }]}>
+                                {getStatusText()}
                             </Text>
                         </View>
                     </View>
-                    <Text style={[styles.transactionAmount, { color: isReceived ? 'green' : 'red' }]}>
-                        {isReceived ? `+ R$${item.valor.toFixed(2)}` : `- R$${item.valor.toFixed(2)}`}
+                    <Text style={[styles.transactionAmount, { color: getAmountColor() }]}>
+                        {getAmountSign()} R${item.valor.toFixed(2)}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -97,7 +152,7 @@ export default function ExtratoScreen() {
             <Text style={[styles.headerText, { color: theme.text }]}>Extrato</Text>
 
             <View style={styles.transactionsContainer}>
-                {!loading && transactions.length === 0 ? (
+                {!loading && getFilteredTransactions().length === 0 ? (
                     <Text style={[styles.noTransactionsText, { color: theme.text }]}>Nenhuma transação encontrada.</Text>
                 ) : (
                     <Text style={[styles.transactionsHeader, { color: theme.text }]}>Histórico de Transações</Text>
@@ -108,20 +163,35 @@ export default function ExtratoScreen() {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
                     >
-                        <TouchableOpacity style={[styles.botaoFilter]} >
-                            <Text>Recentes</Text>
+                        <TouchableOpacity
+                            style={[styles.botaoFilter, activeFilter === 'Recentes' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('Recentes')}
+                        >
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Recentes' && styles.botaoFilterTextActive]}>Recentes</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text>Enviados</Text>
+                        <TouchableOpacity
+                            style={[styles.botaoFilter, activeFilter === 'Enviados' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('Enviados')}
+                        >
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Enviados' && styles.botaoFilterTextActive]}>Enviados</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text>Recebidos</Text>
+                        <TouchableOpacity
+                            style={[styles.botaoFilter, activeFilter === 'Recebidos' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('Recebidos')}
+                        >
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Recebidos' && styles.botaoFilterTextActive]}>Recebidos</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text>Recebidos</Text>
+                        <TouchableOpacity
+                            style={[styles.botaoFilter, activeFilter === 'PIX' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('PIX')}
+                        >
+                            <Text style={[styles.botaoFilterText, activeFilter === 'PIX' && styles.botaoFilterTextActive]}>PIX</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Text>Recebidos</Text>
+                        <TouchableOpacity
+                            style={[styles.botaoFilter, activeFilter === 'Boletos' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('Boletos')}
+                        >
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Boletos' && styles.botaoFilterTextActive]}>Boletos</Text>
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
@@ -129,7 +199,7 @@ export default function ExtratoScreen() {
                     <ActivityIndicator size="large" color={theme.text} style={{ marginTop: 20 }} />
                 ) : (
                     <FlatList
-                        data={transactions}
+                        data={getFilteredTransactions()}
                         keyExtractor={(item) => item.id_transacao.toString()}
                         renderItem={renderTransaction}
                         contentContainerStyle={{ paddingBottom: 20 }}
@@ -155,8 +225,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: 16,
-        marginBottom: 12,
+        marginLeft: 2,
     },
     iconBack: {
         marginBottom: 12,
@@ -176,6 +245,18 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "black",
         backgroundColor: "white"
+    },
+    botaoFilterActive: {
+        backgroundColor: "#007bff",
+        borderColor: "#007bff"
+    },
+    botaoFilterText: {
+        color: "black",
+        fontSize: width / 28,
+        fontWeight: "500"
+    },
+    botaoFilterTextActive: {
+        color: "white"
     },
     transactionsContainer: {
         flex: 1,

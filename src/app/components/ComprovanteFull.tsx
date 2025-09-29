@@ -13,10 +13,10 @@ interface Props {
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function ComprovanteFull({ sucesso = true, id }: Props) {
-    const { theme } = useTheme();
-    const [loading, setLoading] = useState(true);
-    const [transacao, setTransacao] = useState<any>(null);
-    const [sucessoState, setSucessoState] = useState(sucesso);
+  const { theme } = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [transacao, setTransacao] = useState<any>(null);
+  const [sucessoState, setSucessoState] = useState(sucesso);
 
   useEffect(() => {
     async function loadData() {
@@ -50,7 +50,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
     );
   }
 
-  const { valor, descricao, id_transacao, status, conta_origem, conta_destino } = transacao;
+  const { valor, descricao, id_transacao, status, conta_origem, conta_destino, tipoTransacao } = transacao;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -100,17 +100,22 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
             <Text style={[styles.sectionTitle, { color: theme.text, fontSize: SCREEN_WIDTH * 0.04 }]}>Detalhes da Transferência</Text>
 
             <View style={styles.row}>
-              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Descrição</Text>
+              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Descrição:</Text>
               <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{descricao}</Text>
             </View>
 
             <View style={styles.row}>
-              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Código da Transação</Text>
+              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Tipo da transação:</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{tipoTransacao}</Text>
+            </View>
+
+            <View style={styles.row}>
+              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Código da Transação:</Text>
               <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>#{id_transacao}</Text>
             </View>
 
             <View style={styles.row}>
-              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Status</Text>
+              <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Status:</Text>
               <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{status}</Text>
             </View>
           </View>
