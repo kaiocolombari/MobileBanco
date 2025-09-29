@@ -57,11 +57,21 @@ export default function ExtratoScreen() {
                 return transactions.filter(t => t.tipoTransacao === 'enviado');
             case 'Recebidos':
                 return transactions.filter(t => t.tipoTransacao === 'recebido');
-            case 'PIX':
-                return transactions.filter(t => t.tipo === 'transferência');
+            case 'Antigos':
+                return [...transactions].sort((a, b) => {
+                    const dateA = new Date(`${a.date} ${a.hora}`);
+                    const dateB = new Date(`${b.date} ${b.hora}`);
+                    return dateA.getTime() - dateB.getTime();
+                });
             case 'Boletos':
                 return transactions.filter(t => t.tipoTransacao === 'boleto');
             case 'Recentes':
+                return [...transactions].sort((a, b) => {
+                    const dateA = new Date(`${a.date} ${a.hora}`);
+                    const dateB = new Date(`${b.date} ${b.hora}`);
+                    return dateB.getTime() - dateA.getTime(); 
+                });
+
             default:
                 return transactions;
         }
@@ -185,7 +195,7 @@ export default function ExtratoScreen() {
                             style={[styles.botaoFilter, activeFilter === 'PIX' && styles.botaoFilterActive]}
                             onPress={() => handleFilterPress('PIX')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'PIX' && styles.botaoFilterTextActive]}>PIX</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'PIX' && styles.botaoFilterTextActive]}>Antigos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.botaoFilter, activeFilter === 'Boletos' && styles.botaoFilterActive]}
@@ -225,7 +235,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginLeft: 2,
     },
     iconBack: {
         marginBottom: 12,
