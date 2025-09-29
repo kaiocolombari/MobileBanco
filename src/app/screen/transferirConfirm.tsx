@@ -44,11 +44,17 @@ export default function ConfirmarSenhaScreen() {
                 const response = await transferir(token, senha, transferData.valor, cpf_destinatario, 'Transferência via app');
 
                 if (response.status === 'success') {
-                    Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
-                        { text: 'OK', onPress: () => router.replace('/homeScreen') }
-                    ]);
                     // Clear transfer data
                     await AsyncStorage.removeItem('transferData');
+                    // Navigate to receipt screen with transaction ID
+                    const transactionId = response.transactionId;
+                    if (transactionId) {
+                        router.replace(`/comprovante/${transactionId}`);
+                    } else {
+                        Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
+                            { text: 'OK', onPress: () => router.replace('/homeScreen') }
+                        ]);
+                    }
                 } else {
                     Alert.alert('Erro', response.msg || 'Erro na transferência');
                 }

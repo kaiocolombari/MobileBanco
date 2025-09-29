@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import client from "./client";
 import { fetchUser, fetchUserByAccountId } from "./user";
+import {
+  mockUsers,
+  mockTransactions,
+  getMockUserByCpf,
+  updateUserBalance,
+  addMockTransaction,
+  getNextTransactionId,
+  MockTransaction
+} from "./mockData";
 
 export interface Transacao {
     id_transacao: number;
@@ -28,112 +37,24 @@ export interface Transacao {
 }
 
 export async function fetchTransacoes(token: string): Promise<Transacao[]> {
-    try {
-        const response = await client.get('/transacao', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const data = response.data.data;
-        if (!data) return [];
-        else {
-            const transacoesEnviadas = data.transacoesEnviadas.map((t: any) => ({
-                ...t,
-                tipoTransacao: 'enviado' as 'enviado'
-            }));
-
-            const transacoesRecebidas = data.transacoesRecebidas.map((t: any) => ({
-                ...t,
-                tipoTransacao: 'recebido' as 'recebido'
-            }));
-
-            return [...transacoesEnviadas, ...transacoesRecebidas].sort(
-                (a, b) => b.id_transacao - a.id_transacao
-            );
-        }
-    } catch (error) {
-        console.log('Erro ao buscar transações:', error);
-        return [];
-    }
+    // For mock testing, use mock function
+    return await fetchTransacoesMock();
 }
 
 
 export async function fetchTransacoesMock(): Promise<Transacao[]> {
-    const mockData = {
-        transacoesEnviadas: [
-            {
-                id_transacao: 1,
-                valor: 100.50,
-                tipo: "transferência",
-                descricao: "Transferência para amigo",
-                date: new Date('2025-09-10').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                status: "aprovada",
-                conta_destino: {
-                    id_conta: 2,
-                    tipo_conta: "corrente"
-                }
-            },
-            {
-                id_transacao: 3,
-                valor: 0.50,
-                tipo: "transferência",
-                descricao: "Faricio",
-                date: new Date('2025-09-08').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                status: "aprovada",
-                conta_destino: {
-                    id_conta: 2,
-                    tipo_conta: "corrente"
-                }
-            }
-        ],
-        transacoesRecebidas: [
-            {
-                id_transacao: 2,
-                valor: 200.75,
-                tipo: "transferência",
-                descricao: "Pagamento de serviço",
-                status: "aprovada",
-                date: new Date('2025-09-09').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                conta_origem: {
-                    id_conta: 3,
-                    tipo_conta: "poupanca"
-                }
-            }
-        ]
-    };
+    // Use the dynamic mockTransactions array
+    const transacoesEnviadas = mockTransactions
+        .filter(t => t.tipoTransacao === 'enviado')
+        .map(t => ({ ...t }));
 
-    if (!mockData) return [];
-    else {
-        const transacoesEnviadas = mockData.transacoesEnviadas.map(t => ({
-            ...t,
-            tipoTransacao: 'enviado' as 'enviado'
-        }));
+    const transacoesRecebidas = mockTransactions
+        .filter(t => t.tipoTransacao === 'recebido')
+        .map(t => ({ ...t }));
 
-        const transacoesRecebidas = mockData.transacoesRecebidas.map(t => ({
-            ...t,
-            tipoTransacao: 'recebido' as 'recebido'
-        }));
-
-        return [...transacoesEnviadas, ...transacoesRecebidas].sort(
-            (a, b) => b.id_transacao - a.id_transacao
-        );
-    }
+    return [...transacoesEnviadas, ...transacoesRecebidas].sort(
+        (a, b) => b.id_transacao - a.id_transacao
+    );
 }
 
 export async function fetchTransacaoById(id: number, token: string) {
@@ -180,22 +101,8 @@ export async function fetchTransacaoById(id: number, token: string) {
 }
 
 export async function transferir(token: string, password: string, value: number, cpf_destinatario: string, descricao: string) {
-    try {
-        const response = await client.post('/transacao', {
-            password,
-            value,
-            cpf_destinatario,
-            descricao
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.log('Erro ao realizar transferência:', error);
-        throw error;
-    }
+    // For mock testing, use mock function
+    return await transferirMock(password, value, cpf_destinatario, descricao);
 }
 
 export async function transferirMock(password: string, value: number, cpf_destinatario: string, descricao: string, mockData?: any) {
@@ -213,112 +120,72 @@ export async function transferirMock(password: string, value: number, cpf_destin
         throw new Error('CPF inválido');
     }
 
+    // Find sender (assuming logged user is the first one - Faricio)
+    const sender = mockUsers[0]; // Faricio Autista
+    if (sender.conta.saldo < value) {
+        throw new Error('Saldo insuficiente');
+    }
+
+    // Find recipient
+    const recipient = getMockUserByCpf(cpf_destinatario);
+    if (!recipient) {
+        throw new Error('Destinatário não encontrado');
+    }
+
+    // Perform transfer
+    const newSenderBalance = sender.conta.saldo - value;
+    const newRecipientBalance = recipient.conta.saldo + value;
+
+    updateUserBalance(sender.conta.id_conta, newSenderBalance);
+    updateUserBalance(recipient.conta.id_conta, newRecipientBalance);
+
+    // Create transaction record
+    const transactionId = getNextTransactionId();
+    const now = new Date();
+    const newTransaction: MockTransaction = {
+        id_transacao: transactionId,
+        valor: value,
+        tipo: "transferência",
+        descricao: descricao || "Transferência via app",
+        status: "aprovada",
+        date: now.toLocaleDateString('pt-BR'),
+        hora: now.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }),
+        tipoTransacao: 'enviado',
+        conta_origem: {
+            id_conta: sender.conta.id_conta,
+            tipo_conta: sender.conta.tipo_conta
+        },
+        conta_destino: {
+            id_conta: recipient.conta.id_conta,
+            tipo_conta: recipient.conta.tipo_conta
+        },
+        remetente: { full_name: sender.full_name },
+        destinatario: { full_name: recipient.full_name }
+    };
+
+    addMockTransaction(newTransaction);
+
     // Use provided mock data or default
     const defaultMock = {
         status: "success",
         statusCode: 200,
-        msg: "Saldo enviado com sucesso"
+        msg: "Saldo enviado com sucesso",
+        transactionId: transactionId
     };
 
     return mockData || defaultMock;
 }
 
 export async function fetchTransacaoByIdMock(id: number): Promise<Transacao | null> {
-    const mockData = {
-        transacoesEnviadas: [
-            {
-                id_transacao: 1,
-                valor: 100.50,
-                tipo: "transferência",
-                descricao: "Transferência para amigo",
-                date: new Date('2025-09-10').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                status: "aprovada",
-                conta_destino: {
-                    id_conta: 2,
-                    tipo_conta: "corrente"
-                }
-            },
-            {
-                id_transacao: 3,
-                valor: 0.50,
-                tipo: "transferência",
-                descricao: "Faricio",
-                date: new Date('2025-09-08').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                status: "aprovada",
-                conta_destino: {
-                    id_conta: 2,
-                    tipo_conta: "corrente"
-                }
-            }
-        ],
-        transacoesRecebidas: [
-            {
-                id_transacao: 2,
-                valor: 200.75,
-                tipo: "transferência",
-                descricao: "Pagamento de serviço",
-                status: "aprovada",
-                date: new Date('2025-09-09').toLocaleDateString('pt-BR'),
-                hora: new Date().toLocaleTimeString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
-                conta_origem: {
-                    id_conta: 3,
-                    tipo_conta: "poupanca"
-                }
-            }
-        ]
-    };
-
-    const allTransacoes = [
-        ...mockData.transacoesEnviadas.map(t => ({
-            ...t,
-            tipoTransacao: 'enviado' as 'enviado'
-        })),
-        ...mockData.transacoesRecebidas.map(t => ({
-            ...t,
-            tipoTransacao: 'recebido' as 'recebido'
-        }))
-    ];
-
-    const transacao = allTransacoes.find(t => t.id_transacao === id);
+    const transacao = mockTransactions.find(t => t.id_transacao === id);
 
     if (!transacao) {
         return null;
     }
 
-    // Add mock user data
-    let remetente, destinatario;
-
-    if (transacao.tipoTransacao === 'enviado') {
-        remetente = { full_name: "Faricio Autista" }; // Mock logged user
-        if (transacao.conta_destino) {
-            const destUser = { full_name: "Maria Oliveira" }; // Mock for id 2
-            destinatario = destUser;
-        }
-    } else if (transacao.tipoTransacao === 'recebido') {
-        destinatario = { full_name: "Faricio Autista" };
-        if (transacao.conta_origem) {
-            const origUser = { full_name: "Pedro Santos" }; // Mock for id 3
-            remetente = origUser;
-        }
-    }
-
-    return {
-        ...transacao,
-        remetente,
-        destinatario,
-    };
+    return transacao;
 }

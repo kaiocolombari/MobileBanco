@@ -112,7 +112,7 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 12 }}
           >
-            <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { testTransferencia(Math.random() * 100) }} />
+            <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
             <ImageButton image={require("../../assets/barraIcon.png")} label="Boleto" onPress={() => { }} />
             <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { router.push(Rotas.RECARGA) }} />
             <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { router.push(Rotas.EMPRESTIMO) }} />

@@ -5,7 +5,8 @@ import {
     StyleSheet,
     Dimensions,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    ScrollView
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -101,16 +102,28 @@ export default function ExtratoScreen() {
                 ) : (
                     <Text style={[styles.transactionsHeader, { color: theme.text }]}>Histórico de Transações</Text>
                 )}
-                <View style={[styles.filterExtrato, {}]}>
-                    <TouchableOpacity>
-                        <Text>Recentes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text>Enviados</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Text>Recebidos</Text>
-                    </TouchableOpacity>
+                <View style={[styles.filterExtrato]}>
+                    <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
+                    >
+                        <TouchableOpacity style={[styles.botaoFilter]} >
+                            <Text>Recentes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text>Enviados</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text>Recebidos</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text>Recebidos</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text>Recebidos</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
                 </View>
                 {loading ? (
                     <ActivityIndicator size="large" color={theme.text} style={{ marginTop: 20 }} />
@@ -137,10 +150,13 @@ const styles = StyleSheet.create({
         marginLeft: 16,
     },
     filterExtrato: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: "space-around",
-        padding: 8
+        height: height * 0.07,
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 16,
+        marginBottom: 12,
     },
     iconBack: {
         marginBottom: 12,
@@ -150,6 +166,16 @@ const styles = StyleSheet.create({
         fontSize: width / 14,
         fontWeight: "bold",
         padding: 16,
+    },
+    botaoFilter: {
+        borderRadius: 20,
+        paddingVertical: 3,
+        paddingHorizontal: 12,
+        textAlign: "center",
+        borderStyle: "solid",
+        borderWidth: 2,
+        borderColor: "black",
+        backgroundColor: "white"
     },
     transactionsContainer: {
         flex: 1,

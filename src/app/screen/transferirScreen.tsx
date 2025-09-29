@@ -29,7 +29,6 @@ export default function TransferirScreen() {
                     setTipoChave(parsed.tipo || 'chave');
                     setValorChave(parsed.chave);
 
-                    // Fetch recipient data
                     let response;
                     switch (parsed.tipo) {
                         case "chave":
@@ -47,7 +46,7 @@ export default function TransferirScreen() {
 
                     setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || parsed.chave);
                     setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf || '');
-                    setEtapa(3); // Skip to value input
+                    setEtapa(3);
                 } catch (error) {
                     console.log('Error parsing QR data:', error);
                     Alert.alert('Erro', 'Dados do QR Code inválidos');
