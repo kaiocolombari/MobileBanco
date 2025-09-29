@@ -170,8 +170,8 @@ export default function ExtratoScreen() {
                 <View style={[styles.filterExtrato]}>
                     <ScrollView
                         horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
+                        showsHorizontalScrollIndicator={true}
+                        contentContainerStyle={{ gap: 16, paddingRight: 16, paddingBottom: 12 }}
                     >
                         <TouchableOpacity
                             style={[styles.botaoFilter, activeFilter === 'Recentes' && styles.botaoFilterActive]}
@@ -192,10 +192,10 @@ export default function ExtratoScreen() {
                             <Text style={[styles.botaoFilterText, activeFilter === 'Recebidos' && styles.botaoFilterTextActive]}>Recebidos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'PIX' && styles.botaoFilterActive]}
-                            onPress={() => handleFilterPress('PIX')}
+                            style={[styles.botaoFilter, activeFilter === 'Antigos' && styles.botaoFilterActive]}
+                            onPress={() => handleFilterPress('Antigos')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'PIX' && styles.botaoFilterTextActive]}>Antigos</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Antigos' && styles.botaoFilterTextActive]}>Antigos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.botaoFilter, activeFilter === 'Boletos' && styles.botaoFilterActive]}
