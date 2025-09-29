@@ -103,9 +103,10 @@ export default function TransferirScreen() {
         }
     }
 
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <TouchableOpacity style={{...styles.backButton,  position: 'absolute', top: 20, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
+            <TouchableOpacity style={{ ...styles.backButton, position: 'absolute', top: 20, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
                 <Ionicons name="chevron-back" size={28} color="grey" />
             </TouchableOpacity>
             {etapa === 1 && (
@@ -150,7 +151,7 @@ export default function TransferirScreen() {
                     <TouchableOpacity
                         style={[styles.botao, { backgroundColor: theme.button, opacity: valorChave ? 1 : 0.5 }]}
                         disabled={!valorChave}
-                        onPress={() => setEtapa(3)}
+                        onPress={handleSubmitEtapa2}
                     >
                         <Text style={[styles.botaoTexto, { color: theme.text }]}>Próximo</Text>
                     </TouchableOpacity>

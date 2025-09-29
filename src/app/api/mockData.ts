@@ -39,7 +39,6 @@ export interface MockTransaction {
   };
 }
 
-// Initial mock users
 export const mockUsers: MockUser[] = [
   {
     id: 1,
@@ -113,7 +112,6 @@ export const mockUsers: MockUser[] = [
   }
 ];
 
-// Initial mock transactions
 export let mockTransactions: MockTransaction[] = [
   {
     id_transacao: 1,
@@ -157,7 +155,6 @@ export let mockTransactions: MockTransaction[] = [
   }
 ];
 
-// Helper functions
 export const getMockUserByCpf = (cpf: string): MockUser | null => {
   return mockUsers.find(user => user.cpf === cpf) || null;
 };
@@ -182,7 +179,7 @@ export const updateUserBalance = (id_conta: number, newBalance: number) => {
 };
 
 export const addMockTransaction = (transaction: MockTransaction) => {
-  mockTransactions.unshift(transaction); // Add to beginning for latest first
+  mockTransactions.unshift(transaction);
 };
 
 export const getNextTransactionId = (): number => {

@@ -3,7 +3,6 @@ import client from "./client";
 import { getMockUserByCpf, getMockUserByPhone, getMockUserByChavePix } from "./mockData";
 
 export const fetchUser = async () => {
-  // For mock testing, use mock function
   return await fetchUserMock();
 }
 
@@ -14,23 +13,20 @@ export const fetchUserMock = async () => {
       email: "usuario@exemplo.com"
     },
     conta_bancaria: {
-      saldo: 10000
+      saldo: 10.10
     }
   };
 };
 
 export const getDadosDestinatarioByCpf = async (cpf: string) => {
-  // For mock testing, use mock function
   return await getDadosDestinatarioByCpfMock(cpf);
 }
 
 export const getDadosDestinatarioByPhone = async (phone: string) => {
-  // For mock testing, use mock function
   return await getDadosDestinatarioByPhoneMock(phone);
 }
 
 export const getDadosDestinatarioByChavePix = async (chavePix: string) => {
-  // For mock testing, use mock function
   return await getDadosDestinatarioByChavePixMock(chavePix);
 };
 
@@ -60,7 +56,7 @@ export const fetchUserByAccountIdMock = (id_conta: number) => {
 };
 
 export const getDadosDestinatarioByCpfMock = async (cpf: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByCpf(cpf);
   if (!user) {
     throw new Error('Usuário não encontrado');
@@ -78,7 +74,7 @@ export const getDadosDestinatarioByCpfMock = async (cpf: string) => {
 };
 
 export const getDadosDestinatarioByPhoneMock = async (phone: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500)); 
   const user = getMockUserByPhone(phone);
   if (!user) {
     throw new Error('Usuário não encontrado');
@@ -96,7 +92,7 @@ export const getDadosDestinatarioByPhoneMock = async (phone: string) => {
 };
 
 export const getDadosDestinatarioByChavePixMock = async (chavePix: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByChavePix(chavePix);
   if (!user) {
     throw new Error('Usuário não encontrado');
