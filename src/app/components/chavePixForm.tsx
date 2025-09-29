@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import Rotas from "../../types/types.route";
 
 interface PixComponentValeuProps {
   nome: string;
@@ -80,7 +81,7 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
 
       <TouchableOpacity style={styles.buttonContinuar} onPress={() => {
         const valorNumerico = parseFloat(valor.replace(',', '.'));
-        onContinuar(valorNumerico);
+        onContinuar(valorNumerico); 
       }}>
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>

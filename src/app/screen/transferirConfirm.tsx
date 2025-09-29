@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import CancelarTransferenciaModal from "../components/CancelarTransferenciaModal";
 import { transferir } from '../api/fetchTransacoes';
+import Rotas from "../../types/types.route";
 
 export default function ConfirmarSenhaScreen() {
     const [senha, setSenha] = useState("");
@@ -38,21 +39,18 @@ export default function ConfirmarSenhaScreen() {
                     return;
                 }
 
-                // Use stored CPF
                 const cpf_destinatario = transferData.cpfDestinatario || transferData.chavePix.replace(/\D/g, '');
 
                 const response = await transferir(token, senha, transferData.valor, cpf_destinatario, 'Transferência via app');
 
                 if (response.status === 'success') {
-                    // Clear transfer data
                     await AsyncStorage.removeItem('transferData');
-                    // Navigate to receipt screen with transaction ID
                     const transactionId = response.transactionId;
                     if (transactionId) {
                         router.replace(`/comprovante/${transactionId}`);
                     } else {
                         Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
-                            { text: 'OK', onPress: () => router.replace('/homeScreen') }
+                            { text: 'OK', onPress: () => router.replace(Rotas.HOME) }
                         ]);
                     }
                 } else {
@@ -106,7 +104,7 @@ export default function ConfirmarSenhaScreen() {
                     onFechar={() => setModalVisivel(false)}
                     onConfirmar={() => {
                         setModalVisivel(false);
-                        console.log("Transferência cancelada");
+                        router.back()
                     }}
                 />
 

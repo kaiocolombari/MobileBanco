@@ -7,6 +7,7 @@ import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDest
 import type { AxiosResponse } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
+import Rotas from '../../types/types.route';
 
 const { width } = Dimensions.get("window");
 
@@ -104,7 +105,7 @@ export default function TransferirScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <TouchableOpacity style={{...styles.backButton,  position: 'absolute', top: 20, left: 20 }} onPress={() => { router.back() }}>
+            <TouchableOpacity style={{...styles.backButton,  position: 'absolute', top: 20, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
                 <Ionicons name="chevron-back" size={28} color="grey" />
             </TouchableOpacity>
             {etapa === 1 && (
@@ -161,7 +162,6 @@ export default function TransferirScreen() {
                     nome={nomeCompletoDestinatario}
                     chavePix={valorChave}
                     onContinuar={async (valor: number) => {
-                        // Store transfer data
                         await AsyncStorage.setItem('transferData', JSON.stringify({
                             nome: nomeCompletoDestinatario,
                             chavePix: valorChave,
@@ -170,7 +170,7 @@ export default function TransferirScreen() {
                             valor,
                             qrParsedData
                         }));
-                        router.push('/transferirConfirm');
+                        router.push(Rotas.PIXCONFIRM);
                     }}
                     initialValue={qrParsedData?.valor ? qrParsedData.valor * 100 : undefined}
                 />
