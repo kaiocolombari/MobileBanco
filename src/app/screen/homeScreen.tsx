@@ -8,6 +8,7 @@ import {
   TextInput,
   Dimensions,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -17,11 +18,13 @@ import { router } from "expo-router";
 import { fetchUser } from "../api/user";
 import { fetchUserMock } from "../api/user";
 import { useTheme } from "../context/ThemeContext";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [selectedRating, setSelectedRating] = useState<string | null>(null);
   const [ratingText, setRatingText] = useState("");
   const [nome, setNome] = useState("");
@@ -71,7 +74,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.header, { backgroundColor: theme.header }]}>
           <Image
@@ -184,9 +187,9 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <BottomNav />
+      <BottomNav insets={insets} />
 
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -221,10 +224,10 @@ function RatingItem({
   );
 }
 
-function BottomNav() {
+function BottomNav({ insets }: { insets: any }) {
   const { theme } = useTheme();
   return (
-    <View style={[styles.bottomNav, { backgroundColor: theme.card, borderColor: theme.border }]}>
+    <View style={[styles.bottomNav, { backgroundColor: theme.card, borderColor: theme.border, bottom: insets.bottom }]}>
       <TouchableOpacity>
         <Ionicons name="person-outline" size={28} color={theme.imageTintColor} />
       </TouchableOpacity>
@@ -395,7 +398,6 @@ const styles = StyleSheet.create({
 
   bottomNav: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
     flexDirection: "row",

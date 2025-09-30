@@ -59,7 +59,16 @@ export const getDadosDestinatarioByCpfMock = async (cpf: string) => {
   await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByCpf(cpf);
   if (!user) {
-    throw new Error('Usuário não encontrado');
+    return {
+      status: 200,
+      data: {
+        conta: { id_conta: 999, saldo: 0, tipo_conta: "corrente", status_conta: "ativa" },
+        usuario: {
+          full_name: "Usuário Desconhecido",
+          cpf: cpf
+        }
+      }
+    };
   }
   return {
     status: 200,
@@ -74,10 +83,19 @@ export const getDadosDestinatarioByCpfMock = async (cpf: string) => {
 };
 
 export const getDadosDestinatarioByPhoneMock = async (phone: string) => {
-  await new Promise(resolve => setTimeout(resolve, 500)); 
+  await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByPhone(phone);
   if (!user) {
-    throw new Error('Usuário não encontrado');
+    return {
+      status: 200,
+      data: {
+        conta: { id_conta: 999, saldo: 0, tipo_conta: "corrente", status_conta: "ativa" },
+        usuario: {
+          full_name: "Usuário Desconhecido",
+          cpf: ""
+        }
+      }
+    };
   }
   return {
     status: 200,
@@ -95,7 +113,16 @@ export const getDadosDestinatarioByChavePixMock = async (chavePix: string) => {
   await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByChavePix(chavePix);
   if (!user) {
-    throw new Error('Usuário não encontrado');
+    return {
+      status: 200,
+      data: {
+        conta: { id_conta: 999, saldo: 0, tipo_conta: "corrente", status_conta: "ativa" },
+        usuario: {
+          full_name: "Usuário Desconhecido",
+          cpf: ""
+        }
+      }
+    };
   }
   return {
     status: 200,

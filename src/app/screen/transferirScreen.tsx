@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput, Alert, SafeAreaView } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,12 +7,14 @@ import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDest
 import type { AxiosResponse } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Rotas from '../../types/types.route';
 
 const { width } = Dimensions.get("window");
 
 export default function TransferirScreen() {
     const { theme } = useTheme();
+    const insets = useSafeAreaInsets();
     const { qrData } = useLocalSearchParams();
     const [etapa, setEtapa] = useState<1 | 2 | 3 | 4>(1);
     const [tipoChave, setTipoChave] = useState<'cpf' | 'phone' | 'chave' | null>(null);
@@ -30,27 +32,31 @@ export default function TransferirScreen() {
                     setTipoChave(parsed.tipo || 'chave');
                     setValorChave(parsed.chave);
 
+                    let cleanedChave = parsed.chave;
+                    if (parsed.tipo === 'cpf' || parsed.tipo === 'phone') {
+                        cleanedChave = parsed.chave.replace(/\D/g, '');
+                    }
                     let response;
                     switch (parsed.tipo) {
                         case "chave":
-                            response = await getDadosDestinatarioByChavePix(parsed.chave);
+                            response = await getDadosDestinatarioByChavePix(cleanedChave);
                             break;
                         case "phone":
-                            response = await getDadosDestinatarioByPhone(parsed.chave);
+                            response = await getDadosDestinatarioByPhone(cleanedChave);
                             break;
                         case "cpf":
-                            response = await getDadosDestinatarioByCpf(parsed.chave);
+                            response = await getDadosDestinatarioByCpf(cleanedChave);
                             break;
                         default:
                             throw new Error('Tipo inválido');
                     }
 
-                    setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || parsed.chave);
-                    setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf || '');
+                    setNomeCompletoDestinatario((response as AxiosResponse).data?.usuario?.full_name || parsed.chave);
+                    setCpfDestinatario((response as AxiosResponse).data?.usuario?.cpf || '');
                     setEtapa(3);
                 } catch (error) {
                     console.log('Error parsing QR data:', error);
-                    Alert.alert('Erro', 'Dados do QR Code inválidos');
+                    Alert.alert('Erro', 'Dados do QR Code inválidos ou usuário não encontrado');
                 }
             }
         };
@@ -80,22 +86,26 @@ export default function TransferirScreen() {
 
     const handleSubmitEtapa2 = async () => {
         try {
+            let cleanedValue = valorChave;
+            if (tipoChave === 'cpf' || tipoChave === 'phone') {
+                cleanedValue = valorChave.replace(/\D/g, '');
+            }
             switch (tipoChave) {
                 case "chave":
-                    var response = await getDadosDestinatarioByChavePix(valorChave);
+                    var response = await getDadosDestinatarioByChavePix(cleanedValue);
                     break;
                 case "phone":
-                    var response = await getDadosDestinatarioByPhone(valorChave);
+                    var response = await getDadosDestinatarioByPhone(cleanedValue);
                     break;
                 case "cpf":
-                    var response = await getDadosDestinatarioByCpf(valorChave);
+                    var response = await getDadosDestinatarioByCpf(cleanedValue);
                     break;
                 default:
                     throw Error();
             }
 
-            setNomeCompletoDestinatario((response as AxiosResponse).data?.conta?.usuario?.full_name || '');
-            setCpfDestinatario((response as AxiosResponse).data?.conta?.usuario?.cpf || '');
+            setNomeCompletoDestinatario((response as AxiosResponse).data?.usuario?.full_name || '');
+            setCpfDestinatario((response as AxiosResponse).data?.usuario?.cpf || '');
             setEtapa(3)
         } catch (e) {
             console.log(e);
@@ -104,8 +114,8 @@ export default function TransferirScreen() {
 
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <TouchableOpacity style={{ ...styles.backButton, position: 'absolute', top: 20, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+            <TouchableOpacity style={{ ...styles.backButton, position: 'absolute', top: 10, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
                 <Ionicons name="chevron-back" size={28} color="grey" />
             </TouchableOpacity>
             {etapa === 1 && (
@@ -175,7 +185,7 @@ export default function TransferirScreen() {
                     initialValue={qrParsedData?.valor ? qrParsedData.valor * 100 : undefined}
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
