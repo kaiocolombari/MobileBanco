@@ -55,6 +55,7 @@ export default function recargaScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={{ padding: height * 0.01, backgroundColor: theme.header }}></View>
             <View style={[styles.header, { backgroundColor: theme.header }]}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={25} color="white" />

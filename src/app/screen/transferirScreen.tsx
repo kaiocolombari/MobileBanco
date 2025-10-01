@@ -10,7 +10,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Rotas from '../../types/types.route';
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export default function TransferirScreen() {
     const { theme } = useTheme();
@@ -115,26 +115,27 @@ export default function TransferirScreen() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-            <TouchableOpacity style={{ ...styles.backButton, position: 'absolute', top: 10, left: 20 }} onPress={() => { router.replace(Rotas.HOME) }}>
-                <Ionicons name="chevron-back" size={28} color="grey" />
-            </TouchableOpacity>
             {etapa === 1 && (
-                <View style={styles.opcoesContainer}>
-
-                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
-                        <Ionicons name="person-outline" size={22} color={theme.primary} style={styles.icone} />
-                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar CPF</Text>
+                <View>
+                    <TouchableOpacity style={{ ...styles.backButton, position: 'absolute', top: height - 950 }} onPress={() => { router.replace(Rotas.HOME) }}>
+                        <Ionicons name="chevron-back" size={28} color="grey" />
                     </TouchableOpacity>
+                    <View style={styles.opcoesContainer}>
+                        <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('cpf'); setEtapa(2); }}>
+                            <Ionicons name="person-outline" size={22} color={theme.primary} style={styles.icone} />
+                            <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar CPF</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
-                        <Ionicons name="call-outline" size={22} color={theme.primary} style={styles.icone} />
-                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Telefone</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('phone'); setEtapa(2); }}>
+                            <Ionicons name="call-outline" size={22} color={theme.primary} style={styles.icone} />
+                            <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Telefone</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
-                        <Ionicons name="key-outline" size={22} color={theme.primary} style={styles.icone} />
-                        <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Chave Pix</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style={[styles.opcao, { backgroundColor: theme.card, borderColor: theme.border }]} onPress={() => { setTipoChave('chave'); setEtapa(2); }}>
+                            <Ionicons name="key-outline" size={22} color={theme.primary} style={styles.icone} />
+                            <Text style={[styles.opcaoTexto, { color: theme.text }]}>Usar Chave Pix</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             )}
 

@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -20,7 +21,7 @@ import { fetchUserMock } from "../api/user";
 import { useTheme } from "../context/ThemeContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { theme } = useTheme();
@@ -75,6 +76,8 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar hidden={true} />
+      <View style={{ padding: height * 0.01, backgroundColor: theme.header }}></View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.header, { backgroundColor: theme.header }]}>
           <Image
@@ -186,8 +189,8 @@ export default function HomeScreen() {
             <Text style={[styles.rateButtonText, { color: "#FFFFFF" }]}>Enviar avaliação</Text>
           </TouchableOpacity>
         </View>
+        <View style={{ padding: height * 0.03, backgroundColor: theme.background }}></View>
       </ScrollView>
-      <BottomNav insets={insets} />
 
     </SafeAreaView>
   );
@@ -224,29 +227,11 @@ function RatingItem({
   );
 }
 
-function BottomNav({ insets }: { insets: any }) {
-  const { theme } = useTheme();
-  return (
-    <View style={[styles.bottomNav, { backgroundColor: theme.card, borderColor: theme.border, bottom: insets.bottom }]}>
-      <TouchableOpacity>
-        <Ionicons name="person-outline" size={28} color={theme.imageTintColor} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => { router.push(Rotas.EXTRATO) }}>
-        <Ionicons name="document-text-outline" size={28} color={theme.imageTintColor} />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => { router.push(Rotas.DASHBOARD) }}>
-        <Ionicons name="pie-chart-outline" size={28} color={theme.imageTintColor} />
-      </TouchableOpacity>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 90,
   },
 
   header: {
@@ -395,19 +380,5 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontFamily: "Roboto_400Regular",
   },
-
-  bottomNav: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 6,
-  },
 });
+

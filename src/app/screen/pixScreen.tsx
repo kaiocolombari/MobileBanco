@@ -114,6 +114,7 @@ export default function pixScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={{ padding: height * 0.02, backgroundColor: theme.background }}></View>
       <View style={styles.backButton}>
         <TouchableOpacity onPress={() => { router.back() }}>
           <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     padding: 16
   },
-    iconesPix: {
+  iconesPix: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: width * 0.08,
     height: width * 0.08,
-    marginRight: 10, 
+    marginRight: 10,
     borderRadius: (width / 10) / 2,
     justifyContent: 'center',
     alignItems: 'center',

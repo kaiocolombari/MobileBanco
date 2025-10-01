@@ -69,7 +69,7 @@ export default function ExtratoScreen() {
                 return [...transactions].sort((a, b) => {
                     const dateA = new Date(`${a.date} ${a.hora}`);
                     const dateB = new Date(`${b.date} ${b.hora}`);
-                    return dateB.getTime() - dateA.getTime(); 
+                    return dateB.getTime() - dateA.getTime();
                 });
 
             default:
@@ -153,6 +153,7 @@ export default function ExtratoScreen() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={{ padding: height * 0.01, backgroundColor: theme.background }}></View>
             <View style={styles.backButton}>
                 <TouchableOpacity onPress={() => { router.back() }}>
                     <Ionicons name='chevron-back' size={width / 16} color="grey" style={styles.iconBack} />
