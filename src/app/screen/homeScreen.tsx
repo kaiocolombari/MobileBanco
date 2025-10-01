@@ -10,6 +10,7 @@ import {
   Image,
   SafeAreaView,
   StatusBar,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -78,7 +79,8 @@ export default function HomeScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar hidden={true} />
       <View style={{ padding: height * 0.01, backgroundColor: theme.header }}></View>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.header, { backgroundColor: theme.header }]}>
           <Image
             source={require("../../assets/avatar.png")}
@@ -191,6 +193,7 @@ export default function HomeScreen() {
         </View>
         <View style={{ padding: height * 0.03, backgroundColor: theme.background }}></View>
       </ScrollView>
+      </KeyboardAvoidingView>
 
     </SafeAreaView>
   );
