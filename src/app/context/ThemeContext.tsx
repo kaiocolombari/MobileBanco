@@ -14,7 +14,13 @@ interface Theme {
   header: string;
   button: string;
   imageButtonCircle: string;
-  imageTintColor: string
+  imageTintColor: string;
+  filtroButtonColor: string;
+  filtroButtonColorActi: string;
+  filtroborderColor: string;
+  filtroborderColorActi: string;
+  filterText: string;
+  filterTextActi: string;
 }
 
 const lightTheme: Theme = {
@@ -30,7 +36,13 @@ const lightTheme: Theme = {
   header: '#1B98E0',
   button: '#0686D0',
   imageButtonCircle: '#E8F1F2',
-  imageTintColor: '#1B98E0'
+  imageTintColor: '#1B98E0',
+  filtroButtonColor: 'white',
+  filtroborderColor: 'black',
+  filtroButtonColorActi: "#007bff",
+  filtroborderColorActi: "#007bff",
+  filterText: 'black',
+  filterTextActi: 'white',
 };
 
 const darkTheme: Theme = {
@@ -46,7 +58,13 @@ const darkTheme: Theme = {
   header: '#1B98E0',
   button: '#0686D0',
   imageButtonCircle: '#404446',
-  imageTintColor: '#FFFFFF'
+  imageTintColor: '#FFFFFF',
+  filtroButtonColor: 'black',
+  filtroborderColor: 'white',
+  filtroButtonColorActi: "#007bff",
+  filtroborderColorActi: "#007bff",
+  filterText: 'white',
+  filterTextActi: 'white',
 };
 
 interface ThemeContextType {
@@ -63,7 +81,6 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const theme = isDark ? darkTheme : lightTheme;
 
-  // Load theme preference on startup
   useEffect(() => {
     const loadThemePreference = async () => {
       try {
@@ -81,7 +98,6 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     loadThemePreference();
   }, []);
 
-  // Save theme preference when it changes
   useEffect(() => {
     const saveThemePreference = async () => {
       try {
@@ -100,9 +116,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setIsDark(!isDark);
   };
 
-  // Show loading state while theme is being loaded
   if (isLoading) {
-    return null; // Or you could return a loading component
+    return null;
   }
 
   return (

@@ -175,34 +175,34 @@ export default function ExtratoScreen() {
                         contentContainerStyle={{ gap: 16, paddingRight: 16, paddingBottom: 12 }}
                     >
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'Recentes' && styles.botaoFilterActive]}
+                            style={[styles.botaoFilter, activeFilter === 'Recentes' && { backgroundColor: theme.filtroButtonColorActi, borderColor: theme.filtroborderColorActi }, activeFilter === null && { backgroundColor: theme.background, borderColor: theme.filtroborderColor }]}
                             onPress={() => handleFilterPress('Recentes')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'Recentes' && styles.botaoFilterTextActive]}>Recentes</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Recentes' && { color: theme.filterTextActi }, activeFilter === null && { color: theme.filterText }]}>Recentes</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'Enviados' && styles.botaoFilterActive]}
+                            style={[styles.botaoFilter, activeFilter === 'Enviados' && { backgroundColor: theme.filtroButtonColorActi, borderColor: theme.filtroborderColorActi }, activeFilter === null && { backgroundColor: theme.background, borderColor: theme.filtroborderColor }]}
                             onPress={() => handleFilterPress('Enviados')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'Enviados' && styles.botaoFilterTextActive]}>Enviados</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Enviados' && { color: theme.filterTextActi }, activeFilter === null && { color: theme.filterText }]}>Enviados</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'Recebidos' && styles.botaoFilterActive]}
+                            style={[styles.botaoFilter, activeFilter === 'Recebidos' && { backgroundColor: theme.filtroButtonColorActi, borderColor: theme.filtroborderColorActi }, activeFilter === null && { backgroundColor: theme.background, borderColor: theme.filtroborderColor }]}
                             onPress={() => handleFilterPress('Recebidos')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'Recebidos' && styles.botaoFilterTextActive]}>Recebidos</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Recebidos' && { color: theme.filterTextActi }, activeFilter === null && { color: theme.filterText }]}>Recebidos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'Antigos' && styles.botaoFilterActive]}
+                            style={[styles.botaoFilter, activeFilter === 'Antigos' && { backgroundColor: theme.filtroButtonColorActi, borderColor: theme.filtroborderColorActi }, activeFilter === null && { backgroundColor: theme.background, borderColor: theme.filtroborderColor }]}
                             onPress={() => handleFilterPress('Antigos')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'Antigos' && styles.botaoFilterTextActive]}>Antigos</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Antigos' && { color: theme.filterTextActi }, activeFilter === null && { color: theme.filterText }]}>Antigos</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={[styles.botaoFilter, activeFilter === 'Boletos' && styles.botaoFilterActive]}
+                            style={[styles.botaoFilter, activeFilter === 'Boletos' && { backgroundColor: theme.filtroButtonColorActi, borderColor: theme.filtroborderColorActi }, activeFilter === null && { backgroundColor: theme.background, borderColor: theme.filtroborderColor }]}
                             onPress={() => handleFilterPress('Boletos')}
                         >
-                            <Text style={[styles.botaoFilterText, activeFilter === 'Boletos' && styles.botaoFilterTextActive]}>Boletos</Text>
+                            <Text style={[styles.botaoFilterText, activeFilter === 'Boletos' && { color: theme.filterTextActi }, activeFilter === null && { color: theme.filterText }]}>Boletos</Text>
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
@@ -253,12 +253,10 @@ const styles = StyleSheet.create({
         textAlign: "center",
         borderStyle: "solid",
         borderWidth: 2,
-        borderColor: "black",
-        backgroundColor: "white"
     },
     botaoFilterActive: {
         backgroundColor: "#007bff",
-        borderColor: "#007bff"
+        borderColor: "#007bff",
     },
     botaoFilterText: {
         color: "black",
