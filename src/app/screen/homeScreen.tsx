@@ -21,6 +21,7 @@ import { fetchUser } from "../api/user";
 import { fetchUserMock } from "../api/user";
 import { useTheme } from "../context/ThemeContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -64,12 +65,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const data = await fetchUserMock();
-      if (data && data.usuario) {
-        setNome(data.usuario.full_name);
-        setSaldo(data.conta_bancaria.saldo);
+
+      try {
+        const usuario = await fetchUser();
+
+        console.log(usuario)
+        setNome(usuario.full_name);
+        setSaldo(parseFloat(usuario.conta_bancaria.saldo));
+      } catch {
+        await AsyncStorage.removeItem("token")
+        router.push(Rotas.LOGIN)
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     loadUser();
@@ -81,118 +89,118 @@ export default function HomeScreen() {
       <View style={{ padding: height * 0.01, backgroundColor: theme.header }}></View>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={[styles.header, { backgroundColor: theme.header }]}>
-          <Image
-            source={require("../../assets/avatar.png")}
-            style={{
-              width: 60,
-              height: 60,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 3 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.5,
-            }}
-          />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={[styles.hello, { color: '#FFFFFF' }]}>Olá, {nome}</Text>
+          <View style={[styles.header, { backgroundColor: theme.header }]}>
+            <Image
+              source={require("../../assets/avatar.png")}
+              style={{
+                width: 60,
+                height: 60,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.5,
+              }}
+            />
+            <View style={{ marginLeft: 10 }}>
+              <Text style={[styles.hello, { color: '#FFFFFF' }]}>Olá, {nome}</Text>
+            </View>
+            <View style={styles.headerIcons}>
+              <Ionicons name="help-circle-outline" size={25} color="white" />
+              <TouchableOpacity onPress={() => { router.push(Rotas.CONFIG) }}>
+                <Ionicons
+                  name="settings-outline"
+                  size={25}
+                  color="white"
+                  style={{ marginLeft: 15 }}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.headerIcons}>
-            <Ionicons name="help-circle-outline" size={25} color="white" />
-            <TouchableOpacity onPress={() => { router.push(Rotas.CONFIG) }}>
-              <Ionicons
-                name="settings-outline"
-                size={25}
-                color="white"
-                style={{ marginLeft: 15 }}
-              />
+
+          <View style={styles.balanceContainer}>
+            <Text style={[styles.balanceTitle, { color: theme.textSecondary }]}>Conta</Text>
+            <Text style={[styles.balanceValue, { color: theme.imageTintColor }]}>R$ {saldo.toFixed(2)}</Text>
+          </View>
+
+          <View style={{ marginTop: 12 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 12 }}
+            >
+              <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
+              <ImageButton image={require("../../assets/barraIcon.png")} label="Boleto" onPress={() => { }} />
+              <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { router.push(Rotas.RECARGA) }} />
+              <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { router.push(Rotas.EMPRESTIMO) }} />
+              <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
+              <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { router.push(Rotas.COFRINHO) }} />
+            </ScrollView>
+          </View>
+
+          <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.EXTRATO)}>
+            <Ionicons name="document-text-outline" size={20} color={theme.imageTintColor} />
+            <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>Extratos</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.DASHBOARD)}>
+            <Ionicons name="pie-chart-outline" size={20} color={theme.imageTintColor} />
+            <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>DashBoard</Text>
+          </TouchableOpacity>
+
+          <View style={[styles.cardBox, { backgroundColor: theme.card }]}>
+            <Text style={[styles.cardTitle, { color: theme.text }]}>Cofrinho</Text>
+            <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>
+              Comece hoje mesmo! Faça do seu cofrinho digital o seu melhor aliado para conquistar o futuro que você merece.
+            </Text>
+            <TouchableOpacity style={[styles.cardButton, { backgroundColor: theme.button }]} onPress={() => { router.push(Rotas.COFRINHO) }}>
+              <Text style={[styles.cardButtonText, { color: "#FFFFFF" }]}>Comece agora</Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        <View style={styles.balanceContainer}>
-          <Text style={[styles.balanceTitle, { color: theme.textSecondary }]}>Conta</Text>
-          <Text style={[styles.balanceValue, { color: theme.imageTintColor }]}>R$ {saldo.toFixed(2)}</Text>
-        </View>
-
-        <View style={{ marginTop: 12 }}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 12 }}
-          >
-            <ImageButton image={require("../../assets/pixIcon.png")} label="Pix" onPress={() => { router.push(Rotas.PIX) }} />
-            <ImageButton image={require("../../assets/barraIcon.png")} label="Boleto" onPress={() => { }} />
-            <ImageButton image={require("../../assets/recarga.png")} label="Recarga" onPress={() => { router.push(Rotas.RECARGA) }} />
-            <ImageButton image={require("../../assets/emprestimo.png")} label="Emprestimo" onPress={() => { router.push(Rotas.EMPRESTIMO) }} />
-            <ImageButton image={require("../../assets/Qr_Code.png")} label="QR" onPress={() => { }} />
-            <ImageButton image={require("../../assets/cofrinho.png")} label="Cofrinho" onPress={() => { router.push(Rotas.COFRINHO) }} />
-          </ScrollView>
-        </View>
-
-        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.EXTRATO)}>
-          <Ionicons name="document-text-outline" size={20} color={theme.imageTintColor} />
-          <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>Extratos</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.extratoBtn, { backgroundColor: theme.card }]} onPress={() => router.push(Rotas.DASHBOARD)}>
-          <Ionicons name="pie-chart-outline" size={20} color={theme.imageTintColor} />
-          <Text style={[styles.extratoText, { color: theme.imageTintColor }]}>DashBoard</Text>
-        </TouchableOpacity>
-
-        <View style={[styles.cardBox, { backgroundColor: theme.card }]}>
-          <Text style={[styles.cardTitle, { color: theme.text }]}>Cofrinho</Text>
-          <Text style={[styles.cardSubtitle, { color: theme.textSecondary }]}>
-            Comece hoje mesmo! Faça do seu cofrinho digital o seu melhor aliado para conquistar o futuro que você merece.
-          </Text>
-          <TouchableOpacity style={[styles.cardButton, { backgroundColor: theme.button }]} onPress={() => { router.push(Rotas.COFRINHO) }}>
-            <Text style={[styles.cardButtonText, { color: "#FFFFFF" }]}>Comece agora</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.ratingBox}>
-          <Text style={[styles.ratingTitle, { color: theme.text }]}>Avalie sua experiência</Text>
-          <Text style={[styles.ratingSubtitle, { color: theme.textSecondary }]}>
-            O que achou da tela inicial do aplicativo?
-          </Text>
-          <View style={styles.ratingRow}>
-            <RatingItem
-              icon="grin-stars"
-              label="Incrível"
-              selected={selectedRating === "Incrível"}
-              onPress={() => setSelectedRating("Incrível")}
-            />
-            <RatingItem
-              icon="smile"
-              label="Bom"
-              selected={selectedRating === "Bom"}
-              onPress={() => setSelectedRating("Bom")}
-            />
-            <RatingItem
-              icon="meh"
-              label="Médio"
-              selected={selectedRating === "Médio"}
-              onPress={() => setSelectedRating("Médio")}
-            />
-            <RatingItem
-              icon="frown"
-              label="Ruim"
-              selected={selectedRating === "Ruim"}
-              onPress={() => setSelectedRating("Ruim")}
-            />
-            <RatingItem
-              icon="sad-tear"
-              label="Péssimo"
-              selected={selectedRating === "Péssimo"}
-              onPress={() => setSelectedRating("Péssimo")}
-            />
+          <View style={styles.ratingBox}>
+            <Text style={[styles.ratingTitle, { color: theme.text }]}>Avalie sua experiência</Text>
+            <Text style={[styles.ratingSubtitle, { color: theme.textSecondary }]}>
+              O que achou da tela inicial do aplicativo?
+            </Text>
+            <View style={styles.ratingRow}>
+              <RatingItem
+                icon="grin-stars"
+                label="Incrível"
+                selected={selectedRating === "Incrível"}
+                onPress={() => setSelectedRating("Incrível")}
+              />
+              <RatingItem
+                icon="smile"
+                label="Bom"
+                selected={selectedRating === "Bom"}
+                onPress={() => setSelectedRating("Bom")}
+              />
+              <RatingItem
+                icon="meh"
+                label="Médio"
+                selected={selectedRating === "Médio"}
+                onPress={() => setSelectedRating("Médio")}
+              />
+              <RatingItem
+                icon="frown"
+                label="Ruim"
+                selected={selectedRating === "Ruim"}
+                onPress={() => setSelectedRating("Ruim")}
+              />
+              <RatingItem
+                icon="sad-tear"
+                label="Péssimo"
+                selected={selectedRating === "Péssimo"}
+                onPress={() => setSelectedRating("Péssimo")}
+              />
+            </View>
+            <TextInput style={[styles.input, { borderColor: theme.primary, color: theme.text }]} placeholder="Escreva aqui..." placeholderTextColor={theme.textSecondary} value={ratingText} onChangeText={setRatingText} />
+            <TouchableOpacity style={[styles.rateButton, { backgroundColor: theme.button }]} onPress={() => { handleRatingPress() }}>
+              <Text style={[styles.rateButtonText, { color: "#FFFFFF" }]}>Enviar avaliação</Text>
+            </TouchableOpacity>
           </View>
-          <TextInput style={[styles.input, { borderColor: theme.primary, color: theme.text }]} placeholder="Escreva aqui..." placeholderTextColor={theme.textSecondary} value={ratingText} onChangeText={setRatingText} />
-          <TouchableOpacity style={[styles.rateButton, { backgroundColor: theme.button }]} onPress={() => { handleRatingPress() }}>
-            <Text style={[styles.rateButtonText, { color: "#FFFFFF" }]}>Enviar avaliação</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ padding: height * 0.03, backgroundColor: theme.background }}></View>
-      </ScrollView>
+          <View style={{ padding: height * 0.03, backgroundColor: theme.background }}></View>
+        </ScrollView>
       </KeyboardAvoidingView>
 
     </SafeAreaView>

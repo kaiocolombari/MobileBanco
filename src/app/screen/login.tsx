@@ -42,8 +42,9 @@ export default function Login() {
       const responseApi = await requestLogin(cpf.replace(/\D/g, ""), senha);
       // exemplo: supondo que a API retorna { token, usuario }
       if (responseApi?.data.status === "success" && responseApi?.data.token) {
+
         // salva token em storage (opcional)
-        await AsyncStorage.setItem("token", responseApi.token);
+        await AsyncStorage.setItem("token", responseApi.data.token);
         // navega para a home
         router.replace(Rotas.HOME);
       } else {

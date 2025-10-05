@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PixComponentValor } from '../components/chavePixForm';
 import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
-import type { AxiosResponse } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,7 +21,9 @@ export default function TransferirScreen() {
     const [valorChave, setValorChave] = useState('');
     const [nomeCompletoDestinatario, setNomeCompletoDestinatario] = useState("");
     const [cpfDestinatario, setCpfDestinatario] = useState("");
+    const [chaveTransferencia, setChaveTransferencia] = useState("");
     const [qrParsedData, setQrParsedData] = useState<any>(null);
+    const [errorEtapa2, setErrorEtapa2] = useState<string | null>(null);
 
     useEffect(() => {
         const handleQrData = async () => {
@@ -90,24 +92,26 @@ export default function TransferirScreen() {
             if (tipoChave === 'cpf' || tipoChave === 'phone') {
                 cleanedValue = valorChave.replace(/\D/g, '');
             }
+
             switch (tipoChave) {
                 case "chave":
-                    var response = await getDadosDestinatarioByChavePix(cleanedValue);
+                    var conta = await getDadosDestinatarioByChavePix(cleanedValue);
                     break;
                 case "phone":
-                    var response = await getDadosDestinatarioByPhone(cleanedValue);
+                    var conta = await getDadosDestinatarioByPhone(cleanedValue);
                     break;
                 case "cpf":
-                    var response = await getDadosDestinatarioByCpf(cleanedValue);
+                    var conta = await getDadosDestinatarioByCpf(cleanedValue);
                     break;
-                default:
-                    throw Error();
             }
 
-            setNomeCompletoDestinatario((response as AxiosResponse).data?.usuario?.full_name || '');
-            setCpfDestinatario((response as AxiosResponse).data?.usuario?.cpf || '');
+            setNomeCompletoDestinatario((conta as any).usuario?.full_name || '');
+            setChaveTransferencia((conta as any).chave_transferencia)
+
             setEtapa(3)
         } catch (e) {
+            console.log(e)
+            setErrorEtapa2((e as any).response?.data?.msg || "Erro desconhecido ao buscar usuario")
             console.log(e);
         }
     }
@@ -157,6 +161,10 @@ export default function TransferirScreen() {
                         value={valorChave}
                         onChangeText={handleChangeText}
                     />
+                    <View>
+                        <Text style={{ color: "red", marginBottom: 12}}>{errorEtapa2}</Text>
+                    </View>
+
 
                     <TouchableOpacity
                         style={[styles.botao, { backgroundColor: theme.button, opacity: valorChave ? 1 : 0.5 }]}
@@ -175,11 +183,8 @@ export default function TransferirScreen() {
                     onContinuar={async (valor: number) => {
                         await AsyncStorage.setItem('transferData', JSON.stringify({
                             nome: nomeCompletoDestinatario,
-                            chavePix: valorChave,
-                            tipoChave,
-                            cpfDestinatario,
+                            chaveTransferencia,
                             valor,
-                            qrParsedData
                         }));
                         router.push(Rotas.PIXCONFIRM);
                     }}

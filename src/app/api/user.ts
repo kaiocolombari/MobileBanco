@@ -3,7 +3,19 @@ import client from "./client";
 import { getMockUserByCpf, getMockUserByPhone, getMockUserByChavePix } from "./mockData";
 
 export const fetchUser = async () => {
-  return await fetchUserMock();
+  const token = await AsyncStorage.getItem("token");
+
+  const response = await client.get("/usuario/", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  if (!response.data.usuario) {
+    throw new Error();
+  }
+
+  return response.data.usuario
 }
 
 export const fetchUserMock = async () => {
@@ -19,15 +31,44 @@ export const fetchUserMock = async () => {
 };
 
 export const getDadosDestinatarioByCpf = async (cpf: string) => {
-  return await getDadosDestinatarioByCpfMock(cpf);
+  const token = await AsyncStorage.getItem("token");
+
+  const response = await client.get(`/usuario/cpf/${cpf}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+
+  if (response.status >= 200 || response.status <= 200) {
+    return response.data.conta;
+  }
 }
 
 export const getDadosDestinatarioByPhone = async (phone: string) => {
-  return await getDadosDestinatarioByPhoneMock(phone);
+  const token = await AsyncStorage.getItem("token");
+
+  const response = await client.get(`/usuario/phone/${phone}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (response.status >= 200 || response.status <= 200) {
+    return response.data.conta;
+  }
 }
 
 export const getDadosDestinatarioByChavePix = async (chavePix: string) => {
-  return await getDadosDestinatarioByChavePixMock(chavePix);
+  const token = await AsyncStorage.getItem("token");
+
+  const response = await client.get(`/usuario/chave-pix/${chavePix}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (response.status >= 200 || response.status <= 200) {
+    return response.data.conta;
+  }
 };
 
 export const fetchUserByAccountId = async (id_conta: number, token: string) => {
@@ -37,7 +78,7 @@ export const fetchUserByAccountId = async (id_conta: number, token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (response.status === 200) {
+    if (response.status >= 200 || response.status <= 200) {
       return response.data.usuario;
     }
   } catch (error) {
@@ -59,16 +100,7 @@ export const getDadosDestinatarioByCpfMock = async (cpf: string) => {
   await new Promise(resolve => setTimeout(resolve, 500));
   const user = getMockUserByCpf(cpf);
   if (!user) {
-    return {
-      status: 200,
-      data: {
-        conta: { id_conta: 999, saldo: 0, tipo_conta: "corrente", status_conta: "ativa" },
-        usuario: {
-          full_name: "Usuário Desconhecido",
-          cpf: cpf
-        }
-      }
-    };
+    throw new Error("Usuário não encontrado");
   }
   return {
     status: 200,

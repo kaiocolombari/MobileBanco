@@ -6,12 +6,14 @@ import { router } from 'expo-router';
 import CancelarTransferenciaModal from "../components/CancelarTransferenciaModal";
 import { transferir } from '../api/fetchTransacoes';
 import Rotas from "../../types/types.route";
+import type { AxiosError } from "axios";
 
 export default function ConfirmarSenhaScreen() {
     const [senha, setSenha] = useState("");
     const inputRef = useRef<TextInput>(null);
     const [modalVisivel, setModalVisivel] = useState(false);
     const [transferData, setTransferData] = useState<any>(null);
+    const [errorMsg, setErrorMsg] = useState("");
 
     useEffect(() => {
         const loadTransferData = async () => {
@@ -35,30 +37,24 @@ export default function ConfirmarSenhaScreen() {
             try {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
-                    Alert.alert('Erro', 'Token não encontrado. Faça login novamente.');
+                    setErrorMsg('Token não encontrado. Faça login novamente.');
                     return;
                 }
 
-                const cpf_destinatario = transferData.cpfDestinatario || transferData.chavePix.replace(/\D/g, '');
+                const response = await transferir(token, senha, transferData.valor, transferData.chaveTransferencia);
 
-                const response = await transferir(token, senha, transferData.valor, cpf_destinatario, 'Transferência via app');
-
-                if (response.status === 'success') {
+                if (response.status >= 200 || response.status <= 200) {
                     await AsyncStorage.removeItem('transferData');
-                    const transactionId = response.transactionId;
-                    if (transactionId) {
-                        router.replace(`/comprovante/${transactionId}`);
-                    } else {
-                        Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
-                            { text: 'OK', onPress: () => router.replace(Rotas.HOME) }
-                        ]);
-                    }
+
+                    Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
+                        { text: 'OK', onPress: () => router.replace(Rotas.HOME) }
+                    ]);
                 } else {
-                    Alert.alert('Erro', response.msg || 'Erro na transferência');
+                    setErrorMsg(response.data.msg || 'Erro na transferência');
                 }
             } catch (error: any) {
                 console.log('Erro na transferência:', error);
-                Alert.alert('Erro', error.message || 'Erro na transferência');
+                setErrorMsg((error as any).response?.data?.msg || 'Erro na transferência');
             }
         }
     };
@@ -84,12 +80,20 @@ export default function ConfirmarSenhaScreen() {
             />
 
             <View style={styles.digitsContainer}>
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <View key={i} style={styles.digitBox}>
-                        <Text style={styles.digitText}>{senha[i] ? "•" : ""}</Text>
-                    </View>
-                ))}
+                <TouchableOpacity
+                    style={{ flexDirection: "row", justifyContent: "space-between", flex: 1 }}
+                    activeOpacity={1}
+                    onPress={() => inputRef.current?.focus()} // foca o input ao tocar nas caixas
+                >
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <View key={i} style={styles.digitBox}>
+                            <Text style={styles.digitText}>{senha[i] ? "•" : ""}</Text>
+                        </View>
+                    ))}
+                </TouchableOpacity>
             </View>
+
+            <Text style={{color: "red"}}>{errorMsg}</Text>
 
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity onPress={() => {

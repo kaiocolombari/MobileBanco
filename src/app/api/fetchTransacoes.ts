@@ -110,9 +110,16 @@ export async function fetchTransacaoById(id: number, token: string) {
     }
 }
 
-export async function transferir(token: string, password: string, value: number, cpf_destinatario: string, descricao: string) {
+export async function transferir(token: string, password: string, value: number, chave_transferencia: string) {
     // For mock testing, use mock function
-    return await transferirMock(password, value, cpf_destinatario, descricao);
+    const response = await client.post("/transacao/", { password, value, chave_transferencia },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+
+    return response
 }
 
 export async function transferirMock(password: string, value: number, cpf_destinatario: string, descricao: string, mockData?: any) {
