@@ -37,8 +37,29 @@ export interface Transacao {
 }
 
 export async function fetchTransacoes(token: string): Promise<Transacao[]> {
-    // For mock testing, use mock function
-    return await fetchTransacoesMock();
+  try {
+    const response = await client.get("/transacao/");
+    if (response.data.status === "success") {
+      return response.data.data.transacoesEnviadas.concat(response.data.data.transacoesRecebidas).map((t: any) => ({
+        id_transacao: t.id_transacao,
+        valor: t.valor,
+        tipo: t.tipo,
+        descricao: t.descricao,
+        status: t.status,
+        date: new Date(t.createdAt).toLocaleDateString('pt-BR'),
+        hora: new Date(t.createdAt).toLocaleTimeString('pt-BR'),
+        tipoTransacao: t.tipo === 'transferência' ? (t.conta_origem ? 'enviado' : 'recebido') : 'boleto',
+        conta_origem: t.conta_origem,
+        conta_destino: t.conta_destino,
+        remetente: t.usuario_origem ? { full_name: t.usuario_origem.full_name } : undefined,
+        destinatario: t.usuario_destino ? { full_name: t.usuario_destino.full_name } : undefined,
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Erro ao buscar transações:", error);
+    return [];
+  }
 }
 
 
@@ -110,16 +131,9 @@ export async function fetchTransacaoById(id: number, token: string) {
     }
 }
 
-export async function transferir(token: string, password: string, value: number, chave_transferencia: string) {
-    // For mock testing, use mock function
-    const response = await client.post("/transacao/", { password, value, chave_transferencia },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-
-    return response
+export async function transferir(token: string, password: string, value: number, cpf_destinatario: string, descricao: string) {
+  const response = await client.post("/transacao/", { password, value, cpf_destinatario, descricao });
+  return response;
 }
 
 export async function transferirMock(password: string, value: number, cpf_destinatario: string, descricao: string, mockData?: any) {

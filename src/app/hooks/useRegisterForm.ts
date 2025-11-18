@@ -234,17 +234,20 @@ export function useRegisterForm() {
   const enviarCodigoVerificacao = async (email: string): Promise<boolean> => {
     try {
       setLoading(true);
-      // TODO: Implementar chamada para API de envio de código
       console.log("Enviando código de verificação para:", email);
 
-      // Simular envio bem-sucedido
-      await RequestSendCodeVerification(email);
+      const response = await RequestSendCodeVerification(email);
+
+      // Log the verification code for development
+      if (response.data.code) {
+        console.log("Código de verificação gerado:", response.data.code);
+      }
 
       return true;
     } catch (error: any) {
       console.log(
         "Erro ao enviar código de verificação:",
-        error.response?.data?.msg
+        error.response?.data?.msg,
       );
       setFieldError(
         "codigoVerificacao",

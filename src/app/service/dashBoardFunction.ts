@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchTransacoesMock, Transacao } from "../api/fetchTransacoes";
+import { fetchTransacoesMock, Transacao, fetchTransacoes } from "../api/fetchTransacoes";
 
 async function open(action: string, params?: any) {
     try {
@@ -45,7 +45,8 @@ export type DashboardData = {
 
 async function getDashboardAnalytics(): Promise<DashboardData> {
     try {
-        const transactions: Transacao[] = await fetchTransacoesMock();
+        const token = await AsyncStorage.getItem('token');
+        const transactions: Transacao[] = token ? await fetchTransacoes(token) : [];
 
         const storedGoals = await AsyncStorage.getItem('goals');
         const goals: Goal[] = storedGoals ? JSON.parse(storedGoals).map((goal: any) => ({

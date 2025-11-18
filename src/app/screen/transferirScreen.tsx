@@ -106,7 +106,7 @@ export default function TransferirScreen() {
             }
 
             setNomeCompletoDestinatario((conta as any).usuario?.full_name || '');
-            setChaveTransferencia((conta as any).chave_transferencia)
+            setCpfDestinatario((conta as any).usuario?.cpf || '')
 
             setEtapa(3)
         } catch (e) {
@@ -183,7 +183,7 @@ export default function TransferirScreen() {
                     onContinuar={async (valor: number) => {
                         await AsyncStorage.setItem('transferData', JSON.stringify({
                             nome: nomeCompletoDestinatario,
-                            chaveTransferencia,
+                            cpfDestinatario,
                             valor,
                         }));
                         router.push(Rotas.PIXCONFIRM);

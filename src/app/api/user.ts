@@ -3,13 +3,7 @@ import client from "./client";
 import { getMockUserByCpf, getMockUserByPhone, getMockUserByChavePix } from "./mockData";
 
 export const fetchUser = async () => {
-  const token = await AsyncStorage.getItem("token");
-
-  const response = await client.get("/usuario/", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  const response = await client.get("/usuario/");
 
   if (!response.data.usuario) {
     throw new Error();
@@ -31,42 +25,23 @@ export const fetchUserMock = async () => {
 };
 
 export const getDadosDestinatarioByCpf = async (cpf: string) => {
-  const token = await AsyncStorage.getItem("token");
+  const response = await client.get(`/usuario/cpf/${cpf}`);
 
-  const response = await client.get(`/usuario/cpf/${cpf}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-
-  if (response.status >= 200 || response.status <= 200) {
+  if (response.status >= 200 && response.status <= 299) {
     return response.data.conta;
   }
 }
 
 export const getDadosDestinatarioByPhone = async (phone: string) => {
-  const token = await AsyncStorage.getItem("token");
-
-  const response = await client.get(`/usuario/phone/${phone}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (response.status >= 200 || response.status <= 200) {
+  const response = await client.get(`/usuario/phone/${phone}`);
+  if (response.status >= 200 && response.status <= 299) {
     return response.data.conta;
   }
 }
 
 export const getDadosDestinatarioByChavePix = async (chavePix: string) => {
-  const token = await AsyncStorage.getItem("token");
-
-  const response = await client.get(`/usuario/chave-pix/${chavePix}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (response.status >= 200 || response.status <= 200) {
+  const response = await client.get(`/usuario/chave-pix/${chavePix}`);
+  if (response.status >= 200 && response.status <= 299) {
     return response.data.conta;
   }
 };

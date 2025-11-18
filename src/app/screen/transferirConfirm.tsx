@@ -41,7 +41,7 @@ export default function ConfirmarSenhaScreen() {
                     return;
                 }
 
-                const response = await transferir(token, senha, transferData.valor, transferData.chaveTransferencia);
+                const response = await transferir(token, senha, transferData.valor, transferData.cpfDestinatario, 'Transferência via app');
 
                 if (response.status >= 200 || response.status <= 200) {
                     await AsyncStorage.removeItem('transferData');
