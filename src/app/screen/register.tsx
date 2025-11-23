@@ -35,6 +35,7 @@ export default function Register() {
     prevStep,
     handleRegister,
     reenviarCodigoVerificacao,
+    checkPasswordRequirements,
   } = useRegisterForm();
 
   const renderCurrentStep = () => {
@@ -59,6 +60,7 @@ export default function Register() {
             emailChecked={emailChecked}
             loading={loading}
             onUpdateField={updateField}
+            checkPasswordRequirements={checkPasswordRequirements}
           />
         );
       case 3:

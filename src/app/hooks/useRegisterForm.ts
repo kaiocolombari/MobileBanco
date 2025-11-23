@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import Rotas from "../../types/types.route";
+const AsyncStorage = require('@react-native-async-storage/async-storage').default;
 import {
   RequestRegister,
   RequestEmailInUse,
@@ -9,6 +10,7 @@ import {
   RequestSendCodeVerification,
   RequestVerifyCode,
 } from "../api/registerApi";
+import { requestLogin } from "../api/loginApi";
 
 export interface RegisterFormData {
   // Step 1: Personal data
@@ -90,6 +92,15 @@ export function useRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [emailChecked, setEmailChecked] = useState(false);
   const [cpfChecked, setCpfChecked] = useState(false);
+
+  const checkPasswordRequirements = (password: string) => {
+    return {
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumbers: /\d/.test(password),
+      hasSpecialChars: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    };
+  };
 
   const updateField = (
     field: keyof RegisterFormData,
@@ -512,12 +523,37 @@ export function useRegisterForm() {
       const response = await RequestRegister(registerData);
 
       if (response.status === 200 || response.status === 201) {
-        Alert.alert("Sucesso!", "Conta criada com sucesso!", [
-          {
-            text: "OK",
-            onPress: () => router.push(Rotas.LOGIN),
-          },
-        ]);
+        // Auto-login after register
+        try {
+          const loginResponse = await requestLogin(
+            formData.cpf.replace(/\D/g, ""),
+            formData.senha
+          );
+          if (loginResponse.data.token) {
+            await AsyncStorage.setItem('token', loginResponse.data.token);
+            Alert.alert("Sucesso!", "Conta criada e login realizado com sucesso!", [
+              {
+                text: "OK",
+                onPress: () => router.push(Rotas.DASHBOARD),
+              },
+            ]);
+          } else {
+            Alert.alert("Sucesso!", "Conta criada com sucesso!", [
+              {
+                text: "OK",
+                onPress: () => router.push(Rotas.LOGIN),
+              },
+            ]);
+          }
+        } catch (loginError) {
+          console.log("Erro no login automático:", loginError);
+          Alert.alert("Sucesso!", "Conta criada com sucesso!", [
+            {
+              text: "OK",
+              onPress: () => router.push(Rotas.LOGIN),
+            },
+          ]);
+        }
       } else {
         Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
       }
@@ -553,5 +589,6 @@ export function useRegisterForm() {
     prevStep,
     handleRegister,
     reenviarCodigoVerificacao,
+    checkPasswordRequirements,
   };
 }

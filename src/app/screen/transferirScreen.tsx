@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PixComponentValor } from '../components/chavePixForm';
-import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone } from '../api/user';
+import { getDadosDestinatarioByChavePix, getDadosDestinatarioByCpf, getDadosDestinatarioByPhone, fetchUser } from '../api/user';
 import type { AxiosError, AxiosResponse } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
@@ -22,6 +22,7 @@ export default function TransferirScreen() {
     const [nomeCompletoDestinatario, setNomeCompletoDestinatario] = useState("");
     const [cpfDestinatario, setCpfDestinatario] = useState("");
     const [chaveTransferencia, setChaveTransferencia] = useState("");
+    const [chaveTransferenciaDestinatario, setChaveTransferenciaDestinatario] = useState("");
     const [qrParsedData, setQrParsedData] = useState<any>(null);
     const [errorEtapa2, setErrorEtapa2] = useState<string | null>(null);
 
@@ -55,6 +56,7 @@ export default function TransferirScreen() {
 
                     setNomeCompletoDestinatario((response as AxiosResponse).data?.usuario?.full_name || parsed.chave);
                     setCpfDestinatario((response as AxiosResponse).data?.usuario?.cpf || '');
+                    setChaveTransferenciaDestinatario((response as AxiosResponse).data?.conta?.chave_transferencia || '');
                     setEtapa(3);
                 } catch (error) {
                     console.log('Error parsing QR data:', error);
@@ -105,10 +107,24 @@ export default function TransferirScreen() {
                     break;
             }
 
-            setNomeCompletoDestinatario((conta as any).usuario?.full_name || '');
-            setCpfDestinatario((conta as any).usuario?.cpf || '')
+            const cpfDest = (conta as any).usuario?.cpf;
+            if (!cpfDest) {
+                setErrorEtapa2("Usuário não encontrado");
+                return;
+            }
 
-            setEtapa(3)
+            // Check if it's self transfer
+            const loggedUser = await fetchUser();
+            if (loggedUser.usuario?.cpf === cpfDest) {
+                setErrorEtapa2("Não é possível transferir para você mesmo");
+                return;
+            }
+
+            setNomeCompletoDestinatario((conta as any).usuario?.full_name || '');
+            setCpfDestinatario(cpfDest);
+            setChaveTransferenciaDestinatario((conta as any).chave_transferencia || '');
+
+            setEtapa(3);
         } catch (e) {
             console.log(e)
             setErrorEtapa2((e as any).response?.data?.msg || "Erro desconhecido ao buscar usuario")
@@ -184,6 +200,7 @@ export default function TransferirScreen() {
                         await AsyncStorage.setItem('transferData', JSON.stringify({
                             nome: nomeCompletoDestinatario,
                             cpfDestinatario,
+                            chaveTransferenciaDestinatario,
                             valor,
                         }));
                         router.push(Rotas.PIXCONFIRM);

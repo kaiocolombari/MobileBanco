@@ -131,8 +131,8 @@ export async function fetchTransacaoById(id: number, token: string) {
     }
 }
 
-export async function transferir(token: string, password: string, value: number, cpf_destinatario: string, descricao: string) {
-  const response = await client.post("/transacao/", { password, value, cpf_destinatario, descricao });
+export async function transferir(token: string, password: string, value: number, chave_transferencia: string, descricao: string) {
+  const response = await client.post("/transacao/", { password, value, chave_transferencia, descricao });
   return response;
 }
 
@@ -220,3 +220,4 @@ export async function fetchTransacaoByIdMock(id: number): Promise<Transacao | nu
 
     return transacao;
 }
+
