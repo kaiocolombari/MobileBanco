@@ -82,7 +82,7 @@ export default function Login() {
 
         {error && <Text style={{ color: "red", marginTop: 10 }}>{error}</Text>}
 
-        <TouchableOpacity style={styles.loginBackButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.loginBackButton} onPress={() => { }}>
           <Text style={styles.loginBackText}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 

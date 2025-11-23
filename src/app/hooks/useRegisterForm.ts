@@ -531,28 +531,13 @@ export function useRegisterForm() {
           );
           if (loginResponse.data.token) {
             await AsyncStorage.setItem('token', loginResponse.data.token);
-            Alert.alert("Sucesso!", "Conta criada e login realizado com sucesso!", [
-              {
-                text: "OK",
-                onPress: () => router.push(Rotas.DASHBOARD),
-              },
-            ]);
+            router.push(Rotas.HOME);
           } else {
-            Alert.alert("Sucesso!", "Conta criada com sucesso!", [
-              {
-                text: "OK",
-                onPress: () => router.push(Rotas.LOGIN),
-              },
-            ]);
+            router.push(Rotas.LOGIN);
           }
         } catch (loginError) {
           console.log("Erro no login automático:", loginError);
-          Alert.alert("Sucesso!", "Conta criada com sucesso!", [
-            {
-              text: "OK",
-              onPress: () => router.push(Rotas.LOGIN),
-            },
-          ]);
+          router.push(Rotas.LOGIN);
         }
       } else {
         Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
