@@ -7,6 +7,7 @@ import {
   RequestRegister,
   RequestEmailInUse,
   RequestCpfInUse,
+  RequestTelefoneInUse,
   RequestSendCodeVerification,
   RequestVerifyCode,
 } from "../api/registerApi";
@@ -92,6 +93,7 @@ export function useRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [emailChecked, setEmailChecked] = useState(false);
   const [cpfChecked, setCpfChecked] = useState(false);
+  const [telefoneChecked, setTelefoneChecked] = useState(false);
 
   const checkPasswordRequirements = (password: string) => {
     return {
@@ -99,6 +101,7 @@ export function useRegisterForm() {
       hasLowercase: /[a-z]/.test(password),
       hasNumbers: /\d/.test(password),
       hasSpecialChars: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      hasMinLength: password.length >= 8,
     };
   };
 
@@ -242,6 +245,22 @@ export function useRegisterForm() {
     }
   };
 
+  const verificarTelefoneExistente = async (telefone: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      const response = await RequestTelefoneInUse(telefone);
+      return response.data.status !== "success";
+    } catch (error: any) {
+      setFieldError(
+        "telefone",
+        "Não foi possível verificar se o telefone já existe. Tente novamente."
+      );
+      return true;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const enviarCodigoVerificacao = async (email: string): Promise<boolean> => {
     try {
       setLoading(true);
@@ -309,6 +328,7 @@ export function useRegisterForm() {
     console.log("CPF verificado:", cpfChecked);
 
     setCpfChecked(false);
+    setTelefoneChecked(false);
 
     if (!cpfChecked) {
       const cpfExiste = await verificarCpfExistente(cpfLimpo);
@@ -317,6 +337,15 @@ export function useRegisterForm() {
         return false;
       }
       setCpfChecked(true);
+    }
+
+    if (!telefoneChecked) {
+      const telefoneExiste = await verificarTelefoneExistente(telLimpo);
+      if (telefoneExiste) {
+        setFieldError("telefone", "Este telefone já está sendo usado por outra conta.");
+        return false;
+      }
+      setTelefoneChecked(true);
     }
 
     return true;
@@ -339,8 +368,8 @@ export function useRegisterForm() {
       hasError = true;
     }
 
-    if (formData.senha && formData.senha.length < 6) {
-      setFieldError("senha", "A senha deve ter pelo menos 6 caracteres.");
+    if (formData.senha && formData.senha.length <= 8) {
+      setFieldError("senha", "A senha deve ter pelo menos 8 caracteres.");
       hasError = true;
     }
 
@@ -567,6 +596,7 @@ export function useRegisterForm() {
     loading,
     emailChecked,
     cpfChecked,
+    telefoneChecked,
     updateField,
     handleCpfChange,
     handleTelefoneChange,

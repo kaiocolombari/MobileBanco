@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { fetchTransacaoByIdMock } from "../api/fetchTransacoes";
+import { fetchTransacaoById } from "../api/fetchTransacoes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../context/ThemeContext";
 
@@ -23,7 +23,13 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
       if (!id) return;
       setLoading(true);
 
-      const data = await fetchTransacaoByIdMock(id);
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const data = await fetchTransacaoById(id, token);
       setTransacao(data);
       if (data) {
         setSucessoState(data.status === 'aprovada');
@@ -42,7 +48,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
     );
   }
 
-  if (!transacao) {
+  if (!transacao || !transacao.valor) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <Text style={{ color: theme.text }}>Não foi possível carregar a transação.</Text>
@@ -50,7 +56,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
     );
   }
 
-  const { valor, descricao, id_transacao, status, conta_origem, conta_destino, tipoTransacao } = transacao;
+  const { valor, descricao, id_transacao, status, conta_origem, conta_destino } = transacao;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -67,7 +73,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
           </Text>
 
           <Text style={[styles.amount, { color: theme.text, fontSize: SCREEN_WIDTH * 0.08 }]}>
-            R$ {valor.toFixed(2).replace(".", ",")}
+            R$ {Number(valor).toFixed(2).replace(".", ",")}
           </Text>
 
           <View style={styles.section}>
@@ -106,7 +112,7 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
 
             <View style={styles.row}>
               <Text style={[styles.label, { color: theme.textSecondary, fontSize: SCREEN_WIDTH * 0.035 }]}>Tipo da transação:</Text>
-              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{tipoTransacao}</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.tipo}</Text>
             </View>
 
             <View style={styles.row}>

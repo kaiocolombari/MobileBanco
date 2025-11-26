@@ -59,8 +59,8 @@ export default function Step2Credentials({
         <Image
           source={
             show
-              ? require("../../../assets/view.png")   
-              : require("../../../assets/hide.png") 
+              ? require("../../../assets/view.png")
+              : require("../../../assets/hide.png")
           }
           style={{ width: 24, height: 24 }}
           resizeMode="contain"
@@ -110,6 +110,9 @@ export default function Step2Credentials({
         </Text>
         <Text style={[styles.requirementText, passwordReqs.hasSpecialChars && styles.requirementMet]}>
           ✓ Pelo menos um caractere especial
+        </Text>
+        <Text style={[styles.requirementText, passwordReqs.hasSpecialChars && styles.requirementMet]}>
+          ✓ Pelo menos 8 caracteres
         </Text>
       </View>
 

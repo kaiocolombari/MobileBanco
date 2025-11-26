@@ -7,7 +7,7 @@ import Rotas from "../../types/types.route";
 interface PixComponentValeuProps {
   nome: string;
   chavePix: string;
-  onContinuar: (valor: number) => void;
+  onContinuar: (valor: number, descricao: string) => void;
   initialValue?: number;
 }
 
@@ -19,6 +19,7 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
 }) => {
   const [valor, setValor] = useState(initialValue ? (initialValue / 100).toFixed(2).replace(".", ",") : "0,00");
   const [editando, setEditando] = useState(false);
+  const [descricao, setDescricao] = useState("");
 
   const formatarValor = (text: string) => {
     let numeros = text.replace(/\D/g, "");
@@ -77,11 +78,22 @@ export const PixComponentValor: React.FC<PixComponentValeuProps> = ({
           <Text style={styles.subText}>Chave Pix</Text>
           <Text style={styles.chaveTexto}>{chavePix}</Text>
         </View>
+
+        <View style={styles.descricaoContainer}>
+          <Text style={styles.subText}>Descrição (opcional)</Text>
+          <TextInput
+            style={styles.descricaoInput}
+            value={descricao}
+            onChangeText={setDescricao}
+            placeholder="Digite uma descrição para a transferência"
+            maxLength={100}
+          />
+        </View>
       </View>
 
       <TouchableOpacity style={styles.buttonContinuar} onPress={() => {
         const valorNumerico = parseFloat(valor.replace(',', '.'));
-        onContinuar(valorNumerico); 
+        onContinuar(valorNumerico, descricao || 'Transferência via app');
       }}>
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>
@@ -111,6 +123,16 @@ const styles = StyleSheet.create({
   pencilImage: { width: 22, height: 22, marginLeft: 10, tintColor: "#666" },
   chaveContainer: { marginTop: 10 },
   chaveTexto: { fontSize: 16, color: "#222", fontWeight: "500" },
+  descricaoContainer: { marginTop: 15 },
+  descricaoInput: {
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: "#222",
+    backgroundColor: "#F9F9F9",
+  },
   buttonContinuar: {
     width: "100%",
     height: 50,

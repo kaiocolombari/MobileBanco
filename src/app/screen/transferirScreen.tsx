@@ -196,14 +196,15 @@ export default function TransferirScreen() {
                 <PixComponentValor
                     nome={nomeCompletoDestinatario}
                     chavePix={valorChave}
-                    onContinuar={async (valor: number) => {
+                    onContinuar={async (valor: number, descricao: string) => {
                         await AsyncStorage.setItem('transferData', JSON.stringify({
                             nome: nomeCompletoDestinatario,
                             cpfDestinatario,
                             chaveTransferenciaDestinatario,
                             valor,
+                            descricao,
                         }));
-                        router.push(Rotas.PIXCONFIRM);
+                        router.push("/screen/transferirConfirm");
                     }}
                     initialValue={qrParsedData?.valor ? qrParsedData.valor * 100 : undefined}
                 />

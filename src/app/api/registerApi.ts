@@ -36,6 +36,11 @@ export const RequestCpfInUse = async (cpf: string) => {
   return response;
 };
 
+export const RequestTelefoneInUse = async (telefone: string) => {
+  const response = await client.get(`/auth/telefone-in-use/${telefone}`);
+  return response;
+};
+
 export const RequestSendCodeVerification = async (email: string) => {
   const response = await client.get(`/auth/send-code-verification/${email}`);
   return response;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity, View, ScrollView } from "react-native";
+import { Text, TouchableOpacity, View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { router } from "expo-router";
 import Rotas from "../../types/types.route";
 
@@ -108,28 +108,33 @@ export default function Register() {
 
         <StepIndicator currentStep={step} />
 
-        <ScrollView
+        <KeyboardAvoidingView
           style={registerStyles.stepScrollView}
-          showsVerticalScrollIndicator={false}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          {renderCurrentStep()}
-          <TouchableOpacity
-            style={registerStyles.loginBackButton}
-            onPress={() => router.push(Rotas.LOGIN)}
-            disabled={loading}>
-            <Text style={registerStyles.loginBackText}>Já tem uma conta?</Text>
-          </TouchableOpacity>
-          
-          <FormNavigation
-            currentStep={step}
-            loading={loading}
-            onNext={nextStep}
-            onPrev={prevStep}
-            onRegister={handleRegister}
-          />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {renderCurrentStep()}
+            <TouchableOpacity
+              style={registerStyles.loginBackButton}
+              onPress={() => router.push(Rotas.LOGIN)}
+              disabled={loading}>
+              <Text style={registerStyles.loginBackText}>Já tem uma conta?</Text>
+            </TouchableOpacity>
+
+            <FormNavigation
+              currentStep={step}
+              loading={loading}
+              onNext={nextStep}
+              onPrev={prevStep}
+              onRegister={handleRegister}
+            />
 
 
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </View>
   );

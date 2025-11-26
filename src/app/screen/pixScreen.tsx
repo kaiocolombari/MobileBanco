@@ -5,7 +5,8 @@ import ImageButton from '../components/ImageButton';
 import { Roboto_400Regular } from '@expo-google-fonts/roboto';
 import Rotas from '../../types/types.route';
 import { router } from 'expo-router';
-import { fetchTransacoesMock, Transacao } from '../api/fetchTransacoes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchTransacoes, Transacao } from '../api/fetchTransacoes';
 import { useTheme } from '../context/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,23 +21,14 @@ export default function pixScreen() {
   useEffect(() => {
     async function loadTransactions() {
       setLoading(true);
-      const data = await fetchTransacoesMock();
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      const data = await fetchTransacoes(token);
 
-      const sortedData = data.sort((a, b) => {
-        const [diaA, mesA, anoA] = a.date.split('/');
-        const [horaA, minA] = a.hora.split(':');
-
-        const dateA = new Date(+anoA, +mesA - 1, +diaA, +horaA, +minA);
-
-        const [diaB, mesB, anoB] = b.date.split('/');
-        const [horaB, minB] = b.hora.split(':');
-
-        const dateB = new Date(+anoB, +mesB - 1, +diaB, +horaB, +minB);
-
-        return dateB.getTime() - dateA.getTime();
-      });
-
-      setTransactions(sortedData);
+      setTransactions(data);
       setLoading(false);
     }
     loadTransactions();

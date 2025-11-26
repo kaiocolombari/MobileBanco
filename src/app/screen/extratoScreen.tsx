@@ -11,7 +11,8 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
-import { fetchTransacoesMock, Transacao } from '../api/fetchTransacoes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchTransacoes, Transacao } from '../api/fetchTransacoes';
 import ComprovanteFull from '../components/ComprovanteFull';
 import Rotas from '../../types/types.route';
 import { useTheme } from '../context/ThemeContext';
@@ -23,32 +24,21 @@ export default function ExtratoScreen() {
     const [transactions, setTransactions] = useState<Transacao[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState<string | null>(null);
-
     useEffect(() => {
         async function loadTransactions() {
             setLoading(true);
-            const data = await fetchTransacoesMock();
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+            const data = await fetchTransacoes(token);
 
-            const sortedData = data.sort((a, b) => {
-                const [diaA, mesA, anoA] = a.date.split('/');
-                const [horaA, minA] = a.hora.split(':');
-
-                const dateA = new Date(+anoA, +mesA - 1, +diaA, +horaA, +minA);
-
-                const [diaB, mesB, anoB] = b.date.split('/');
-                const [horaB, minB] = b.hora.split(':');
-
-                const dateB = new Date(+anoB, +mesB - 1, +diaB, +horaB, +minB);
-
-                return dateB.getTime() - dateA.getTime();
-            });
-
-            setTransactions(sortedData);
+            setTransactions(data);
             setLoading(false);
         }
         loadTransactions();
     }, []);
-
     const getFilteredTransactions = () => {
         if (!activeFilter) return transactions;
 
@@ -163,11 +153,7 @@ export default function ExtratoScreen() {
             <Text style={[styles.headerText, { color: theme.text }]}>Extrato</Text>
 
             <View style={styles.transactionsContainer}>
-                {!loading && getFilteredTransactions().length === 0 ? (
-                    <Text style={[styles.noTransactionsText, { color: theme.text }]}>Nenhuma transação encontrada.</Text>
-                ) : (
-                    <Text style={[styles.transactionsHeader, { color: theme.text }]}>Histórico de Transações</Text>
-                )}
+                <Text style={[styles.transactionsHeader, { color: theme.text }]}>Histórico de Transações</Text>
                 <View style={[styles.filterExtrato]}>
                     <ScrollView
                         horizontal={true}
@@ -206,8 +192,8 @@ export default function ExtratoScreen() {
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
-                {loading ? (
-                    <ActivityIndicator size="large" color={theme.text} style={{ marginTop: 20 }} />
+                {!loading && getFilteredTransactions().length === 0 ? (
+                    <Text style={[styles.noTransactionsText, { color: theme.text }]}>Nenhuma transação encontrada.</Text>
                 ) : (
                     <FlatList
                         data={getFilteredTransactions()}

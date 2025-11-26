@@ -14,6 +14,9 @@ export default function ConfirmarSenhaScreen() {
     const [modalVisivel, setModalVisivel] = useState(false);
     const [transferData, setTransferData] = useState<any>(null);
     const [errorMsg, setErrorMsg] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [transactionId, setTransactionId] = useState<number | null>(null);
 
     useEffect(() => {
         const loadTransferData = async () => {
@@ -32,7 +35,8 @@ export default function ConfirmarSenhaScreen() {
     };
 
     const handleTransferir = async () => {
-        if (senha.length === 6 && transferData) {
+        if (senha.length === 6 && transferData && !loading) {
+            setLoading(true);
             Keyboard.dismiss();
             try {
                 const token = await AsyncStorage.getItem('token');
@@ -41,23 +45,50 @@ export default function ConfirmarSenhaScreen() {
                     return;
                 }
 
-                const response = await transferir(token, senha, transferData.valor, transferData.chaveTransferenciaDestinatario, 'Transferência via app');
+                const response = await transferir(token, senha, transferData.valor, transferData.chaveTransferenciaDestinatario, transferData.descricao);
 
-                if (response.status >= 200 || response.status <= 200) {
+                if (response.status >= 200 && response.status < 300) {
                     await AsyncStorage.removeItem('transferData');
-
-                    Alert.alert('Sucesso', 'Transferência realizada com sucesso!', [
-                        { text: 'OK', onPress: () => router.replace(Rotas.HOME) }
-                    ]);
+                    setTransactionId(response.data.transactionId);
+                    setSuccess(true);
                 } else {
                     setErrorMsg(response.data.msg || 'Erro na transferência');
                 }
             } catch (error: any) {
                 console.log('Erro na transferência:', error);
                 setErrorMsg((error as any).response?.data?.msg || 'Erro na transferência');
+            } finally {
+                setLoading(false);
             }
         }
     };
+
+    if (success) {
+        return (
+            <View style={styles.successContainer}>
+                <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
+                <Text style={styles.successTitle}>Transferência Realizada!</Text>
+                <Text style={styles.successMessage}>Sua transferência foi processada com sucesso.</Text>
+
+                {transactionId && (
+                    <TouchableOpacity
+                        style={styles.receiptButton}
+                        onPress={() => router.push(`/comprovante/${transactionId}`)}
+                    >
+                        <Ionicons name="document-text" size={20} color="white" />
+                        <Text style={styles.receiptText}>Ver Comprovante</Text>
+                    </TouchableOpacity>
+                )}
+
+                <TouchableOpacity
+                    style={styles.homeButton}
+                    onPress={() => router.replace(Rotas.HOME)}
+                >
+                    <Text style={styles.homeText}>Voltar ao Início</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -113,11 +144,11 @@ export default function ConfirmarSenhaScreen() {
                 />
 
                 <TouchableOpacity
-                    style={[styles.transferButton, senha.length < 6 && { opacity: 0.6 }]}
-                    disabled={senha.length < 6}
+                    style={[styles.transferButton, (senha.length < 6 || loading) && { opacity: 0.6 }]}
+                    disabled={senha.length < 6 || loading}
                     onPress={handleTransferir}
                 >
-                    <Text style={styles.transferText}>Transferir</Text>
+                    <Text style={styles.transferText}>{loading ? 'Transferindo...' : 'Transferir'}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -135,6 +166,51 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFF",
         padding: 24,
         justifyContent: "center",
+    },
+    successContainer: {
+        flex: 1,
+        backgroundColor: "#FFF",
+        padding: 24,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    successTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#4CAF50",
+        marginTop: 20,
+        marginBottom: 10,
+        textAlign: "center",
+    },
+    successMessage: {
+        fontSize: 16,
+        color: "#666",
+        textAlign: "center",
+        marginBottom: 40,
+    },
+    receiptButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#1B98E0",
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        marginBottom: 20,
+    },
+    receiptText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "600",
+        marginLeft: 8,
+    },
+    homeButton: {
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+    },
+    homeText: {
+        color: "#1B98E0",
+        fontSize: 16,
+        fontWeight: "600",
     },
     title: {
         fontSize: 18,

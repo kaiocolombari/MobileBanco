@@ -11,10 +11,12 @@ import { router } from "expo-router";
 import Rotas from "../../types/types.route";
 import { requestLogin } from "../api/loginApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../context/ThemeContext";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Login() {
+  const { theme } = useTheme();
   const [cpf, setCpf] = useState<string>("");
   const [senha, setSenha] = useState<string>("");
 
@@ -95,6 +97,14 @@ export default function Login() {
             {loading ? "Entrando..." : "Entrar"}
           </Text>
         </TouchableOpacity>
+        <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
+        <View style={styles.loginBottomText}>
+          <Text style={[styles.loginBackText, { color: 'black' }]}>Não possui uma conta?</Text>
+          <TouchableOpacity style={[styles.loginBackButton]} onPress={() => { router.push(Rotas.REGISTER) }}>
+            <Text style={styles.loginBackText}>Cadastre-se</Text>
+          </TouchableOpacity>
+        </View>
+
       </View>
     </View>
   );
@@ -121,6 +131,13 @@ const styles = StyleSheet.create({
     paddingVertical: "6%",
     flexGrow: 1,
   },
+  line: {
+    width: "100%",
+    height: 5,
+    marginBottom: 10,
+    marginTop: height * 0.34,
+  },
+
   loginTitle: {
     fontSize: width * 0.08,
     color: "black",
@@ -156,11 +173,21 @@ const styles = StyleSheet.create({
     fontSize: width * 0.045,
     fontFamily: "Roboto_400Regular",
   },
+
   loginBackButton: {
-    marginTop: 8,
+    marginTop: 2,
+    marginRight: width * 0.15,
   },
+
   loginBackText: {
     color: "blue",
-    fontSize: width * 0.04,
+    fontSize: width * 0.03,
   },
+  loginBottomText: {
+    marginLeft: width * 0.218,
+    marginTop: height * 0.02,
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center"
+  }
 });

@@ -70,7 +70,7 @@ export default function HomeScreen() {
         const usuario = await fetchUser();
 
         console.log(usuario)
-        setNome(usuario.full_name);
+        setNome(usuario.full_name.split(' ')[0]);
         setSaldo(parseFloat(usuario.conta_bancaria.saldo));
       } catch {
         await AsyncStorage.removeItem("token")

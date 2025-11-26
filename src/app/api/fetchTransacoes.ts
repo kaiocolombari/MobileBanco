@@ -40,7 +40,7 @@ export async function fetchTransacoes(token: string): Promise<Transacao[]> {
   try {
     const response = await client.get("/transacao/");
     if (response.data.status === "success") {
-      return response.data.data.transacoesEnviadas.concat(response.data.data.transacoesRecebidas).map((t: any) => ({
+      const transacoesEnviadas = response.data.data.transacoesEnviadas.map((t: any) => ({
         id_transacao: t.id_transacao,
         valor: t.valor,
         tipo: t.tipo,
@@ -48,12 +48,29 @@ export async function fetchTransacoes(token: string): Promise<Transacao[]> {
         status: t.status,
         date: new Date(t.createdAt).toLocaleDateString('pt-BR'),
         hora: new Date(t.createdAt).toLocaleTimeString('pt-BR'),
-        tipoTransacao: t.tipo === 'transferência' ? (t.conta_origem ? 'enviado' : 'recebido') : 'boleto',
+        tipoTransacao: 'enviado',
         conta_origem: t.conta_origem,
         conta_destino: t.conta_destino,
         remetente: t.usuario_origem ? { full_name: t.usuario_origem.full_name } : undefined,
         destinatario: t.usuario_destino ? { full_name: t.usuario_destino.full_name } : undefined,
       }));
+
+      const transacoesRecebidas = response.data.data.transacoesRecebidas.map((t: any) => ({
+        id_transacao: t.id_transacao,
+        valor: t.valor,
+        tipo: t.tipo,
+        descricao: t.descricao,
+        status: t.status,
+        date: new Date(t.createdAt).toLocaleDateString('pt-BR'),
+        hora: new Date(t.createdAt).toLocaleTimeString('pt-BR'),
+        tipoTransacao: 'recebido',
+        conta_origem: t.conta_origem,
+        conta_destino: t.conta_destino,
+        remetente: t.usuario_origem ? { full_name: t.usuario_origem.full_name } : undefined,
+        destinatario: t.usuario_destino ? { full_name: t.usuario_destino.full_name } : undefined,
+      }));
+
+      return transacoesEnviadas.concat(transacoesRecebidas);
     }
     return [];
   } catch (error) {
@@ -90,40 +107,17 @@ export async function fetchTransacaoById(id: number, token: string) {
             },
         });
 
-        const transacao = response.data.data;
-        if (!transacao) return null;
-
-        // Fetch logged user
-        const loggedUser = await fetchUser();
-        const loggedUserName = loggedUser?.usuario?.full_name || "Usuário";
-
-        let remetente, destinatario;
-
-        if (transacao.tipoTransacao === 'enviado') {
-            remetente = { full_name: loggedUserName };
-            if (transacao.conta_destino) {
-                const destUser = await fetchUserByAccountId(transacao.conta_destino.id_conta, token);
-                destinatario = { full_name: destUser?.full_name || "Destinatário" };
-            }
-        } else if (transacao.tipoTransacao === 'recebido') {
-            destinatario = { full_name: loggedUserName };
-            if (transacao.conta_origem) {
-                const origUser = await fetchUserByAccountId(transacao.conta_origem.id_conta, token);
-                remetente = { full_name: origUser?.full_name || "Remetente" };
-            }
-        } else if (transacao.tipoTransacao === 'boleto') {
-            destinatario = { full_name: loggedUserName };
-            if (transacao.conta_origem) {
-                const origUser = await fetchUserByAccountId(transacao.conta_origem.id_conta, token);
-                remetente = { full_name: origUser?.full_name || "Boleto" };
-            }
+        if (response.data.status !== "success") {
+            return null;
         }
+
+        const transacao = response.data.data.transacao;
+        if (!transacao) return null;
 
         return {
             ...transacao,
-            tipoTransacao: transacao.tipoTransacao as 'enviado' | 'recebido' | 'boleto',
-            remetente,
-            destinatario,
+            remetente: response.data.data.usuario_origem ? { full_name: response.data.data.usuario_origem.full_name } : undefined,
+            destinatario: response.data.data.usuario_destino ? { full_name: response.data.data.usuario_destino.full_name } : undefined,
         };
     } catch (error) {
         console.error("Erro ao buscar transação por id:", error);
