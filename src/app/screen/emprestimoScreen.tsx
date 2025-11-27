@@ -7,11 +7,13 @@ import {
   ScrollView,
   Alert,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { router } from 'expo-router';
 import ValidatedInput from '../components/ValidatedInput';
+import { solicitarEmprestimo, listarEmprestimos, pagarParcela, Emprestimo, Parcela } from '../api/emprestimoApi';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,7 +23,12 @@ export default function EmprestimoScreen() {
   const [loanTerm, setLoanTerm] = useState(12);
   const [monthlyPayment, setMonthlyPayment] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
-  const [interestRate] = useState(0.009);
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [loans, setLoans] = useState<Emprestimo[]>([]);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [selectedParcela, setSelectedParcela] = useState<Parcela | null>(null);
+  const [interestRate] = useState(0.01); // Match backend rate of 1% per month
 
   const calculatePayment = (principal: number, rate: number, months: number) => {
     if (principal <= 0 || months <= 0) return { monthly: 0, total: 0 };
@@ -39,21 +46,73 @@ export default function EmprestimoScreen() {
     setTotalPayment(total);
   }, [loanAmount, loanTerm, interestRate]);
 
-  const handleApply = () => {
+  useEffect(() => {
+    loadLoans();
+  }, []);
+
+  const loadLoans = async () => {
+    try {
+      const userLoans = await listarEmprestimos();
+      setLoans(userLoans);
+    } catch (error) {
+      console.error('Erro ao carregar empréstimos:', error);
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!selectedParcela) return;
+
+    if (!password || password.length !== 6) {
+      Alert.alert('Erro', 'Digite uma senha de 6 dígitos');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await pagarParcela(selectedParcela.id_parcela, password);
+      Alert.alert('Sucesso', 'Parcela paga com sucesso!');
+      setSelectedParcela(null);
+      setPassword('');
+      loadLoans();
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApply = async () => {
     const amount = parseFloat(loanAmount.replace(/[^0-9.]/g, '')) || 0;
-    if (amount < 1000) {
-      Alert.alert('Erro', 'O valor mínimo do empréstimo é R$ 1.000,00');
+    if (amount < 100) {
+      Alert.alert('Erro', 'O valor mínimo do empréstimo é R$ 100,00');
       return;
     }
-    if (amount > 50000) {
-      Alert.alert('Erro', 'O valor máximo do empréstimo é R$ 50.000,00');
+    if (amount > 10000) {
+      Alert.alert('Erro', 'O valor máximo do empréstimo é R$ 10.000,00');
       return;
     }
-    Alert.alert(
-      'Solicitação Enviada',
-      'Sua solicitação de empréstimo foi enviada para análise. Você será notificado em breve.',
-      [{ text: 'OK', onPress: () => router.back() }]
-    );
+    if (!password || password.length !== 6) {
+      Alert.alert('Erro', 'Digite uma senha de 6 dígitos');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await solicitarEmprestimo(amount, loanTerm, password);
+      Alert.alert(
+        'Sucesso',
+        'Empréstimo solicitado com sucesso! O valor foi creditado em sua conta.',
+        [{ text: 'OK', onPress: () => {
+          loadLoans();
+          setLoanAmount('');
+          setPassword('');
+        } }]
+      );
+    } catch (error: any) {
+      Alert.alert('Erro', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -82,7 +141,22 @@ export default function EmprestimoScreen() {
             maxLength={10}
           />
           <Text style={[styles.hint, { color: theme.textSecondary }]}>
-            Mínimo: R$ 1.000,00 | Máximo: R$ 50.000,00
+            Mínimo: R$ 100,00 | Máximo: R$ 10.000,00
+          </Text>
+        </View>
+
+        <View style={[styles.card, { backgroundColor: theme.card }]}>
+          <Text style={[styles.cardTitle, { color: theme.text }]}>Senha da Conta</Text>
+          <ValidatedInput
+            placeholder="Digite sua senha de 6 dígitos"
+            value={password}
+            onChangeText={(text) => setPassword(text.replace(/[^0-9]/g, ''))}
+            keyboardType="numeric"
+            maxLength={6}
+            secureTextEntry
+          />
+          <Text style={[styles.hint, { color: theme.textSecondary }]}>
+            Senha necessária para confirmar a solicitação
           </Text>
         </View>
 
@@ -152,11 +226,95 @@ export default function EmprestimoScreen() {
           </Text>
         </View>
 
+        {loans.length > 0 && (
+          <View style={[styles.card, { backgroundColor: theme.card }]}>
+            <Text style={[styles.cardTitle, { color: theme.text }]}>Suas Parcelas</Text>
+            {loans.map((loan) =>
+              loan.parcelas?.map((parcela) => (
+                <View key={parcela.id_parcela} style={styles.loanItem}>
+                  <View style={styles.loanInfo}>
+                    <Text style={[styles.loanText, { color: theme.text }]}>
+                      Parcela {parcela.numero_parcela} de {loan.prazo_meses}
+                    </Text>
+                    <Text style={[styles.loanText, { color: theme.text }]}>
+                      Valor: {formatCurrency(parcela.valor_parcela)}
+                    </Text>
+                    <Text style={[styles.loanText, { color: theme.text }]}>
+                      Vencimento: {new Date(parcela.data_vencimento).toLocaleDateString('pt-BR')}
+                    </Text>
+                    <Text style={[styles.loanText, { color: theme.text }]}>
+                      Status: {parcela.status === 'pago' ? 'Pago' : parcela.status === 'atrasado' ? 'Atrasado' : 'Pendente'}
+                    </Text>
+                  </View>
+                  {parcela.status !== 'pago' && (
+                    <TouchableOpacity
+                      style={[styles.payButton, { backgroundColor: theme.button }]}
+                      onPress={() => setSelectedParcela(parcela)}
+                    >
+                      <Text style={styles.payButtonText}>Pagar</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))
+            )}
+          </View>
+        )}
+
+        {selectedParcela && (
+          <View style={[styles.card, { backgroundColor: theme.card }]}>
+            <Text style={[styles.cardTitle, { color: theme.text }]}>Pagar Parcela</Text>
+            <Text style={[styles.loanText, { color: theme.text }]}>
+              Parcela {selectedParcela.numero_parcela}
+            </Text>
+            <Text style={[styles.loanText, { color: theme.text }]}>
+              Valor: {formatCurrency(selectedParcela.valor_parcela)}
+            </Text>
+            <Text style={[styles.loanText, { color: theme.text }]}>
+              Vencimento: {new Date(selectedParcela.data_vencimento).toLocaleDateString('pt-BR')}
+            </Text>
+            <ValidatedInput
+              placeholder="Senha de 6 dígitos"
+              value={password}
+              onChangeText={(text) => setPassword(text.replace(/[^0-9]/g, ''))}
+              keyboardType="numeric"
+              maxLength={6}
+              secureTextEntry
+            />
+            <View style={styles.paymentButtons}>
+              <TouchableOpacity
+                style={[styles.cancelButton, { backgroundColor: theme.card }]}
+                onPress={() => {
+                  setSelectedParcela(null);
+                  setPassword('');
+                }}
+              >
+                <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.confirmButton, { backgroundColor: theme.button }]}
+                onPress={handlePayment}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <Text style={styles.confirmButtonText}>Confirmar Pagamento</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         <TouchableOpacity
           style={[styles.applyButton, { backgroundColor: theme.button }]}
           onPress={handleApply}
+          disabled={loading}
         >
-          <Text style={styles.applyButtonText}>Solicitar Empréstimo</Text>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.applyButtonText}>Solicitar Empréstimo</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -266,6 +424,62 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontFamily: 'Roboto_500Medium',
+  },
+  loanItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  loanInfo: {
+    flex: 1,
+  },
+  loanText: {
+    fontSize: 14,
+    fontFamily: 'Roboto_400Regular',
+    marginVertical: 2,
+  },
+  payButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  payButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Roboto_500Medium',
+  },
+  paymentButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+  },
+  cancelButtonText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Roboto_500Medium',
+  },
+  confirmButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  confirmButtonText: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 14,
     fontFamily: 'Roboto_500Medium',
   },
 });

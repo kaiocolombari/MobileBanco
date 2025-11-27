@@ -35,6 +35,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [hideBalance, setHideBalance] = useState(false);
 
   type Avaliacao = {
     user: string;
@@ -105,13 +106,23 @@ export default function HomeScreen() {
               <Text style={[styles.hello, { color: '#FFFFFF' }]}>Olá, {nome}</Text>
             </View>
             <View style={styles.headerIcons}>
-              <Ionicons name="help-circle-outline" size={25} color="white" />
+              <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
+                <Ionicons
+                  name={hideBalance ? "eye-off-outline" : "eye-outline"}
+                  size={25}
+                  color={"white"}
+                  style={{ marginLeft: 10, marginRight: 10 }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => { }}>
+                <Ionicons name="help-circle-outline" size={25} color="white" />
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => { router.push(Rotas.CONFIG) }}>
                 <Ionicons
                   name="settings-outline"
                   size={25}
                   color="white"
-                  style={{ marginLeft: 15 }}
+                  style={{ marginLeft: 10, marginRight: 0 }}
                 />
               </TouchableOpacity>
             </View>
@@ -119,7 +130,12 @@ export default function HomeScreen() {
 
           <View style={styles.balanceContainer}>
             <Text style={[styles.balanceTitle, { color: theme.textSecondary }]}>Conta</Text>
-            <Text style={[styles.balanceValue, { color: theme.imageTintColor }]}>R$ {saldo.toFixed(2)}</Text>
+            <View style={styles.balanceRow}>
+              <Text style={[styles.balanceValue, { color: theme.imageTintColor }]}>
+                R$ {hideBalance ? "••••••" : saldo.toFixed(2)}
+              </Text>
+
+            </View>
           </View>
 
           <View style={{ marginTop: 12 }}>
@@ -275,10 +291,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: "Roboto_400Regular",
   },
+  balanceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
   balanceValue: {
     fontSize: 22,
     fontFamily: "Roboto_700Bold",
-    marginTop: 4,
   },
 
   extratoBtn: {
