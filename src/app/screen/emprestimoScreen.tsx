@@ -28,7 +28,7 @@ export default function EmprestimoScreen() {
   const [loans, setLoans] = useState<Emprestimo[]>([]);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [selectedParcela, setSelectedParcela] = useState<Parcela | null>(null);
-  const [interestRate] = useState(0.01); // Match backend rate of 1% per month
+  const [interestRate] = useState(0.01); 
 
   const calculatePayment = (principal: number, rate: number, months: number) => {
     if (principal <= 0 || months <= 0) return { monthly: 0, total: 0 };

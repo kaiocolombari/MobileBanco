@@ -37,6 +37,21 @@ export default function HomeScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [hideBalance, setHideBalance] = useState(false);
 
+  const toggleBalanceVisibility = async () => {
+    const newHideState = !hideBalance;
+    setHideBalance(newHideState);
+    if (!newHideState) {
+      // Quando revelando o saldo, atualiza os dados
+      try {
+        const usuario = await fetchUser();
+        setNome(usuario.full_name.split(' ')[0]);
+        setSaldo(parseFloat(usuario.conta_bancaria.saldo));
+      } catch (error) {
+        console.error("Erro ao atualizar saldo:", error);
+      }
+    }
+  };
+
   type Avaliacao = {
     user: string;
     rating: string;
@@ -106,7 +121,7 @@ export default function HomeScreen() {
               <Text style={[styles.hello, { color: '#FFFFFF' }]}>Olá, {nome}</Text>
             </View>
             <View style={styles.headerIcons}>
-              <TouchableOpacity onPress={() => setHideBalance(!hideBalance)}>
+              <TouchableOpacity onPress={toggleBalanceVisibility}>
                 <Ionicons
                   name={hideBalance ? "eye-off-outline" : "eye-outline"}
                   size={25}
