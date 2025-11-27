@@ -60,51 +60,55 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.header}>
         <Text style={styles.title}>VIPER</Text>
       </View>
       <View style={styles.loginContainer}>
-        <Text style={styles.loginTitle}>Bem-vindo de volta!</Text>
-        <Text style={styles.loginSubtitle}>Reconecte com sua conta</Text>
-        <TextInput
-          placeholder="CPF"
-          style={styles.loginInput}
-          value={cpf}
-          keyboardType="numeric"
-          onChangeText={handleCpfChange}
-          maxLength={14}
-        />
-        <TextInput
-          placeholder="Senha"
-          style={styles.loginInput}
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-        />
+        <View style={styles.formContainer}>
+          <Text style={styles.loginTitle}>Bem-vindo de volta!</Text>
+          <Text style={styles.loginSubtitle}>Reconecte com sua conta</Text>
+          <TextInput
+            placeholder="CPF"
+            style={styles.loginInput}
+            value={cpf}
+            keyboardType="numeric"
+            onChangeText={handleCpfChange}
+            maxLength={14}
+          />
+          <TextInput
+            placeholder="Senha"
+            style={styles.loginInput}
+            value={senha}
+            onChangeText={setSenha}
+            secureTextEntry
+          />
 
-        {error && <Text style={{ color: "red", marginTop: 10 }}>{error}</Text>}
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <TouchableOpacity style={styles.loginBackButton} onPress={() => { }}>
-          <Text style={styles.loginBackText}>Esqueceu sua senha?</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.loginBackButton} onPress={() => { }}>
+            <Text style={styles.loginBackText}>Esqueceu sua senha?</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.loginButton, loading && { opacity: 0.6 }]}
-          onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? "Entrando..." : "Entrar"}
-          </Text>
-        </TouchableOpacity>
-        <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
-        <View style={styles.loginBottomText}>
-          <Text style={[styles.loginBackText, { color: 'black' }]}>Não possui uma conta?</Text>
-          <TouchableOpacity style={[styles.loginBackButton]} onPress={() => { router.push(Rotas.REGISTER) }}>
-            <Text style={styles.loginBackText}>Cadastre-se</Text>
+          <TouchableOpacity
+            style={[styles.loginButton, loading && { opacity: 0.6 }]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Entrando..." : "Entrar"}
+            </Text>
           </TouchableOpacity>
         </View>
 
+        <View style={styles.bottomContainer}>
+          <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
+          <View style={styles.loginBottomText}>
+            <Text style={[styles.loginBackText, { color: 'black' }]}>Não possui uma conta?</Text>
+            <TouchableOpacity style={[styles.loginBackButton]} onPress={() => { router.push(Rotas.REGISTER) }}>
+              <Text style={styles.loginBackText}>Cadastre-se</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -115,27 +119,36 @@ const styles = StyleSheet.create({
     backgroundColor: "#1B98E0",
     flex: 1,
   },
+  header: {
+    alignItems: 'center',
+    paddingTop: height * 0.05,
+    paddingBottom: height * 0.05,
+  },
   title: {
     fontSize: width * 0.15,
     color: "white",
     textAlign: "center",
-    marginTop: height * 0.05,
     fontFamily: "Sanchez_400Regular",
-    marginBottom: height * 0.05,
   },
   loginContainer: {
     backgroundColor: "white",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    flex: 1,
+  },
+  formContainer: {
     paddingHorizontal: "8%",
-    paddingVertical: "6%",
-    flexGrow: 1,
+    paddingTop: "6%",
+    flex: 1,
+  },
+  bottomContainer: {
+    paddingHorizontal: "8%",
+    paddingBottom: 10,
   },
   line: {
     width: "100%",
     height: 5,
-    marginBottom: 10,
-    marginTop: height * 0.34,
+    marginBottom: 20,
   },
 
   loginTitle: {
@@ -157,6 +170,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 15,
     paddingHorizontal: 12,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
+    fontSize: width * 0.04,
   },
   loginButton: {
     width: "50%",
@@ -184,10 +202,8 @@ const styles = StyleSheet.create({
     fontSize: width * 0.03,
   },
   loginBottomText: {
-    marginLeft: width * 0.218,
-    marginTop: height * 0.02,
-    justifyContent: "space-between",
+    justifyContent: "center",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   }
 });

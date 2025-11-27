@@ -111,6 +111,7 @@ export default function Register() {
         <KeyboardAvoidingView
           style={registerStyles.stepScrollView}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}

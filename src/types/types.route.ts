@@ -14,7 +14,9 @@ const Rotas = {
   COFRINHO: "screen/cofrinhoScreen",
   DASHBOARD: "screen/dashboardScreen",
   EMPRESTIMO: "screen/emprestimoScreen",
-  RECARGA: "screen/recarga"
+  RECARGA: "screen/recarga",
+  QRGENERATOR: "screen/qrGenerator",
+  QRSCANNER: "screen/qrScanner",
 }
 
 export default Rotas

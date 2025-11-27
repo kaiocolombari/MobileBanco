@@ -116,9 +116,14 @@ export default function pixScreen() {
         <Text style={[styles.headerText, { color: theme.text }]}>Área Pix</Text>
       </View>
       <View style={styles.iconesPix}>
-        <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
-        <ImageButton image={require("../../assets/copiaCola.png")} label="Pix Copia e Cola" onPress={() => { }} />
-        <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { router.push('/qrScanner') }} />
+        <View style={styles.iconRow}>
+          <ImageButton image={require("../../assets/trans3.png")} label="Transferir" onPress={() => { router.push(Rotas.TRANSPIX) }} />
+          <ImageButton image={require("../../assets/copiaCola.png")} label="Pix Copia e Cola" onPress={() => { }} />
+          <ImageButton image={require("../../assets/Qr_Code.png")} label="Ler QR Code" onPress={() => { router.push('/screen/qrScanner') }} />
+        </View>
+        <View style={styles.iconRowSingle}>
+          <ImageButton image={require("../../assets/Qr_Code.png")} label="Gerar QR Code" onPress={() => { router.push('/screen/qrGenerator') }} />
+        </View>
       </View>
       <View style={[styles.line, { backgroundColor: theme.imageButtonCircle }]}></View>
 
@@ -163,10 +168,17 @@ const styles = StyleSheet.create({
     padding: 16
   },
   iconesPix: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 20
+  },
+  iconRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  iconRowSingle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   line: {
     width: "100%",
