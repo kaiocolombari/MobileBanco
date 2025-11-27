@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchTransacoesMock, Transacao, fetchTransacoes } from "../api/fetchTransacoes";
+import { fetchUser, withdrawFromCofrinho } from "../api/user";
 
 async function open(action: string, params?: any) {
     try {
@@ -47,6 +48,7 @@ async function getDashboardAnalytics(): Promise<DashboardData> {
     try {
         const token = await AsyncStorage.getItem('token');
         const transactions: Transacao[] = token ? await fetchTransacoes(token) : [];
+        const usuario = await fetchUser();
 
         const storedGoals = await AsyncStorage.getItem('goals');
         const goals: Goal[] = storedGoals ? JSON.parse(storedGoals).map((goal: any) => ({
@@ -66,7 +68,7 @@ async function getDashboardAnalytics(): Promise<DashboardData> {
             }
         });
 
-        const totalPiggyBank = goals.reduce((sum, goal) => sum + goal.current, 0);
+        const totalPiggyBank = usuario.conta_bancaria.cofrinho || 0;
         const balance = totalIncome - totalExpenses - totalPiggyBank;
 
         const monthlyMap = new Map<string, { income: number; expenses: number }>();
@@ -91,11 +93,30 @@ async function getDashboardAnalytics(): Promise<DashboardData> {
             .map(([month, data]) => ({ month, ...data }))
             .sort((a, b) => a.month.localeCompare(b.month));
 
+        // Check for completed goals and auto-withdraw
+        for (let i = 0; i < goals.length; i++) {
+            const goal = goals[i];
+            const progress = goal.target > 0 ? (goal.current / goal.target) * 100 : 0;
+            if (progress >= 100 && goal.current > 0) {
+                // Auto-withdraw
+                try {
+                    await withdrawFromCofrinho(goal.current);
+                    goals[i].current = 0;
+                    goals[i].status = 'completed';
+                } catch (error) {
+                    console.error('Erro ao retirar meta concluída:', error);
+                }
+            }
+        }
+
+        // Save updated goals
+        await AsyncStorage.setItem('goals', JSON.stringify(goals));
+
         const piggyBankGoals = goals.map(goal => ({
             name: goal.name,
             current: goal.current,
             target: goal.target,
-            progress: (goal.current / goal.target) * 100,
+            progress: goal.target > 0 ? (goal.current / goal.target) * 100 : 0,
         }));
 
         const transactionCategories = [

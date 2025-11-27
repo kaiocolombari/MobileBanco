@@ -16,6 +16,8 @@ import { getDashboardAnalytics, DashboardData } from "../service/dashBoardFuncti
 import Rotas from "../../types/types.route";
 import { useTheme } from "../context/ThemeContext";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { withdrawFromCofrinho } from '../api/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get("window");
 
@@ -45,6 +47,22 @@ export default function DashboardScreen() {
   const onRefresh = () => {
     setRefreshing(true);
     loadDashboardData();
+  };
+
+  const handleWithdrawCofrinho = async () => {
+    if (!dashboardData || dashboardData.totalPiggyBank <= 0) return;
+
+    try {
+      const response = await withdrawFromCofrinho(dashboardData.totalPiggyBank);
+      if (response.status === 'success') {
+        // Reload dashboard
+        loadDashboardData();
+      } else {
+        alert(response.msg || 'Erro ao retirar do cofrinho');
+      }
+    } catch (error) {
+      alert('Erro ao conectar');
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -125,7 +143,14 @@ export default function DashboardScreen() {
   };
 
   const BarChart = ({ data }: { data: { month: string; income: number; expenses: number }[] }) => {
-    const maxValue = Math.max(...data.flatMap(item => [item.income, item.expenses]));
+    if (data.length === 0) {
+      return (
+        <View style={styles.barChartContainer}>
+          <Text style={{ color: theme.text }}>Sem dados para exibir</Text>
+        </View>
+      );
+    }
+    const maxValue = Math.max(...data.flatMap(item => [item.income, item.expenses])) || 1;
     const chartHeight = 120;
     const chartWidth = width - 60;
     const barWidth = (chartWidth / data.length) * 0.8;
@@ -225,6 +250,14 @@ export default function DashboardScreen() {
                 <Text style={[styles.summaryValue, { color: '#FF9800' }]}>
                   {formatCurrency(dashboardData.totalPiggyBank)}
                 </Text>
+                {dashboardData.totalPiggyBank > 0 && (
+                  <TouchableOpacity
+                    style={[styles.withdrawButton, { backgroundColor: theme.primary, marginTop: 10 }]}
+                    onPress={handleWithdrawCofrinho}
+                  >
+                    <Text style={styles.withdrawButtonText}>Retirar Tudo</Text>
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
                 <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Saldo</Text>
@@ -434,5 +467,16 @@ const styles = StyleSheet.create({
   goalAmount: {
     fontSize: 14,
     textAlign: 'right',
+  },
+  withdrawButton: {
+    marginTop: 10,
+    padding: 8,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  withdrawButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

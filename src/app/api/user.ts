@@ -142,3 +142,18 @@ export const getDadosDestinatarioByChavePixMock = async (chavePix: string) => {
     }
   };
 };
+
+export const updateChavePix = async (chave_transferencia: string) => {
+  const response = await client.patch("/usuario/chave-pix", { chave_transferencia });
+  return response.data;
+};
+
+export const addToCofrinho = async (valor: number) => {
+  const response = await client.post("/usuario/cofrinho/add", { valor });
+  return response.data;
+};
+
+export const withdrawFromCofrinho = async (valor: number) => {
+  const response = await client.post("/usuario/cofrinho/withdraw", { valor });
+  return response.data;
+};
