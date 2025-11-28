@@ -15,6 +15,7 @@ import { useTheme } from '../context/ThemeContext';
 import { router } from 'expo-router';
 import ValidatedInput from '../components/ValidatedInput';
 import { solicitarEmprestimo, listarEmprestimos, pagarParcela, Emprestimo, Parcela } from '../api/emprestimoApi';
+import Rotas from '../../types/types.route';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,7 +42,7 @@ export default function EmprestimoScreen() {
   };
 
   useEffect(() => {
-    const amount = parseFloat(loanAmount.replace(/[^0-9.]/g, '')) || 0;
+    const amount = parseFloat(loanAmount) || 0;
     const { monthly, total } = calculatePayment(amount, interestRate, loanTerm);
     setMonthlyPayment(monthly);
     setTotalPayment(total);
@@ -88,7 +89,9 @@ export default function EmprestimoScreen() {
   };
 
   const handleApply = async () => {
-    const amount = parseFloat(loanAmount.replace(/[^0-9.]/g, '')) || 0;
+    console.log('handleApply called');
+    const amount = parseFloat(loanAmount) || 0;
+    console.log('amount:', amount);
     if (amount < 100) {
       Alert.alert('Erro', 'O valor mínimo do empréstimo é R$ 100,00');
       return;
@@ -112,18 +115,19 @@ export default function EmprestimoScreen() {
           onPress: async () => {
             setLoading(true);
             try {
-              await solicitarEmprestimo(amount, loanTerm, password);
+              console.log('Solicitando empréstimo:', { amount, loanTerm, password });
+              const result = await solicitarEmprestimo(amount, loanTerm, password);
+              console.log('Resultado:', result);
               Alert.alert(
                 'Sucesso',
                 'Empréstimo solicitado com sucesso! O valor foi creditado em sua conta.',
                 [{ text: 'OK', onPress: () => {
-                  loadLoans();
-                  setLoanAmount('');
-                  setPassword('');
+                  router.replace(Rotas.HOME);
                 } }]
               );
             } catch (error: any) {
-              Alert.alert('Erro', error.message);
+              console.log('Erro no empréstimo:', error);
+              Alert.alert('Erro', error.message || 'Erro desconhecido');
             } finally {
               setLoading(false);
             }
@@ -229,7 +233,7 @@ export default function EmprestimoScreen() {
           <View style={styles.summaryRow}>
             <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Juros totais:</Text>
             <Text style={[styles.summaryValue, { color: theme.primary }]}>
-              {formatCurrency(totalPayment - (parseFloat(loanAmount.replace(/[^0-9.]/g, '')) || 0))}
+              {formatCurrency(totalPayment - (parseFloat(loanAmount) || 0))}
             </Text>
           </View>
         </View>
@@ -354,7 +358,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 30,
+    paddingBottom: 100,
   },
   header: {
     flexDirection: "row",
