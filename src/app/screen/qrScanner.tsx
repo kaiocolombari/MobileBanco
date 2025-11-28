@@ -30,40 +30,44 @@ export default function QrScanner() {
         // Fetch recipient name
         try {
           const response = await fetch(`http://192.168.0.76:3000/api/v1/user/chave-pix/${qrData.recipient}`);
+          let recipientName = qrData.recipient;
           if (response.ok) {
             const userData = await response.json();
-            router.push({
-              pathname: '/screen/paymentConfirm',
-              params: {
-                amount: qrData.amount,
-                recipient: qrData.recipient,
-                recipientName: userData.usuario?.full_name || qrData.recipient,
-                description: qrData.description || 'Pagamento via QR Code'
-              }
-            });
-          } else {
-            // If can't fetch name, proceed with chave
-            router.push({
-              pathname: '/screen/paymentConfirm',
-              params: {
-                amount: qrData.amount,
-                recipient: qrData.recipient,
-                recipientName: qrData.recipient,
-                description: qrData.description || 'Pagamento via QR Code'
-              }
-            });
+            recipientName = userData.conta?.usuario?.full_name || qrData.recipient;
           }
+          Alert.alert(
+            'QR Code Detectado',
+            `Destinatário: ${recipientName}\nValor: R$ ${qrData.amount}\nDescrição: ${qrData.description || 'Pagamento via QR Code'}`,
+            [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Confirmar', onPress: () => router.push({
+                pathname: '/screen/paymentConfirm',
+                params: {
+                  amount: qrData.amount,
+                  recipient: qrData.recipient,
+                  recipientName: recipientName,
+                  description: qrData.description || 'Pagamento via QR Code'
+                }
+              }) }
+            ]
+          );
         } catch (fetchError) {
-          // If fetch fails, proceed with chave
-          router.push({
-            pathname: '/screen/paymentConfirm',
-            params: {
-              amount: qrData.amount,
-              recipient: qrData.recipient,
-              recipientName: qrData.recipient,
-              description: qrData.description || 'Pagamento via QR Code'
-            }
-          });
+          Alert.alert(
+            'QR Code Detectado',
+            `Destinatário: ${qrData.recipient}\nValor: R$ ${qrData.amount}\nDescrição: ${qrData.description || 'Pagamento via QR Code'}`,
+            [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Confirmar', onPress: () => router.push({
+                pathname: '/screen/paymentConfirm',
+                params: {
+                  amount: qrData.amount,
+                  recipient: qrData.recipient,
+                  recipientName: qrData.recipient,
+                  description: qrData.description || 'Pagamento via QR Code'
+                }
+              }) }
+            ]
+          );
         }
       } else {
         Alert.alert('QR Code Inválido', 'Este QR code não contém dados de pagamento válidos.');

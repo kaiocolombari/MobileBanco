@@ -8,6 +8,7 @@ import {
   Alert,
   Dimensions,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -69,8 +70,13 @@ export default function EmprestimoScreen() {
 
     setLoading(true);
     try {
-      await pagarParcela(selectedParcela.id_parcela, password);
-      Alert.alert('Sucesso', 'Parcela paga com sucesso!');
+      const response = await pagarParcela(selectedParcela.id_parcela, password);
+      const transactionId = response.transactionId;
+      if (transactionId) {
+        router.push(`/comprovante/${transactionId}`);
+      } else {
+        Alert.alert('Sucesso', 'Parcela paga com sucesso!');
+      }
       setSelectedParcela(null);
       setPassword('');
       loadLoans();
@@ -96,23 +102,35 @@ export default function EmprestimoScreen() {
       return;
     }
 
-    setLoading(true);
-    try {
-      await solicitarEmprestimo(amount, loanTerm, password);
-      Alert.alert(
-        'Sucesso',
-        'Empréstimo solicitado com sucesso! O valor foi creditado em sua conta.',
-        [{ text: 'OK', onPress: () => {
-          loadLoans();
-          setLoanAmount('');
-          setPassword('');
-        } }]
-      );
-    } catch (error: any) {
-      Alert.alert('Erro', error.message);
-    } finally {
-      setLoading(false);
-    }
+    Alert.alert(
+      'Confirmar Empréstimo',
+      `Valor: ${formatCurrency(amount)}\nPrazo: ${loanTerm} meses\nParcela mensal: ${formatCurrency(monthlyPayment)}\nTotal a pagar: ${formatCurrency(totalPayment)}\n\nDeseja confirmar a solicitação?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Confirmar',
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await solicitarEmprestimo(amount, loanTerm, password);
+              Alert.alert(
+                'Sucesso',
+                'Empréstimo solicitado com sucesso! O valor foi creditado em sua conta.',
+                [{ text: 'OK', onPress: () => {
+                  loadLoans();
+                  setLoanAmount('');
+                  setPassword('');
+                } }]
+              );
+            } catch (error: any) {
+              Alert.alert('Erro', error.message);
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const formatCurrency = (value: number) => {
@@ -260,50 +278,60 @@ export default function EmprestimoScreen() {
           </View>
         )}
 
-        {selectedParcela && (
-          <View style={[styles.card, { backgroundColor: theme.card }]}>
-            <Text style={[styles.cardTitle, { color: theme.text }]}>Pagar Parcela</Text>
-            <Text style={[styles.loanText, { color: theme.text }]}>
-              Parcela {selectedParcela.numero_parcela}
-            </Text>
-            <Text style={[styles.loanText, { color: theme.text }]}>
-              Valor: {formatCurrency(selectedParcela.valor_parcela)}
-            </Text>
-            <Text style={[styles.loanText, { color: theme.text }]}>
-              Vencimento: {new Date(selectedParcela.data_vencimento).toLocaleDateString('pt-BR')}
-            </Text>
-            <ValidatedInput
-              placeholder="Senha de 6 dígitos"
-              value={password}
-              onChangeText={(text) => setPassword(text.replace(/[^0-9]/g, ''))}
-              keyboardType="numeric"
-              maxLength={6}
-              secureTextEntry
-            />
-            <View style={styles.paymentButtons}>
-              <TouchableOpacity
-                style={[styles.cancelButton, { backgroundColor: theme.card }]}
-                onPress={() => {
-                  setSelectedParcela(null);
-                  setPassword('');
-                }}
-              >
-                <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.confirmButton, { backgroundColor: theme.button }]}
-                onPress={handlePayment}
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <Text style={styles.confirmButtonText}>Confirmar Pagamento</Text>
-                )}
-              </TouchableOpacity>
+        <Modal
+          visible={!!selectedParcela}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => {
+            setSelectedParcela(null);
+            setPassword('');
+          }}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+              <Text style={[styles.cardTitle, { color: theme.text }]}>Pagar Parcela</Text>
+              <Text style={[styles.loanText, { color: theme.text }]}>
+                Parcela {selectedParcela?.numero_parcela}
+              </Text>
+              <Text style={[styles.loanText, { color: theme.text }]}>
+                Valor: {selectedParcela ? formatCurrency(selectedParcela.valor_parcela) : ''}
+              </Text>
+              <Text style={[styles.loanText, { color: theme.text }]}>
+                Vencimento: {selectedParcela ? new Date(selectedParcela.data_vencimento).toLocaleDateString('pt-BR') : ''}
+              </Text>
+              <ValidatedInput
+                placeholder="Senha de 6 dígitos"
+                value={password}
+                onChangeText={(text) => setPassword(text.replace(/[^0-9]/g, ''))}
+                keyboardType="numeric"
+                maxLength={6}
+                secureTextEntry
+              />
+              <View style={styles.paymentButtons}>
+                <TouchableOpacity
+                  style={[styles.cancelButton, { backgroundColor: theme.card }]}
+                  onPress={() => {
+                    setSelectedParcela(null);
+                    setPassword('');
+                  }}
+                >
+                  <Text style={[styles.cancelButtonText, { color: theme.text }]}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.confirmButton, { backgroundColor: theme.button }]}
+                  onPress={handlePayment}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#FFFFFF" size="small" />
+                  ) : (
+                    <Text style={styles.confirmButtonText}>Confirmar Pagamento</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        )}
+        </Modal>
 
         <TouchableOpacity
           style={[styles.applyButton, { backgroundColor: theme.button }]}
@@ -481,5 +509,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontFamily: 'Roboto_500Medium',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 400,
+    padding: 20,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

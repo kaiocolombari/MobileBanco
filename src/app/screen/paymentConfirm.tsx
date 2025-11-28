@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../context/ThemeContext';
 import { transferir } from '../api/fetchTransacoes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Rotas from '../../types/types.route';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,6 +16,8 @@ export default function PaymentConfirm() {
 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [transactionId, setTransactionId] = useState<number | null>(null);
 
   const handleConfirm = async () => {
     if (!password) {
@@ -33,14 +36,11 @@ export default function PaymentConfirm() {
       const response = await transferir(token, password, parseFloat(amount as string), recipient as string, description as string);
 
       if (response.status >= 200 && response.status < 300) {
-        const transactionId = response.data?.transactionId;
-        if (transactionId) {
-          router.push(`/comprovante/${transactionId}`);
-        } else {
-          Alert.alert('Sucesso', 'Pagamento realizado com sucesso!', [
-            { text: 'OK', onPress: () => router.push('/screen/pixScreen') }
-          ]);
+        const transId = response.data?.transactionId;
+        if (transId) {
+          setTransactionId(transId);
         }
+        setSuccess(true);
       } else {
         Alert.alert('Erro', response.data.msg || 'Falha no pagamento');
       }
@@ -50,6 +50,35 @@ export default function PaymentConfirm() {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.successContainer}>
+          <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
+          <Text style={[styles.successTitle, { color: theme.text }]}>Pagamento Realizado!</Text>
+          <Text style={[styles.successMessage, { color: theme.textSecondary }]}>Seu pagamento foi processado com sucesso.</Text>
+
+          {transactionId && (
+            <TouchableOpacity
+              style={[styles.receiptButton, { backgroundColor: theme.button }]}
+              onPress={() => router.push(`/comprovante/${transactionId}`)}
+            >
+              <Ionicons name="document-text" size={20} color="white" />
+              <Text style={styles.receiptText}>Ver Comprovante</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            style={styles.homeButton}
+            onPress={() => router.replace(Rotas.HOME)}
+          >
+            <Text style={[styles.homeText, { color: theme.button }]}>Voltar ao Início</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -102,6 +131,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  successContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  receiptButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1B98E0',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  receiptText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  homeButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+  },
+  homeText: {
+    color: '#1B98E0',
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',

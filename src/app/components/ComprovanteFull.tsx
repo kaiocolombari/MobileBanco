@@ -80,11 +80,11 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
             <Text style={[styles.sectionTitle, { color: theme.text, fontSize: SCREEN_WIDTH * 0.04 }]}>Destinatário</Text>
             <View style={styles.row}>
               <Ionicons name="person-circle-outline" size={SCREEN_WIDTH * 0.05} color={theme.textSecondary} />
-              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.destinatario?.full_name || "Destinatário"}</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.destinatario?.full_name || (transacao.tipo === "pagamento_emprestimo" ? "Banco Viper S.A." : "Destinatário")}</Text>
             </View>
             <View style={styles.row}>
               <Ionicons name="card-outline" size={SCREEN_WIDTH * 0.05} color={theme.textSecondary} />
-              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>Conta {conta_destino?.id_conta}</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.destinatario?.cpf || (transacao.tipo === "pagamento_emprestimo" ? "Instituição Financeira" : `Conta ${conta_destino?.id_conta}`)}</Text>
             </View>
           </View>
 
@@ -93,11 +93,11 @@ export default function ComprovanteFull({ sucesso = true, id }: Props) {
             <Text style={[styles.sectionTitle, { color: theme.text, fontSize: SCREEN_WIDTH * 0.04 }]}>Remetente</Text>
             <View style={styles.row}>
               <Ionicons name="person-circle-outline" size={SCREEN_WIDTH * 0.05} color={theme.textSecondary} />
-              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.remetente?.full_name || "Remetente"}</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.remetente?.full_name || (transacao.tipo === "emprestimo" ? "Banco Viper S.A." : "Remetente")}</Text>
             </View>
             <View style={styles.row}>
               <Ionicons name="card-outline" size={SCREEN_WIDTH * 0.05} color={theme.textSecondary} />
-              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>Conta {conta_origem?.id_conta}</Text>
+              <Text style={[styles.value, { color: theme.text, fontSize: SCREEN_WIDTH * 0.038 }]}>{transacao.remetente?.cpf || (transacao.tipo === "emprestimo" ? "Instituição Financeira" : `Conta ${conta_origem?.id_conta}`)}</Text>
             </View>
           </View>
 
